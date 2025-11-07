@@ -14,7 +14,10 @@ public class MemberController {
 	
     @Autowired
     private MemberService memberService;
-
+    
+    @Autowired
+    private com.MokU.service.EmailService emailService;
+    
     @GetMapping("/signup")
     public String signupPage() {
         return "signup";
@@ -82,4 +85,53 @@ public class MemberController {
         session.invalidate();
         return "redirect:/login";
     }
+
+
+ // 1 비밀번호 찾기 페이지 이동
+ @GetMapping("/member/forgot-password")
+ public String forgotPasswordPage() {
+     return "forgotPassword";
+ }
+
+ // 2️ 인증코드 이메일 전송
+ @PostMapping("/member/sendResetCode")
+ @ResponseBody
+ public String sendResetCode(@RequestParam("email") String email, HttpSession session) {
+     try {
+         String code = emailService.sendAuthCode(email);
+         session.setAttribute("resetEmail", email);
+         session.setAttribute("resetCode", code);
+         return "success";
+     } catch (Exception e) {
+         e.printStackTrace();
+         return "fail";
+     }
+ }
+
+ // 3️ 인증코드 확인
+ @PostMapping("/member/verifyResetCode")
+ @ResponseBody
+ public String verifyResetCode(@RequestParam("code") String code, HttpSession session) {
+     String savedCode = (String) session.getAttribute("resetCode");
+     if (savedCode != null && savedCode.equals(code)) {
+         session.setAttribute("resetVerified", true);
+         return "verified";
+     }
+     return "invalid";
+ }
+
+ // 4️ 새 비밀번호 변경
+ @PostMapping("/member/resetPassword")
+ @ResponseBody
+ public String resetPassword(@RequestParam("newPw") String newPw, HttpSession session) {
+     Boolean verified = (Boolean) session.getAttribute("resetVerified");
+     String email = (String) session.getAttribute("resetEmail");
+
+     if (verified != null && verified && email != null) {
+         memberService.updatePasswordByEmail(email, newPw);
+         session.removeAttribute("resetVerified");
+         return "success";
+     }
+     return "fail";
+ }
 }

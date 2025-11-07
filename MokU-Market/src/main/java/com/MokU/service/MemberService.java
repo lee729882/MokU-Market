@@ -7,4 +7,5 @@ public interface MemberService {
     MemberVO login(MemberVO member);
     boolean existsByEmail(String email);
     boolean existsByPhone(String phone);
+    void updatePasswordByEmail(String email, String newPw); // ✅ 추가
 }

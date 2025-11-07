@@ -160,7 +160,7 @@ button.login-btn:hover {
 
             <div class="options">
                 <label><input type="checkbox"> Remember Me</label>
-                <a href="#">비밀번호 찾기</a>
+				<a href="${pageContext.request.contextPath}/member/forgot-password">비밀번호 찾기</a>
             </div>
 
             <div class="signup-link">

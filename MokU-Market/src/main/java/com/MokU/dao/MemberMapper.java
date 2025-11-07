@@ -1,6 +1,8 @@
 package com.MokU.dao;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
 import com.MokU.vo.MemberVO;
 
 @Mapper
@@ -12,4 +14,6 @@ public interface MemberMapper {
     
     int countByEmail(String email);
     int countByPhone(String phone);
+    void updatePasswordByEmail(@Param("email") String email, @Param("newPw") String newPw);
+
 }

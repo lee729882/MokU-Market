@@ -26,5 +26,12 @@
 	    SELECT COUNT(*) FROM MOKU_USER WHERE PHONE = #{phone}
 	</select>
 
+<update id="updatePasswordByEmail">
+    UPDATE MOKU_USER
+    SET PASSWORD = #{newPw}
+    WHERE EMAIL = #{email}
+</update>
+
+
 
 </mapper>
