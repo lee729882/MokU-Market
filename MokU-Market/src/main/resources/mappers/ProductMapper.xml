@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.MokU.dao.ProductDAO">
+
+<insert id="insertProduct" parameterType="com.MokU.vo.ProductVO">
+    INSERT INTO PRODUCT
+    (PRODUCT_ID, TITLE, CATEGORY, PRICE, DESCRIPTION, SELLER_ID, LATITUDE, LONGITUDE, IMAGE_PATH)
+    VALUES (
+        PRODUCT_SEQ.NEXTVAL,
+        #{title},
+        #{category},
+        #{price},
+        #{description},
+        #{sellerId},
+        #{latitude, jdbcType=NUMERIC},
+        #{longitude, jdbcType=NUMERIC},
+        #{imagePath}
+    )
+</insert>
+
+    <select id="getProductsByCategory" resultType="com.MokU.vo.ProductVO">
+        SELECT * FROM PRODUCT WHERE CATEGORY = #{category} ORDER BY CREATED_AT DESC
+    </select>
+
+    <select id="getProductById" resultType="com.MokU.vo.ProductVO">
+        SELECT * FROM PRODUCT WHERE PRODUCT_ID = #{id}
+    </select>
+
+</mapper>

@@ -23,4 +23,13 @@
     <!-- ✅ Controller 패키지 자동 스캔 -->
     <context:component-scan base-package="com.MokU.controller" />
 
+    <!-- ✅ 파일 업로드 설정 (multipart/form-data) -->
+    <beans:bean id="multipartResolver"
+        class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- 최대 업로드 용량 (50MB = 52428800 byte) -->
+        <beans:property name="maxUploadSize" value="52428800" />
+        <!-- 기본 인코딩 -->
+        <beans:property name="defaultEncoding" value="UTF-8" />
+    </beans:bean>
+
 </beans:beans>

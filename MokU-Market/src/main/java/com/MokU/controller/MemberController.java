@@ -76,7 +76,26 @@ public class MemberController {
     }
     @GetMapping("/login")
     public String loginPage() {
-        return "login";
+        return "login"; // → /WEB-INF/views/login.jsp 로 연결됨
+    }
+
+    @PostMapping("/login")
+    public String login(MemberVO vo, HttpSession session, Model model) {
+        // DB에서 이메일/비밀번호 검증
+        MemberVO loginUser = memberService.login(vo);
+
+        if (loginUser != null) {
+            // ✅ 로그인 성공 → 세션에 사용자 저장
+            session.setAttribute("loginUser", loginUser);
+            System.out.println("✅ 로그인 성공: " + loginUser.getEmail());
+
+            // ✅ 홈 페이지로 이동
+            return "redirect:/home";
+        } else {
+            // ❌ 로그인 실패 → 에러 메시지 전달
+            model.addAttribute("error", "이메일 또는 비밀번호가 올바르지 않습니다.");
+            return "login"; // login.jsp로 다시 이동
+        }
     }
 
 
@@ -134,4 +153,19 @@ public class MemberController {
      }
      return "fail";
  }
+ 
+//✅ 로그인 후 홈 화면
+@GetMapping("/home")
+public String homePage(HttpSession session, Model model) {
+  MemberVO user = (MemberVO) session.getAttribute("loginUser");
+  
+  if (user == null) {
+      return "redirect:/login"; // 로그인 안 한 상태면 로그인 페이지로 이동
+  }
+
+  model.addAttribute("name", user.getName());
+  return "home";
+}
+
+
 }
