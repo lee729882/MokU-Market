@@ -8,4 +8,6 @@ public interface MemberService {
     boolean existsByEmail(String email);
     boolean existsByPhone(String phone);
     void updatePasswordByEmail(String email, String newPw); // ✅ 추가
+
+    void updateLocationVerified(MemberVO member);
 }

@@ -15,5 +15,6 @@ public interface MemberMapper {
     int countByEmail(String email);
     int countByPhone(String phone);
     void updatePasswordByEmail(@Param("email") String email, @Param("newPw") String newPw);
+    void updateLocationVerified(MemberVO member);
 
 }

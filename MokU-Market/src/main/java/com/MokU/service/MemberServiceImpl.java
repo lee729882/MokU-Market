@@ -30,9 +30,15 @@ public class MemberServiceImpl implements MemberService {
     public boolean existsByPhone(String phone) {
         return memberMapper.countByPhone(phone) > 0;
     }
+
     @Override
     public void updatePasswordByEmail(String email, String newPw) {
         memberMapper.updatePasswordByEmail(email, newPw);
     }
 
+    // ✅ 위치 인증 업데이트
+    @Override
+    public void updateLocationVerified(MemberVO member) {
+        memberMapper.updateLocationVerified(member);
+    }
 }

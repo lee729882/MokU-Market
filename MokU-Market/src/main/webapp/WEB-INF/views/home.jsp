@@ -168,7 +168,7 @@ body {
 .footer {
     background-color: #f1f1f1;
     text-align: center;
-    padding: 20px;
+    padding: 10px;
     font-size: 13px;
     color: #666;
     border-top: 1px solid #ddd;
@@ -188,7 +188,7 @@ body {
     </div>
     <div class="user-menu">
         <a href="#">내 상점</a>
-        <a href="#">마이페이지</a>
+<a href="${pageContext.request.contextPath}/controller/mypage">마이페이지</a>
         <a href="${pageContext.request.contextPath}/logout">로그아웃</a>
     </div>
 </div>
