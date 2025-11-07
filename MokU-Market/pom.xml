@@ -50,6 +50,23 @@
     <artifactId>poi</artifactId>
     <version>5.2.5</version>
 </dependency>
+<!-- JavaMail (Jakarta Mail) -->
+<!-- ✅ JavaMail (이메일 전송용) -->
+
+<!-- javax.mail로 교체 -->
+<dependency>
+    <groupId>com.sun.mail</groupId>
+    <artifactId>javax.mail</artifactId>
+    <version>1.6.2</version>
+</dependency>
+
+
+<!-- ✅ Activation Framework (메일 첨부 등 처리용, 필수) -->
+<dependency>
+    <groupId>com.sun.activation</groupId>
+    <artifactId>jakarta.activation</artifactId>
+    <version>2.0.1</version>
+</dependency>
 
 <!-- XLSX(OOXML 포맷) 파일용 확장 라이브러리 -->
 <dependency>
