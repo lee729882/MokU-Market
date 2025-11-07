@@ -130,6 +130,39 @@ body {
     margin-top: 40px;
     font-size: 15px;
 }
+/* ✅ body 전체를 flex로 구성 */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Nanum Gothic', sans-serif;
+    background-color: #f7f8f9;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ✅ 본문 컨테이너는 남은 공간을 채우도록 */
+.container {
+    flex: 1; /* footer 밀어내기 역할 */
+    max-width: 1000px;
+    margin: 40px auto;
+    background: white;
+    border-radius: 18px;
+    padding: 30px 40px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+}
+
+/* ✅ 푸터는 항상 아래쪽에 위치 */
+.footer {
+    background-color: #f1f1f1;
+    text-align: center;
+    padding: 10px;
+    font-size: 13px;
+    color: #666;
+    border-top: 1px solid #ddd;
+    margin-top: auto; /* 핵심! */
+}
+
 </style>
 </head>
 
@@ -179,6 +212,12 @@ body {
 
     <a href="${pageContext.request.contextPath}/product/add" class="add-btn">상품 등록하기</a>
 </div>
+<body>
+  <div class="footer">
+      <p>© 2025 Mokpo National University | MokU Market</p>
+  </div>
+</body>
+
 
 </body>
 </html>
