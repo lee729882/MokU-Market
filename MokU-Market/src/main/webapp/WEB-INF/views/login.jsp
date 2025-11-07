@@ -4,10 +4,14 @@
 <head>
 <meta charset="UTF-8">
 <title>목유마켓 로그인</title>
+
+<!-- ✅ 폰트: Jua (둥글고 귀여운 손글씨체) + Nanum Gothic -->
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
+
 <style>
 body {
-    font-family: 'Noto Sans KR', sans-serif;
-    background-color: #f8f8f8;
+    font-family: 'Nanum Gothic', sans-serif;
+    background-color: #f7f8f9;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -16,124 +20,125 @@ body {
 }
 
 .login-container {
-    background-color: #fff;
-    width: 420px;
+    background: #fff;
+    width: 380px;
     border-radius: 22px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    animation: fadeIn 0.6s ease-in-out;
+    text-align: center;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* ✅ 헤더: 학교 색상 적용 */
+/* ✅ 상단 헤더 영역 */
 .header {
-    background-color: #007A5C; /* 목포대 청록 */
-    padding: 45px 20px 25px;
-    text-align: center;
+    background-color: #007A5C;
+    padding: 25px 0 10px; /* 상단/하단 여백 줄임 */
+    border-bottom: 1px solid #eaeaea;
 }
-
 .header img {
-    width: 85px;
-    height: 85px;
-    object-fit: contain;
-    margin-bottom: 12px;
-    border-radius: 10px;
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;        /* ✅ 완전 동그라미 */
+    object-fit: cover;         /* 비율 유지 */
+    background-color: #fff;    /* 테두리 대비 */
+    padding: 5px;              /* 안쪽 여백으로 여유감 */
+    box-shadow: 0 0 5px rgba(0,0,0,0.1); /* 은은한 그림자 효과 */
 }
 
+
+/* ✅ '목유마켓' 로고 텍스트 */
 .header h1 {
-    color: #fff;
-    font-size: 27px;
-    font-weight: 700;
-    margin: 0;
+    font-family: 'Jua', sans-serif;
+    font-size: 28px;
+    color: #007A5C; /* 본 글자색 */
+    margin-top: 8px;
+    margin-bottom: 2px; /* 아래 여백 줄임 */
+    letter-spacing: 1px;
+    text-shadow:
+        -1.5px -1.5px 0 #ffffff,
+         1.5px -1.5px 0 #ffffff,
+        -1.5px  1.5px 0 #ffffff,
+         1.5px  1.5px 0 #ffffff; /* 흰색 외곽선 효과 */
 }
 
-/* ✅ 폼 */
+/* ✅ 로그인 폼 */
 .form {
-    padding: 30px 35px 40px;
+    padding: 18px 35px 30px;
 }
-
 .form h2 {
-    text-align: center;
-    font-size: 20px;
+    font-size: 19px;
     color: #222;
-    margin-bottom: 25px;
-    font-weight: 600;
+    margin-bottom: 15px;
+    font-weight: 700;
 }
 
-/* ✅ 입력창 디자인 통일 */
-.form input[type="email"],
-.form input[type="password"] {
+input[type="text"], input[type="password"] {
     width: 100%;
     box-sizing: border-box;
     padding: 13px 15px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     border: 1px solid #ddd;
-    border-radius: 10px;
+    border-radius: 12px;
     font-size: 14px;
     transition: 0.2s;
 }
-
-.form input:focus {
+input[type="text"]:focus, input[type="password"]:focus {
+    border-color: #00A67E;
     outline: none;
-    border-color: #00A67E; /* 민트색 포커스 */
-    box-shadow: 0 0 6px rgba(0, 166, 126, 0.3);
 }
 
 /* ✅ 로그인 버튼 */
-.form button.login-btn {
+button.login-btn {
     width: 100%;
     background-color: #00A67E;
-    border: none;
     color: #fff;
-    font-size: 16px;
-    font-weight: 700;
+    border: none;
     border-radius: 12px;
-    padding: 13px 0;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 12px 0;
+    margin-top: 6px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    margin-top: 10px;
-    box-shadow: 0 3px 0 #007A5C;
+    transition: all 0.2s ease-in-out;
+}
+button.login-btn:hover {
+    background-color: #008a6b;
+    transform: translateY(-1.5px);
 }
 
-.form button.login-btn:hover {
-    background-color: #007A5C;
-    box-shadow: 0 2px 0 #005E48;
-    transform: translateY(-2px);
-}
-
-/* ✅ 옵션 (체크박스, 비밀번호 찾기) */
+/* ✅ 옵션 (Remember me / 비밀번호 찾기) */
 .options {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 12px;
     font-size: 13px;
-    color: #666;
+    margin-top: 8px;
+    color: #555;
 }
-
-.options input[type="checkbox"] {
-    accent-color: #00A67E;
+.options label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
-
-/* ✅ 하단 회원가입 링크 */
-.signup {
-    text-align: center;
-    margin-top: 25px;
-    font-size: 14px;
-    color: #333;
-}
-
-.signup a {
-    color: #00A67E;
-    font-weight: 600;
+.options a {
     text-decoration: none;
+    color: #007A5C;
+}
+.options a:hover {
+    text-decoration: underline;
 }
 
-.signup a:hover {
+/* ✅ 회원가입 링크 */
+.signup-link {
+    margin-top: 18px;
+    font-size: 14px;
+    color: #444;
+}
+.signup-link a {
+    color: #00A67E;
+    text-decoration: none;
+    font-weight: 600;
+}
+.signup-link a:hover {
     text-decoration: underline;
 }
 </style>
@@ -149,20 +154,20 @@ body {
     <div class="form">
         <h2>로그인</h2>
         <form action="${pageContext.request.contextPath}/login" method="post">
-            <input type="email" name="email" placeholder="이메일 주소를 입력해주세요" required>
+            <input type="text" name="email" placeholder="이메일 주소를 입력해주세요" required>
             <input type="password" name="password" placeholder="비밀번호를 입력해주세요" required>
             <button type="submit" class="login-btn">로그인</button>
 
             <div class="options">
-                <label><input type="checkbox" name="remember"> Remember Me</label>
+                <label><input type="checkbox"> Remember Me</label>
                 <a href="#">비밀번호 찾기</a>
             </div>
-        </form>
 
-        <div class="signup">
-            아직 회원이 아니신가요?
-            <a href="${pageContext.request.contextPath}/signup">회원가입</a>
-        </div>
+            <div class="signup-link">
+                아직 회원이 아니신가요? 
+                <a href="${pageContext.request.contextPath}/signup">회원가입</a>
+            </div>
+        </form>
     </div>
 </div>
 </body>

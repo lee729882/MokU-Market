@@ -4,49 +4,76 @@
 <head>
 <meta charset="UTF-8">
 <title>목유마켓 회원가입</title>
+
+<!-- ✅ 폰트 통일 -->
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
+
 <style>
+/* ✅ 전체 폰트 */
 body {
-    font-family: 'Noto Sans KR', sans-serif;
-    background-color: #f8f8f8;
+    font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+    background-color: #f7f8f9;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     margin: 0;
 }
+
 .signup-container {
     background-color: #fff;
     width: 420px;
     border-radius: 22px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+    text-align: center;
 }
+
+/* ✅ 헤더 */
 .header {
     background-color: #007A5C;
-    padding: 45px 20px 25px;
+    padding: 25px 0 10px;
     text-align: center;
 }
 .header img {
     width: 85px;
     height: 85px;
-    margin-bottom: 12px;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: #fff;
+    padding: 6px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    margin-bottom: 8px;
 }
 .header h1 {
-    color: #fff;
-    font-size: 27px;
-    font-weight: 700;
-    margin: 0;
+    font-family: 'Jua', sans-serif;
+    font-size: 28px;
+    color: #007A5C;
+    margin-top: 6px;
+    margin-bottom: 2px;
+    letter-spacing: 1px;
+    text-shadow:
+        -1.5px -1.5px 0 #ffffff,
+         1.5px -1.5px 0 #ffffff,
+        -1.5px  1.5px 0 #ffffff,
+         1.5px  1.5px 0 #ffffff;
 }
+
+/* ✅ 폼 전체 */
 .form {
-    padding: 15px 35px 30px;
+    padding: 10px 35px 30px; /* 상단 여백 줄임 (기존 18px → 10px) */
 }
 .form h2 {
     text-align: center;
-    font-size: 20px;
+    font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+    font-weight: 700;
+    font-size: 21px;
     color: #222;
-    margin-bottom: 15px;
-    font-weight: 600;
+    margin-bottom: 18px; /* 회원가입 아래 간격 약간 줄임 */
+    letter-spacing: -0.3px;
 }
+
+/* ✅ 입력 필드 통일 */
 .form input[type="email"],
 .form input[type="password"],
 .form input[type="text"],
@@ -54,43 +81,76 @@ body {
     width: 100%;
     box-sizing: border-box;
     padding: 13px 15px;
-    margin-bottom: 13px;
+    margin-bottom: 14px; /* ✅ 모든 입력칸 간격 동일 */
     border: 1px solid #ddd;
-    border-radius: 10px;
+    border-radius: 12px;
     font-size: 14px;
+    transition: 0.2s;
 }
+.form input:focus {
+    border-color: #00A67E;
+    outline: none;
+}
+
+/* ✅ 인증 그룹 (버튼 포함 동일 간격) */
 .auth-group {
     display: flex;
     align-items: stretch;
-    gap: 10px;
-    margin-bottom: 13px;
+    gap: 3px;
+    margin-bottom: 5px; /* ✅ 입력칸과 동일한 간격 */
 }
 .auth-group input {
     flex: 1;
-    height: 44px;
+    height: 46px;
+    border-radius: 12px;
+    padding: 13px 0px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    transition: 0.2s;
+}
+.auth-group input:focus {
+    border-color: #00A67E;
+    outline: none;
 }
 .auth-group button {
+    width: 120px;
+    height: 46px;
     background-color: #00A67E;
     color: #fff;
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
-    padding: 0 18px;
-    height: 44px;
+    transition: 0.2s;
 }
+.auth-group button:hover {
+    background-color: #008a6b;
+    transform: translateY(-1px);
+}
+
+
+
+/* ✅ 회원가입 버튼 */
 .form button.signup-btn {
     width: 100%;
     background-color: #00A67E;
     border: none;
     color: #fff;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     border-radius: 12px;
     padding: 13px 0;
     margin-top: 10px;
+    cursor: pointer;
+    transition: 0.2s;
 }
+.form button.signup-btn:hover {
+    background-color: #008a6b;
+    transform: translateY(-1.5px);
+}
+
+/* ✅ 로그인 링크 */
 .login-link {
     text-align: center;
     margin-top: 25px;
@@ -102,8 +162,13 @@ body {
     font-weight: 600;
     text-decoration: none;
 }
+.login-link a:hover {
+    text-decoration: underline;
+}
+
 </style>
 </head>
+
 <body>
 <div class="signup-container">
     <div class="header">
