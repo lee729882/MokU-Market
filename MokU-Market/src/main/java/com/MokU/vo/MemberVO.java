@@ -21,6 +21,8 @@ public class MemberVO {
     private String verifiedPlace;      // 인증된 학교명 (예: 목포대학교)
     private Date verifiedAt;           // 인증 완료 시각
 
+    private String profileImagePath;
+
     // ===== Getter & Setter =====
     public int getUserId() { return userId; }
     public void setUserId(int userId) { this.userId = userId; }
@@ -60,4 +62,12 @@ public class MemberVO {
 
     public Date getVerifiedAt() { return verifiedAt; }
     public void setVerifiedAt(Date verifiedAt) { this.verifiedAt = verifiedAt; }
+    
+    public String getProfileImagePath() {
+        return profileImagePath;
+    }
+
+    public void setProfileImagePath(String profileImagePath) {
+        this.profileImagePath = profileImagePath;
+    }
 }

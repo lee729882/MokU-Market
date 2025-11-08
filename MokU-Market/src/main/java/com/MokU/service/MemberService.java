@@ -10,4 +10,8 @@ public interface MemberService {
     void updatePasswordByEmail(String email, String newPw); // ✅ 추가
 
     void updateLocationVerified(MemberVO member);
+    
+    void updateProfileImage(MemberVO user);
+
+
 }

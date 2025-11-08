@@ -25,7 +25,7 @@ html, body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 25px 40px;
+    padding: 22px 40px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
@@ -49,34 +49,43 @@ html, body {
     color: white;
 }
 
-/* 네비게이션 & 사용자 메뉴 공통 */
+/* 네비게이션 & 사용자 메뉴 */
 .nav-links, .user-menu {
     display: flex;
     align-items: center;
-    font-family: 'Nanum Gothic', sans-serif !important;
     font-weight: 600;
     font-size: 15px;
-    line-height: 1.4;
     color: white;
 }
-.nav-links {
-    gap: 25px;
-    margin-left: 60px;
-}
-.user-menu {
-    gap: 20px;
-}
+.nav-links { gap: 25px; margin-left: 60px; }
+.user-menu { gap: 25px; }
 
 /* 링크 스타일 */
 .nav-links a, .user-menu a {
     color: inherit;
     text-decoration: none;
-    font-weight: inherit;
-    font-size: inherit;
 }
 .nav-links a:hover, .user-menu a:hover {
     text-decoration: underline;
 }
+
+/* 프로필 링크 */
+.profile-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: white;
+}
+.profile-link img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid white;
+    transition: 0.2s ease;
+}
+.profile-link:hover img { transform: scale(1.07); }
 
 /* 검색창 */
 .search-box {
@@ -91,7 +100,6 @@ html, body {
     border: none;
     border-radius: 20px;
     outline: none;
-    font-size: 14px;
 }
 .search-box button {
     background: white;
@@ -101,42 +109,36 @@ html, body {
     height: 32px;
     margin-left: 8px;
     cursor: pointer;
-    font-size: 15px;
     color: #007A5C;
     font-weight: bold;
 }
 
-/* ✅ 마이페이지 상단 탭 (ZoopZoop 스타일 균등 배치) */
+/* ✅ 마이페이지 탭 */
 .mypage-nav {
     display: flex;
-    justify-content: center; /* 중앙 정렬 */
-    align-items: center;
+    justify-content: center;
     background-color: #f7f7f7;
     border-bottom: 1.5px solid #007A5C;
     box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
-
 .mypage-nav a {
-    flex: 1; /* 균등 너비 */
+    flex: 1;
     text-align: center;
     padding: 16px 0;
-    text-decoration: none;
     font-weight: 600;
     color: #444;
-    font-size: 15px;
+    text-decoration: none;
     border-bottom: 3px solid transparent;
-    transition: all 0.2s ease-in-out;
+    transition: 0.2s;
 }
-
 .mypage-nav a:hover {
     color: #007A5C;
     background-color: #f0fdf9;
 }
-
 .mypage-nav a.active {
     color: #007A5C;
     border-bottom: 3px solid #007A5C;
-    background-color: #ffffff;
+    background-color: #fff;
 }
 
 /* ✅ 프로필 카드 */
@@ -157,17 +159,12 @@ html, body {
     height: 120px;
     border-radius: 50%;
     border: 4px solid #00A67E;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     overflow: hidden;
-    background-color: #fff;
 }
 .profile-img img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 50%;
 }
 .camera-btn {
     position: absolute;
@@ -184,26 +181,12 @@ html, body {
     font-size: 14px;
     cursor: pointer;
     border: 2px solid #fff;
-    transition: 0.2s;
 }
-.camera-btn:hover {
-    background: #005f45;
-}
+.camera-btn:hover { background: #005f45; }
 
 /* ✅ 프로필 정보 */
-.profile-info h2 {
-    margin: 0;
-    font-size: 19px;
-    font-weight: bold;
-}
-.profile-info .stats {
-    font-size: 14px;
-    color: #555;
-    margin-top: 3px;
-}
-.profile-info .stats span {
-    margin-right: 15px;
-}
+.profile-info h2 { margin: 0; font-size: 19px; font-weight: bold; }
+.profile-info .stats { font-size: 14px; color: #555; margin-top: 3px; }
 .profile-info .verify-badge {
     display: inline-block;
     margin-top: 8px;
@@ -212,14 +195,8 @@ html, body {
     font-size: 13px;
     font-weight: 600;
 }
-.verify-badge.verified {
-    background-color: #e8f9f1;
-    color: #007a5c;
-}
-.verify-badge.unverified {
-    background-color: #fce8e8;
-    color: #cc2b2b;
-}
+.verify-badge.verified { background-color: #e8f9f1; color: #007a5c; }
+.verify-badge.unverified { background-color: #fce8e8; color: #cc2b2b; }
 .verify-btn {
     background-color: #007A5C;
     color: white;
@@ -230,9 +207,7 @@ html, body {
     cursor: pointer;
     margin-left: 5px;
 }
-.verify-btn:hover {
-    background-color: #005f45;
-}
+.verify-btn:hover { background-color: #005f45; }
 
 /* ✅ 정보 폼 */
 .info-box {
@@ -249,8 +224,7 @@ html, body {
     color: #333;
     margin-bottom: 6px;
 }
-.info-box input[type="text"],
-.info-box input[type="email"] {
+.info-box input {
     width: 100%;
     padding: 11px 12px;
     border-radius: 8px;
@@ -260,38 +234,7 @@ html, body {
     font-size: 14px;
     margin-bottom: 15px;
 }
-.info-box input[readonly] {
-    cursor: not-allowed;
-}
-.btn-save {
-    width: 100%;
-    background-color: #ccc;
-    color: #fff;
-    border: none;
-    padding: 12px;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: not-allowed;
-}
-
-/* ✅ 비밀번호 변경 링크 */
-.password-change {
-    text-align: center;
-    margin-top: 40px;
-    margin-bottom: 40px;
-}
-.password-change a {
-    color: #ff4d4d;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 14px;
-    opacity: 0.85;
-    transition: 0.2s;
-}
-.password-change a:hover {
-    text-decoration: underline;
-    opacity: 1;
-}
+.info-box input[readonly] { cursor: not-allowed; }
 
 /* ✅ 푸터 */
 .footer {
@@ -303,6 +246,25 @@ html, body {
     border-top: 1px solid #ddd;
     margin-top: auto;
 }
+/* ✅ 비밀번호 변경 링크 */
+.password-change {
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+.password-change a {
+    color: #ff4d4d;               /* 빨강 강조 */
+    text-decoration: none;        /* 밑줄 제거 */
+    font-weight: 600;
+    font-size: 14px;
+    opacity: 0.85;
+    transition: 0.2s;
+}
+.password-change a:hover {
+    text-decoration: underline;   /* 마우스 오버 시 밑줄 */
+    opacity: 1;
+}
+
 </style>
 </head>
 
@@ -330,7 +292,17 @@ html, body {
 
     <div class="user-menu">
         <a href="${pageContext.request.contextPath}/controller/myStore">내 상점</a>
-        <a href="${pageContext.request.contextPath}/controller/mypage">마이페이지</a>
+        <a href="${pageContext.request.contextPath}/controller/mypage" class="profile-link">
+            <c:choose>
+                <c:when test="${not empty user.profileImagePath}">
+                    <img src="${pageContext.request.contextPath}${user.profileImagePath}" alt="프로필 이미지">
+                </c:when>
+                <c:otherwise>
+                    <img src="${pageContext.request.contextPath}/resources/images/default_profile.png" alt="기본 프로필">
+                </c:otherwise>
+            </c:choose>
+            <span>${user.name}</span>
+        </a>
         <a href="${pageContext.request.contextPath}/logout">로그아웃</a>
     </div>
 </div>
@@ -343,21 +315,24 @@ html, body {
     <a href="${pageContext.request.contextPath}/controller/reviews">내 후기</a>
 </div>
 
-
 <!-- ✅ 프로필 카드 -->
 <div class="profile-card">
     <div class="profile-img">
-        <img id="profilePreview" src="${pageContext.request.contextPath}/resources/images/sample_profile.jpg" alt="프로필 이미지">
+        <c:choose>
+            <c:when test="${not empty user.profileImagePath}">
+                <img id="profilePreview" src="${pageContext.request.contextPath}${user.profileImagePath}" alt="프로필 이미지">
+            </c:when>
+            <c:otherwise>
+                <img id="profilePreview" src="${pageContext.request.contextPath}/resources/images/default_profile.png" alt="기본 프로필">
+            </c:otherwise>
+        </c:choose>
         <div class="camera-btn" onclick="document.getElementById('profileUpload').click()">📷</div>
-        <input type="file" id="profileUpload" accept="image/*" style="display:none;">
+        <input type="file" id="profileUpload" accept="image/*" style="display:none;" onchange="uploadProfileImage(this)">
     </div>
 
     <div class="profile-info">
         <h2>${user.name}</h2>
-        <div class="stats">
-            <span>매너온도: ${user.mannerTemp}℃ 🔥</span>
-        </div>
-
+        <div class="stats"><span>매너온도: ${user.mannerTemp}℃ 🔥</span></div>
         <div class="stats">
             <c:choose>
                 <c:when test="${user.isLocationVerified eq 'Y'}">
@@ -370,7 +345,6 @@ html, body {
                 </c:otherwise>
             </c:choose>
         </div>
-
         <div class="stats">
             <span>내 등록템 ${user.productCount}개</span>
             <span>내 관심템 ${user.favoriteCount}개</span>
@@ -393,9 +367,7 @@ html, body {
     <button class="btn-save" disabled>저장하기</button>
 </div>
 
-<div class="password-change">
-    <a href="${pageContext.request.contextPath}/member/forgot-password">비밀번호 변경하기</a>
-</div>
+<div class="password-change"> <a href="${pageContext.request.contextPath}/member/forgot-password">비밀번호 변경하기</a> </div>
 
 <!-- ✅ 푸터 -->
 <div class="footer">
@@ -408,34 +380,56 @@ function verifyWifi() {
     .then(res => res.text())
     .then(msg => {
         alert(msg);
-
         if (msg.includes("📡 캠퍼스 Wi-Fi 인증 완료")) {
-            // ✅ 인증 성공 시 UI 즉시 업데이트
-            const verifyArea = document.querySelector(".verify-badge.unverified");
-            if (verifyArea) {
-                verifyArea.classList.remove("unverified");
-                verifyArea.classList.add("verified");
-                verifyArea.innerText = "🎓 캠퍼스 인증 완료";
+            const badge = document.querySelector(".verify-badge.unverified");
+            if (badge) {
+                badge.classList.remove("unverified");
+                badge.classList.add("verified");
+                badge.textContent = "🎓 캠퍼스 인증 완료";
             }
+            const btn = document.querySelector(".verify-btn");
+            if (btn) btn.style.display = "none";
 
-            // ✅ Wi-Fi 인증 버튼 숨기기
-            const verifyBtn = document.querySelector(".verify-btn");
-            if (verifyBtn) verifyBtn.style.display = "none";
-
-            // ✅ 인증 장소 표시 (optional)
-            const statsDiv = document.querySelector(".stats");
-            const placeInfo = document.createElement("span");
-            placeInfo.style.fontSize = "13px";
-            placeInfo.style.color = "#777";
-            placeInfo.style.marginLeft = "8px";
-            placeInfo.textContent = "(목포대학교 Wi-Fi 인증)";
-            statsDiv.appendChild(placeInfo);
+            const place = document.createElement("span");
+            place.textContent = "(목포대학교 Wi-Fi 인증)";
+            place.style.fontSize = "13px";
+            place.style.color = "#777";
+            place.style.marginLeft = "8px";
+            badge.parentNode.appendChild(place);
         }
     })
     .catch(() => alert("Wi-Fi 인증 중 오류가 발생했습니다."));
 }
+
+function uploadProfileImage(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("file", file);
+
+    fetch("${pageContext.request.contextPath}/controller/updateProfileImage", {
+        method: "POST",
+        body: formData,
+        credentials: "include"   // ✅ 세션 유지
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message);
+        if (data.success) {
+            // ✅ 업로드 성공 시: 미리보기 즉시 갱신
+            document.getElementById("profilePreview").src =
+                "${pageContext.request.contextPath}" + data.imagePath;
+
+            // ✅ 헤더 프로필 사진도 즉시 갱신
+            const headerProfile = document.querySelector(".profile-link img");
+            if (headerProfile) {
+                headerProfile.src = "${pageContext.request.contextPath}" + data.imagePath;
+            }
+        }
+    })
+    .catch(() => alert("업로드 중 오류가 발생했습니다."));
+}
+
 </script>
-
-
 </body>
 </html>

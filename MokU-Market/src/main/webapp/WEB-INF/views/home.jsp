@@ -189,6 +189,26 @@ body {
     color: #666;
     border-top: 1px solid #ddd;
 }
+/* ✅ 프로필 링크 */
+.profile-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: white;
+}
+.profile-link img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid white;
+    transition: 0.2s ease;
+}
+.profile-link:hover img {
+    transform: scale(1.07);
+}
+
 </style>
 </head>
 
@@ -197,7 +217,8 @@ body {
 <!-- ✅ 헤더 -->
 <div class="header">
     <div class="logo">
-        <a href="${pageContext.request.contextPath}/home" style="display:flex; align-items:center; gap:10px; text-decoration:none; color:white;">
+        <a href="${pageContext.request.contextPath}/home" 
+           style="display:flex; align-items:center; gap:10px; text-decoration:none; color:white;">
             <img src="${pageContext.request.contextPath}/resources/images/mokyu_logo.png" alt="로고">
             <h1>목유마켓</h1>
         </a>
@@ -215,10 +236,19 @@ body {
 
     <div class="user-menu">
         <a href="${pageContext.request.contextPath}/controller/myStore">내 상점</a>
-        <a href="${pageContext.request.contextPath}/controller/mypage">마이페이지</a>
+
+        <a href="${pageContext.request.contextPath}/controller/mypage" class="profile-link">
+            <c:choose>
+                <c:when test="${not empty user.profileImagePath}">
+                    <img src="${pageContext.request.contextPath}${user.profileImagePath}" alt="프로필 이미지">
+                </c:when>
+            </c:choose>
+            <span>${user.name}</span>
+        </a>
         <a href="${pageContext.request.contextPath}/logout">로그아웃</a>
     </div>
 </div>
+
 
 <!-- ✅ 메인 배너 -->
 <div class="banner">

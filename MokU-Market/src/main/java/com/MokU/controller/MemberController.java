@@ -1,10 +1,13 @@
 package com.MokU.controller;
 
+import java.io.File;
+
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.MokU.service.MemberService;
 import com.MokU.vo.MemberVO;
@@ -158,14 +161,19 @@ public class MemberController {
 @GetMapping("/home")
 public String homePage(HttpSession session, Model model) {
   MemberVO user = (MemberVO) session.getAttribute("loginUser");
-  
+
   if (user == null) {
       return "redirect:/login"; // 로그인 안 한 상태면 로그인 페이지로 이동
   }
 
-  model.addAttribute("name", user.getName());
+  // ✅ JSP에서 ${user.~~}로 접근 가능하도록 전체 객체 전달
+  model.addAttribute("user", user);
+
   return "home";
 }
+
+
+
 
 
 }

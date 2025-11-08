@@ -41,4 +41,10 @@ public class MemberServiceImpl implements MemberService {
     public void updateLocationVerified(MemberVO user) {
         memberMapper.updateLocationVerified(user);
     }
+ // MemberServiceImpl.java
+    @Override
+    public void updateProfileImage(MemberVO user) {
+        memberMapper.updateProfileImage(user);
+    }
+
 }
