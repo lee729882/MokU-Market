@@ -1,5 +1,7 @@
 package com.MokU.controller;
 
+import java.util.Date;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,18 +52,19 @@ public class UserController {
         String ip = request.getRemoteAddr();
         System.out.println("사용자 IP: " + ip);
 
-        // ✅ 테스트용: 특정 Wi-Fi IP(183.109.228.30) + localhost 허용
         if (ip.equals("183.109.228.30") || ip.startsWith("127.0.0.") || ip.startsWith("0:0:0:0")) {
             user.setIsLocationVerified("Y");
             user.setVerifiedPlace("목포대학교 Wi-Fi 인증");
+            user.setVerifiedAt(new java.util.Date());
+
+            System.out.println("✅ UPDATE 호출 전: " + user.getUserId());
             memberService.updateLocationVerified(user);
+            System.out.println("✅ UPDATE 호출 완료");
+
             session.setAttribute("loginUser", user);
             return "📡 캠퍼스 Wi-Fi 인증 완료!";
         } else {
             return "❌ 캠퍼스 네트워크(Wi-Fi)에서만 인증 가능합니다. (현재 IP: " + ip + ")";
         }
     }
-
-
-
 }

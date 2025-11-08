@@ -5,12 +5,17 @@
 <head>
 <meta charset="UTF-8">
 <title>${category} 목록 - 목유마켓</title>
-<link href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic:wght@400;600;700&display=swap" rel="stylesheet">
+
 <style>
-body {
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
     font-family: 'Nanum Gothic', sans-serif;
     background-color: #f7f8f9;
-    margin: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 /* ✅ 상단 헤더 */
@@ -20,9 +25,11 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 40px;
+    padding: 25px 40px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
+
+/* 로고 */
 .header .logo {
     display: flex;
     align-items: center;
@@ -41,22 +48,67 @@ body {
     margin: 0;
     color: white;
 }
-.header .user-menu {
+
+/* 네비게이션 + 사용자 메뉴 공통 */
+.nav-links, .user-menu {
     display: flex;
-    gap: 20px;
     align-items: center;
-}
-.header .user-menu a {
-    color: white;
-    text-decoration: none;
+    font-family: 'Nanum Gothic', sans-serif !important;
     font-weight: 600;
+    font-size: 15px;
+    line-height: 1.4;
+    color: white;
 }
-.header .user-menu a:hover {
+.nav-links {
+    gap: 25px;
+    margin-left: 60px;
+}
+.user-menu {
+    gap: 20px;
+}
+
+/* 링크 스타일 */
+.nav-links a, .user-menu a {
+    color: inherit;
+    text-decoration: none;
+    font-weight: inherit;
+    font-size: inherit;
+}
+.nav-links a:hover, .user-menu a:hover {
     text-decoration: underline;
 }
 
-/* ✅ 본문 */
+/* 검색창 */
+.search-box {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.search-box input {
+    width: 60%;
+    padding: 9px 15px;
+    border: none;
+    border-radius: 20px;
+    outline: none;
+    font-size: 14px;
+}
+.search-box button {
+    background: white;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    margin-left: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    color: #007A5C;
+    font-weight: bold;
+}
+
+/* ✅ 본문 컨테이너 */
 .container {
+    flex: 1;
     max-width: 1000px;
     margin: 40px auto;
     background: white;
@@ -86,9 +138,7 @@ body {
     transition: 0.3s;
     cursor: pointer;
 }
-.product:hover {
-    transform: translateY(-5px);
-}
+.product:hover { transform: translateY(-5px); }
 .product img {
     width: 100%;
     height: 160px;
@@ -130,29 +180,8 @@ body {
     margin-top: 40px;
     font-size: 15px;
 }
-/* ✅ body 전체를 flex로 구성 */
-html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    font-family: 'Nanum Gothic', sans-serif;
-    background-color: #f7f8f9;
-    display: flex;
-    flex-direction: column;
-}
 
-/* ✅ 본문 컨테이너는 남은 공간을 채우도록 */
-.container {
-    flex: 1; /* footer 밀어내기 역할 */
-    max-width: 1000px;
-    margin: 40px auto;
-    background: white;
-    border-radius: 18px;
-    padding: 30px 40px;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
-}
-
-/* ✅ 푸터는 항상 아래쪽에 위치 */
+/* ✅ 푸터 */
 .footer {
     background-color: #f1f1f1;
     text-align: center;
@@ -160,22 +189,36 @@ html, body {
     font-size: 13px;
     color: #666;
     border-top: 1px solid #ddd;
-    margin-top: auto; /* 핵심! */
+    margin-top: auto;
 }
-
 </style>
 </head>
 
 <body>
+
 <!-- ✅ 헤더 -->
 <div class="header">
     <div class="logo">
-        <img src="${pageContext.request.contextPath}/resources/images/mokyu_logo.png" alt="로고">
-        <h1>목유마켓</h1>
+        <a href="${pageContext.request.contextPath}/home" 
+           style="display:flex; align-items:center; gap:10px; text-decoration:none; color:white;">
+            <img src="${pageContext.request.contextPath}/resources/images/mokyu_logo.png" alt="로고">
+            <h1>목유마켓</h1>
+        </a>
     </div>
+
+    <div class="nav-links">
+        <a href="${pageContext.request.contextPath}/controller/products">중고거래</a>
+        <a href="${pageContext.request.contextPath}/controller/free">무료나눔</a>
+    </div>
+
+    <div class="search-box">
+        <input type="text" placeholder="원하는 상품을 검색해보세요!">
+        <button>🔍</button>
+    </div>
+
     <div class="user-menu">
-        <a href="${pageContext.request.contextPath}/home">홈으로</a>
-        <a href="${pageContext.request.contextPath}/product/add">상품 등록</a>
+        <a href="${pageContext.request.contextPath}/controller/myStore">내 상점</a>
+        <a href="${pageContext.request.contextPath}/controller/mypage">마이페이지</a>
         <a href="${pageContext.request.contextPath}/logout">로그아웃</a>
     </div>
 </div>
@@ -194,16 +237,16 @@ html, body {
                     <div class="product" onclick="location.href='${pageContext.request.contextPath}/product/detail/${p.productId}'">
                         <img src="${pageContext.request.contextPath}${p.imagePath}" alt="${p.title}">
                         <p>${p.title}</p>
-							<p class="price">
-							    <c:choose>
-							        <c:when test="${p.price == 0}">
-							            무료나눔
-							        </c:when>
-							        <c:otherwise>
-							            ${p.price}원
-							        </c:otherwise>
-							    </c:choose>
-							</p>
+                        <p class="price">
+                            <c:choose>
+                                <c:when test="${p.price == 0}">
+                                    무료나눔
+                                </c:when>
+                                <c:otherwise>
+                                    ${p.price}원
+                                </c:otherwise>
+                            </c:choose>
+                        </p>
                     </div>
                 </c:forEach>
             </div>
@@ -212,12 +255,11 @@ html, body {
 
     <a href="${pageContext.request.contextPath}/product/add" class="add-btn">상품 등록하기</a>
 </div>
-<body>
-  <div class="footer">
-      <p>© 2025 Mokpo National University | MokU Market</p>
-  </div>
-</body>
 
+<!-- ✅ 푸터 -->
+<div class="footer">
+    <p>© 2025 Mokpo National University | MokU Market</p>
+</div>
 
 </body>
 </html>

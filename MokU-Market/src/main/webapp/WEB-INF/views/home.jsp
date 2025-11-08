@@ -5,8 +5,8 @@
 <meta charset="UTF-8">
 <title>목유마켓 홈</title>
 <link href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
+
 <style>
-/* ✅ 전체 기본 스타일 */
 body {
     font-family: 'Nanum Gothic', sans-serif;
     margin: 0;
@@ -20,9 +20,11 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 40px;
+    padding: 25px 40px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
+
+/* 로고 */
 .header .logo {
     display: flex;
     align-items: center;
@@ -41,35 +43,74 @@ body {
     margin: 0;
     color: white;
 }
-.header .search-box {
+
+.nav-links {
+    display: flex;
+    gap: 25px;
+    align-items: center;
+    margin-left: 60px;
+    font-family: 'Nanum Gothic', sans-serif; /* ✅ 폰트 완전 동일화 */
+    font-weight: 600; /* ✅ 두께 통일 */
+    font-size: 15px;  /* ✅ 크기 통일 */
+    line-height: 1;   /* ✅ 렌더링 차이 제거 */
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    font-weight: inherit; /* ✅ 부모에서 상속 */
+    font-size: inherit;
+}
+
+.nav-links a:hover {
+    text-decoration: underline;
+}
+
+
+/* 검색창 */
+.search-box {
     flex: 1;
     display: flex;
     justify-content: center;
-    margin: 0 40px;
+    align-items: center;
 }
-.header input[type="text"] {
+.search-box input {
     width: 60%;
-    padding: 10px 15px;
+    padding: 9px 15px;
     border: none;
     border-radius: 20px;
     outline: none;
     font-size: 14px;
 }
-.header .user-menu {
+.search-box button {
+    background: white;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    margin-left: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    color: #007A5C;
+    font-weight: bold;
+}
+
+/* 사용자 메뉴 */
+.user-menu {
     display: flex;
     gap: 20px;
     align-items: center;
 }
-.header .user-menu a {
+.user-menu a {
     color: white;
     text-decoration: none;
     font-weight: 600;
 }
-.header .user-menu a:hover {
+.user-menu a:hover {
     text-decoration: underline;
 }
 
-/* ✅ 메인 배너 */
+/* ✅ 이하 기존 유지 */
 .banner {
     background: linear-gradient(135deg, #00A67E, #007A5C);
     color: white;
@@ -81,20 +122,15 @@ body {
     font-size: 28px;
     margin-bottom: 12px;
 }
-.banner p {
-    font-size: 16px;
-}
+.banner p { font-size: 16px; }
 
-/* ✅ 카테고리 */
 .categories {
     display: flex;
-    justify-content: center; /* 가운데 정렬 */
-    flex-wrap: nowrap;       /* 줄바꿈 금지 */
-    gap: 30px;               /* 아이콘 간격 */
+    justify-content: center;
+    flex-wrap: nowrap;
+    gap: 30px;
     margin: 40px auto;
-    max-width: none;         /* 고정폭 제한 해제 */
 }
-
 .category {
     width: 120px;
     height: 120px;
@@ -108,20 +144,10 @@ body {
     cursor: pointer;
     transition: 0.3s;
 }
-.category:hover {
-    transform: translateY(-5px);
-}
-.category img {
-    width: 40px;
-    height: 40px;
-    margin-bottom: 10px;
-}
-.category span {
-    font-weight: 600;
-    color: #333;
-}
+.category:hover { transform: translateY(-5px); }
+.category img { width: 40px; height: 40px; margin-bottom: 10px; }
+.category span { font-weight: 600; color: #333; }
 
-/* ✅ 상품 리스트 */
 .section {
     max-width: 1000px;
     margin: 0 auto 50px;
@@ -146,25 +172,15 @@ body {
     text-align: center;
     transition: 0.3s;
 }
-.product:hover {
-    transform: translateY(-5px);
-}
+.product:hover { transform: translateY(-5px); }
 .product img {
     width: 100%;
     height: 150px;
     object-fit: cover;
 }
-.product p {
-    margin: 10px;
-    font-size: 14px;
-    color: #333;
-}
-.product .price {
-    font-weight: bold;
-    color: #007A5C;
-}
+.product p { margin: 10px; font-size: 14px; color: #333; }
+.product .price { font-weight: bold; color: #007A5C; }
 
-/* ✅ 푸터 */
 .footer {
     background-color: #f1f1f1;
     text-align: center;
@@ -177,18 +193,29 @@ body {
 </head>
 
 <body>
+
 <!-- ✅ 헤더 -->
 <div class="header">
     <div class="logo">
-        <img src="${pageContext.request.contextPath}/resources/images/mokyu_logo.png" alt="로고">
-        <h1>목유마켓</h1>
+        <a href="${pageContext.request.contextPath}/home" style="display:flex; align-items:center; gap:10px; text-decoration:none; color:white;">
+            <img src="${pageContext.request.contextPath}/resources/images/mokyu_logo.png" alt="로고">
+            <h1>목유마켓</h1>
+        </a>
     </div>
+
+    <div class="nav-links">
+        <a href="${pageContext.request.contextPath}/controller/products">중고거래</a>
+        <a href="${pageContext.request.contextPath}/controller/free">무료나눔</a>
+    </div>
+
     <div class="search-box">
         <input type="text" placeholder="원하는 상품을 검색해보세요!">
+        <button>🔍</button>
     </div>
+
     <div class="user-menu">
-        <a href="#">내 상점</a>
-<a href="${pageContext.request.contextPath}/controller/mypage">마이페이지</a>
+        <a href="${pageContext.request.contextPath}/controller/myStore">내 상점</a>
+        <a href="${pageContext.request.contextPath}/controller/mypage">마이페이지</a>
         <a href="${pageContext.request.contextPath}/logout">로그아웃</a>
     </div>
 </div>

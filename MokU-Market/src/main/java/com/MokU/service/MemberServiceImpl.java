@@ -38,7 +38,7 @@ public class MemberServiceImpl implements MemberService {
 
     // ✅ 위치 인증 업데이트
     @Override
-    public void updateLocationVerified(MemberVO member) {
-        memberMapper.updateLocationVerified(member);
+    public void updateLocationVerified(MemberVO user) {
+        memberMapper.updateLocationVerified(user);
     }
 }
