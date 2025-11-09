@@ -4,28 +4,53 @@
 
 <mapper namespace="com.MokU.dao.ProductDAO">
 
-<insert id="insertProduct" parameterType="com.MokU.vo.ProductVO">
-    INSERT INTO PRODUCT
-    (PRODUCT_ID, TITLE, CATEGORY, PRICE, DESCRIPTION, SELLER_ID, LATITUDE, LONGITUDE, IMAGE_PATH)
-    VALUES (
-        PRODUCT_SEQ.NEXTVAL,
-        #{title},
-        #{category},
-        #{price},
-        #{description},
-        #{sellerId},
-        #{latitude, jdbcType=NUMERIC},
-        #{longitude, jdbcType=NUMERIC},
-        #{imagePath}
-    )
-</insert>
+    <!-- ✅ 상품 등록 -->
+    <insert id="insertProduct" parameterType="com.MokU.vo.ProductVO">
+        INSERT INTO PRODUCT (
+            TITLE, CATEGORY, PRICE, DESCRIPTION,
+            SELLER_ID, LATITUDE, LONGITUDE, IMAGE_PATH, PLACE_NAME
+        ) VALUES (
+            #{title},
+            #{category},
+            #{price},
+            #{description, jdbcType=CLOB},
+            #{sellerId, jdbcType=NUMERIC},
+            #{latitude, jdbcType=NUMERIC},
+            #{longitude, jdbcType=NUMERIC},
+            #{imagePath, jdbcType=VARCHAR},
+            #{placeName, jdbcType=VARCHAR}
+        )
+    </insert>
 
+    <!-- ✅ 카테고리별 목록 -->
     <select id="getProductsByCategory" resultType="com.MokU.vo.ProductVO">
-        SELECT * FROM PRODUCT WHERE CATEGORY = #{category} ORDER BY CREATED_AT DESC
+        SELECT PRODUCT_ID, TITLE, CATEGORY, PRICE, IMAGE_PATH, VIEW_COUNT, LIKE_COUNT, STATUS, CREATED_AT
+        FROM PRODUCT
+        WHERE CATEGORY = #{category}
+        ORDER BY CREATED_AT DESC
     </select>
 
+    <!-- ✅ 상품 상세 조회 -->
     <select id="getProductById" resultType="com.MokU.vo.ProductVO">
-        SELECT * FROM PRODUCT WHERE PRODUCT_ID = #{id}
+        SELECT *
+        FROM PRODUCT
+        WHERE PRODUCT_ID = #{productId}
     </select>
+
+    <!-- ✅ 조회수 증가 -->
+    <update id="increaseViewCount" parameterType="int">
+        UPDATE PRODUCT
+        SET VIEW_COUNT = VIEW_COUNT + 1,
+            UPDATED_AT = SYSDATE
+        WHERE PRODUCT_ID = #{productId}
+    </update>
+
+    <!-- ✅ 좋아요(찜) 증가 -->
+    <update id="increaseLikeCount" parameterType="int">
+        UPDATE PRODUCT
+        SET LIKE_COUNT = LIKE_COUNT + 1,
+            UPDATED_AT = SYSDATE
+        WHERE PRODUCT_ID = #{productId}
+    </update>
 
 </mapper>

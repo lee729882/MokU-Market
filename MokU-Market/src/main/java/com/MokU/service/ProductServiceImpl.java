@@ -1,6 +1,7 @@
 package com.MokU.service;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +25,19 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductVO getProductById(int id) {
-        return productDAO.getProductById(id);
+    public ProductVO getProductById(int productId) {
+        // ✅ 상세보기 시 자동으로 조회수 +1
+        productDAO.increaseViewCount(productId);
+        return productDAO.getProductById(productId);
+    }
+
+    @Override
+    public void increaseViewCount(int productId) {
+        productDAO.increaseViewCount(productId);
+    }
+
+    @Override
+    public void increaseLikeCount(int productId) {
+        productDAO.increaseLikeCount(productId);
     }
 }
