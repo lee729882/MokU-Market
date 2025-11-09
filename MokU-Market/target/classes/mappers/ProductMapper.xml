@@ -4,6 +4,25 @@
 
 <mapper namespace="com.MokU.dao.ProductDAO">
 
+    <!-- ✅ resultMap 정의 -->
+    <resultMap id="ProductMap" type="com.MokU.vo.ProductVO">
+        <id property="productId" column="PRODUCT_ID"/>
+        <result property="sellerId" column="SELLER_ID"/>
+        <result property="title" column="TITLE"/>
+        <result property="price" column="PRICE"/>
+        <result property="category" column="CATEGORY"/>
+        <result property="description" column="DESCRIPTION"/>
+        <result property="imagePath" column="IMAGE_PATH"/>
+        <result property="placeName" column="PLACE_NAME"/>
+        <result property="latitude" column="LATITUDE"/>
+        <result property="longitude" column="LONGITUDE"/>
+        <result property="viewCount" column="VIEW_COUNT"/>
+        <result property="likeCount" column="LIKE_COUNT"/>
+        <result property="status" column="STATUS"/>
+        <result property="createdAt" column="CREATED_AT"/>
+        <result property="updatedAt" column="UPDATED_AT"/>
+    </resultMap>
+
     <!-- ✅ 상품 등록 -->
     <insert id="insertProduct" parameterType="com.MokU.vo.ProductVO">
         INSERT INTO PRODUCT (
@@ -23,7 +42,7 @@
     </insert>
 
     <!-- ✅ 카테고리별 목록 -->
-    <select id="getProductsByCategory" resultType="com.MokU.vo.ProductVO">
+    <select id="getProductsByCategory" parameterType="string" resultMap="ProductMap">
         SELECT PRODUCT_ID, TITLE, CATEGORY, PRICE, IMAGE_PATH, VIEW_COUNT, LIKE_COUNT, STATUS, CREATED_AT
         FROM PRODUCT
         WHERE CATEGORY = #{category}
@@ -31,7 +50,7 @@
     </select>
 
     <!-- ✅ 상품 상세 조회 -->
-    <select id="getProductById" resultType="com.MokU.vo.ProductVO">
+    <select id="getProductById" parameterType="int" resultMap="ProductMap">
         SELECT *
         FROM PRODUCT
         WHERE PRODUCT_ID = #{productId}

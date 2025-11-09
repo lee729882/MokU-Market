@@ -1,5 +1,6 @@
-<%@ page contentType="text/html; charset=UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>  <!-- ✅ 가격 천단위 표시용 추가 -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -18,7 +19,7 @@ html, body {
   flex-direction: column;
 }
 
-/* ✅ 헤더 전체 */
+/* ✅ 헤더 */
 .header {
   background-color: #007A5C;
   color: white;
@@ -28,151 +29,93 @@ html, body {
   padding: 25px 40px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
+.header .logo { display:flex; align-items:center; gap:10px; }
+.header .logo img { width:45px; height:45px; border-radius:50%; background:white; padding:4px; }
+.header .logo h1 { font-family:'Jua',sans-serif; font-size:25px; margin:0; color:white; }
+/* 네비게이션 & 사용자 메뉴 */
+.nav-links, .user-menu {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    font-size: 15px;
+    color: white;
+}
+.nav-links { gap: 25px; margin-left: 60px; }
+.user-menu { gap: 25px; }
 
-/* ✅ 로고 */
-.header .logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+/* 링크 스타일 */
+.nav-links a, .user-menu a {
+    color: inherit;
+    text-decoration: none;
 }
-.header .logo img {
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  background: white;
-  padding: 4px;
-}
-.header .logo h1 {
-  font-family: 'Jua', sans-serif;
-  font-size: 25px;
-  margin: 0;
-  color: white;
+.nav-links a:hover, .user-menu a:hover {
+    text-decoration: underline;
 }
 
-/* ✅ 네비게이션 */
-.nav-links {
-  display: flex;
-  gap: 25px;
-  align-items: center;
-  margin-left: 60px;
-  font-family: 'Nanum Gothic', sans-serif;
-  font-weight: 600;
-  font-size: 15px;
-  line-height: 1;
-}
-.nav-links a {
-  color: white;
-  text-decoration: none;
-}
-.nav-links a:hover { text-decoration: underline; }
 
-/* ✅ 검색창 (home.jsp 동일 정렬) */
+/* 검색창 */
 .search-box {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .search-box input {
-  width: 700px;
-  padding: 12px 22px;
-  border: none;
-  border-radius: 25px;
-  outline: none;
-  font-size: 15px;
-  color: #333;
-  background-color: white;
-  box-sizing: border-box;
-  line-height: normal;
+    width: 60%;
+    padding: 9px 15px;
+    border: none;
+    border-radius: 20px;
+    outline: none;
 }
 .search-box button {
-  background-color: white;
-  border: none;
-  border-radius: 50%;
-  width: 38px;
-  height: 38px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: 0.2s;
-  position: relative;
-  top: 0;
-}
-.search-box button:hover {
-  transform: scale(1.05);
-  background-color: #f1f1f1;
+    background: white;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    margin-left: 8px;
+    cursor: pointer;
+    color: #007A5C;
+    font-weight: bold;
 }
 
-/* ✅ 사용자 메뉴 */
-.user-menu {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-}
-.user-menu a {
-  color: white;
-  text-decoration: none;
-  font-weight: 600;
-}
-.user-menu a:hover {
-  text-decoration: underline;
-}
 
-/* ✅ 프로필 링크 */
-.profile-link {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  text-decoration: none;
-  color: white;
-}
+.profile-link { display:flex; align-items:center; gap:8px; color:white; text-decoration:none; }
 .profile-link img {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid white;
-  transition: 0.2s ease;
+  width:36px; height:36px; border-radius:50%; border:2px solid white;
+  object-fit:cover; transition:0.2s ease;
 }
-.profile-link:hover img { transform: scale(1.07); }
+.profile-link:hover img { transform:scale(1.07); }
 
-/* ✅ 본문 컨테이너 */
+/* ✅ 본문 */
 .container {
   flex: 1;
   width: 100%;
-  max-width: 1100px;
-  margin: 50px auto;
+  max-width: 1150px;
+  margin: 60px auto;
   padding: 0 20px;
 }
 .container h2 {
   text-align: center;
   color: #007A5C;
   font-size: 24px;
-  margin-bottom: 25px;
+  margin-bottom: 35px;
 }
 
-/* ✅ 상품 목록 */
-.empty-msg {
-  text-align: center;
-  color: #777;
-  margin-top: 40px;
-  font-size: 15px;
-}
+/* ✅ 상품 카드 */
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 25px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 30px 25px;
 }
 .product {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 15px;
   box-shadow: 0 3px 8px rgba(0,0,0,0.08);
-  padding: 12px;
+  overflow: hidden;
   cursor: pointer;
+  text-align: left;
   transition: 0.25s;
-  text-align: center;
 }
 .product:hover {
   transform: translateY(-3px);
@@ -180,29 +123,43 @@ html, body {
 }
 .product img {
   width: 100%;
-  height: 180px;
+  height: 200px;
   object-fit: cover;
-  border-radius: 10px;
-  margin-bottom: 10px;
 }
-.product p { margin: 6px 0; font-size: 15px; color: #333; }
-.product .price { font-weight: bold; color: #007A5C; }
-
-/* ✅ 상품 등록 버튼 */
-.add-btn {
-  display: block;
-  width: 200px;
-  margin: 50px auto 80px;
-  padding: 13px 0;
-  text-align: center;
-  background-color: #007A5C;
-  color: white;
-  border-radius: 10px;
-  text-decoration: none;
+.product-info {
+  padding: 15px;
+}
+.product-info h3 {
+  font-size: 15px;
+  color: #333;
   font-weight: 600;
-  transition: 0.2s;
+  margin: 6px 0;
+  line-height: 1.4;
 }
-.add-btn:hover { background-color: #005f45; }
+.price {
+  font-weight: bold;
+  font-size: 15px;
+  color: #111;
+  margin: 5px 0;
+}
+
+/* ✅ 카테고리 뱃지 */
+.badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 4px 10px;
+  border-radius: 20px;
+  color: white;
+  margin-bottom: 5px;
+}
+.badge.무료나눔 { background-color: #4CAF50; }
+.badge.전자기기 { background-color: #3F51B5; }
+.badge.의류 { background-color: #FF7043; }
+.badge.생활용품 { background-color: #009688; }
+.badge.전공서적 { background-color: #9C27B0; }
+.badge.음식 { background-color: #795548; }
+.badge.default { background-color: #607D8B; }
 
 /* ✅ 푸터 */
 .footer {
@@ -237,7 +194,6 @@ html, body {
   opacity: 0.85;
   transition: 0.25s;
   line-height: 1.1;
-  font-family: 'Nanum Gothic', sans-serif;
 }
 .floating-top span {
   display: block;
@@ -245,10 +201,7 @@ html, body {
   font-weight: 700;
   margin-top: -2px;
 }
-.floating-top:hover {
-  opacity: 1;
-  transform: translateY(-2px);
-}
+.floating-top:hover { opacity: 1; transform: translateY(-2px); }
 .floating-add {
   display: flex;
   justify-content: center;
@@ -261,23 +214,10 @@ html, body {
   font-size: 38px;
   font-weight: bold;
   text-decoration: none;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
   transition: 0.25s;
 }
-.floating-add:hover {
-  background-color: #E03B3B;
-  transform: scale(1.07);
-}
-
-@media (max-width: 768px) {
-  .floating-container { bottom: 25px; right: 25px; }
-  .floating-add {
-    width: 55px;
-    height: 55px;
-    font-size: 34px;
-    line-height: 55px;
-  }
-}
+.floating-add:hover { background-color: #E03B3B; transform: scale(1.07); }
 </style>
 </head>
 
@@ -286,7 +226,7 @@ html, body {
 <!-- ✅ 헤더 -->
 <div class="header">
   <div class="logo">
-    <a href="${pageContext.request.contextPath}/home" 
+    <a href="${pageContext.request.contextPath}/home"
        style="display:flex; align-items:center; gap:10px; text-decoration:none; color:white;">
       <img src="${pageContext.request.contextPath}/resources/images/mokyu_logo.png" alt="로고">
       <h1>목유마켓</h1>
@@ -326,27 +266,35 @@ html, body {
 
   <c:choose>
     <c:when test="${empty products}">
-      <p class="empty-msg">등록된 상품이 없습니다. 첫 번째로 등록해보세요!</p>
+      <p style="text-align:center; color:#777; margin-top:40px;">등록된 상품이 없습니다. 첫 번째로 등록해보세요!</p>
     </c:when>
     <c:otherwise>
       <div class="product-grid">
         <c:forEach var="p" items="${products}">
           <div class="product" onclick="location.href='${pageContext.request.contextPath}/product/detail/${p.productId}'">
-            <img src="${pageContext.request.contextPath}${p.imagePath}" alt="${p.title}">
-            <p>${p.title}</p>
-            <p class="price">
-              <c:choose>
-                <c:when test="${p.price == 0}">무료나눔</c:when>
-                <c:otherwise>${p.price}원</c:otherwise>
-              </c:choose>
-            </p>
+            
+            <!-- ✅ 이미지 -->
+            <img src="${pageContext.request.contextPath}${p.imagePath}"
+                 alt="${p.title}"
+                 onerror="this.src='${pageContext.request.contextPath}/resources/images/no_image.png';" />
+
+            <div class="product-info">
+              <span class="badge ${p.category != null ? p.category : 'default'}">${p.category}</span>
+              <h3>${p.title}</h3>
+              <p class="price">
+                <c:choose>
+                  <c:when test="${p.price == 0}">무료나눔</c:when>
+                  <c:otherwise>
+                    <fmt:formatNumber value="${p.price}" type="number" pattern="#,###" /> 원
+                  </c:otherwise>
+                </c:choose>
+              </p>
+            </div>
           </div>
         </c:forEach>
       </div>
     </c:otherwise>
   </c:choose>
-
-  <a href="${pageContext.request.contextPath}/product/add" class="add-btn">상품 등록하기</a>
 </div>
 
 <!-- ✅ 푸터 -->

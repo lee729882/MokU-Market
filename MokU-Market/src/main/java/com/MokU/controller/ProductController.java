@@ -18,6 +18,8 @@ import com.MokU.service.ProductService;
 import com.MokU.vo.MemberVO;
 import com.MokU.vo.ProductVO;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 @Controller
 @RequestMapping("/product")
 public class ProductController {
@@ -34,7 +36,6 @@ public class ProductController {
         return "product_form";
     }
 
-    /** ✅ 상품 등록 처리 (다중 이미지 업로드 지원) */
     @PostMapping("/add")
     public String addProduct(@ModelAttribute ProductVO vo,
                              @RequestParam("files") MultipartFile[] files,
@@ -44,9 +45,9 @@ public class ProductController {
         MemberVO user = (MemberVO) session.getAttribute("loginUser");
         if (user == null) return "redirect:/login";
 
-        vo.setSellerId(user.getUserId()); // moku_user.user_id 참조
+        vo.setSellerId(user.getUserId());
 
-        // ✅ 업로드 폴더 경로 지정
+        // ✅ 업로드 경로 설정
         String uploadDir = request.getServletContext().getRealPath("/resources/uploads/");
         File dir = new File(uploadDir);
         if (!dir.exists()) dir.mkdirs();
@@ -54,22 +55,31 @@ public class ProductController {
         // ✅ 파일 여러 장 업로드 처리
         List<String> filePaths = new ArrayList<>();
         for (MultipartFile file : files) {
-            if (!file.isEmpty()) {
-                String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+            if (file != null && !file.isEmpty()) {
+                String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
                 File dest = new File(uploadDir, fileName);
                 file.transferTo(dest);
-                filePaths.add("/resources/uploads/" + fileName);
+
+                // ✅ 슬래시 경로로 통일
+                String path = "/resources/uploads/" + fileName;
+                filePaths.add(path.replace("\\", "/"));
             }
         }
 
-        // ✅ 대표 이미지는 첫 번째 이미지로 지정
+        // ✅ 대표 이미지 설정 (첫 번째 파일)
         if (!filePaths.isEmpty()) {
             vo.setImagePath(filePaths.get(0));
+        } else {
+            vo.setImagePath("/resources/images/no_image.png"); // 기본 이미지
         }
 
         productService.insertProduct(vo);
-        return "redirect:/product/list?category=" + vo.getCategory();
+
+        // ✅ 카테고리 인코딩 후 리다이렉트
+        String encodedCategory = URLEncoder.encode(vo.getCategory(), StandardCharsets.UTF_8);
+        return "redirect:/product/list?category=" + encodedCategory;
     }
+
 
     /** ✅ 카테고리별 목록 보기 */
     @GetMapping("/list")
