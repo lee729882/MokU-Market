@@ -271,7 +271,7 @@ html, body {
     <c:otherwise>
       <div class="product-grid">
         <c:forEach var="p" items="${products}">
-          <div class="product" onclick="location.href='${pageContext.request.contextPath}/product/detail/${p.productId}'">
+			<div class="product" onclick="location.href='${pageContext.request.contextPath}/product/detail?id=${p.productId}'">
             
             <!-- ✅ 이미지 -->
             <img src="${pageContext.request.contextPath}${p.imagePath}"

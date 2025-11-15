@@ -14,7 +14,13 @@ public interface MemberMapper {
     
     int countByEmail(String email);
     int countByPhone(String phone);
+
     void updatePasswordByEmail(@Param("email") String email, @Param("newPw") String newPw);
+
     void updateLocationVerified(MemberVO member);
+
     void updateProfileImage(MemberVO user);
+
+    // ⭐⭐⭐ 상세페이지 판매자 정보 불러오는 핵심 메서드
+    MemberVO getMemberById(int userId);
 }

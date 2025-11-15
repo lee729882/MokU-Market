@@ -64,12 +64,40 @@
         WHERE PRODUCT_ID = #{productId}
     </update>
 
-    <!-- ✅ 좋아요(찜) 증가 -->
-    <update id="increaseLikeCount" parameterType="int">
-        UPDATE PRODUCT
-        SET LIKE_COUNT = LIKE_COUNT + 1,
-            UPDATED_AT = SYSDATE
-        WHERE PRODUCT_ID = #{productId}
-    </update>
+<!-- 1. 찜했는지 확인 -->
+<select id="isLiked" resultType="int">
+    SELECT COUNT(*) 
+    FROM likes 
+    WHERE user_id = #{userId} 
+    AND product_id = #{productId}
+</select>
+
+<!-- 2. 찜 추가 -->
+<insert id="addLike">
+    INSERT INTO likes (like_id, user_id, product_id)
+    VALUES (likes_seq.nextval, #{userId}, #{productId})
+</insert>
+
+<!-- 3. 찜 삭제 -->
+<delete id="removeLike">
+    DELETE FROM likes
+    WHERE user_id = #{userId}
+    AND product_id = #{productId}
+</delete>
+
+<!-- 4. 좋아요 카운트 증가 -->
+<update id="increaseLikeCount">
+    UPDATE product
+    SET like_count = NVL(like_count, 0) + 1
+    WHERE product_id = #{productId}
+</update>
+
+<update id="decreaseLikeCount">
+    UPDATE product
+    SET like_count = NVL(like_count, 0) - 1
+    WHERE product_id = #{productId}
+</update>
+
+
 
 </mapper>

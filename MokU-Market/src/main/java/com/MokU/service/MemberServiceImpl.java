@@ -36,15 +36,19 @@ public class MemberServiceImpl implements MemberService {
         memberMapper.updatePasswordByEmail(email, newPw);
     }
 
-    // ✅ 위치 인증 업데이트
     @Override
     public void updateLocationVerified(MemberVO user) {
         memberMapper.updateLocationVerified(user);
     }
- // MemberServiceImpl.java
+
     @Override
     public void updateProfileImage(MemberVO user) {
         memberMapper.updateProfileImage(user);
     }
 
+    // ⭐⭐ 상세페이지 판매자 정보 조회 (필수 추가)
+    @Override
+    public MemberVO getMemberById(int userId) {
+        return memberMapper.getMemberById(userId);
+    }
 }

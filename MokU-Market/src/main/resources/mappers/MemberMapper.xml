@@ -74,6 +74,26 @@
     SET PROFILE_IMAGE_PATH = #{profileImagePath}
     WHERE USER_ID = #{userId}
 </update>
+    <!-- ✅ 유저 ID로 회원 정보 조회 (상세페이지 판매자 정보용) -->
+<select id="getMemberById" parameterType="int" resultType="com.MokU.vo.MemberVO">
+    SELECT 
+        USER_ID,
+        EMAIL,
+        PASSWORD,
+        NAME,
+        PHONE,
+        VERIFIED,
+        MANNER_TEMP AS mannerTemp,
+        PRODUCT_COUNT AS productCount,
+        FAVORITE_COUNT AS favoriteCount,
+        CHAT_COUNT AS chatCount,
+        IS_LOCATION_VERIFIED AS isLocationVerified,
+        VERIFIED_PLACE AS verifiedPlace,
+        VERIFIED_AT AS verifiedAt,
+        PROFILE_IMAGE_PATH AS profileImagePath
+    FROM MOKU_USER
+    WHERE USER_ID = #{userId}
+</select>
     
 
 </mapper>

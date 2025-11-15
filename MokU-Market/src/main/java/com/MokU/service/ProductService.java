@@ -12,6 +12,14 @@ public interface ProductService {
     ProductVO getProductById(int productId);
 
     void increaseViewCount(int productId);
-
+    
+    boolean isLiked(int userId, int productId);
+    void addLike(int userId, int productId);
+    void removeLike(int userId, int productId);
     void increaseLikeCount(int productId);
+    void decreaseLikeCount(int productId);
+    boolean toggleLike(int userId, int productId);
+    int getLikeCount(int productId);
+
+
 }
