@@ -21,5 +21,16 @@ public interface ProductService {
     boolean toggleLike(int userId, int productId);
     int getLikeCount(int productId);
 
+    /* ============================
+       ★★ 여러 장 상품 이미지 추가 기능
+       ============================ */
 
+    // 1) 상품 이미지 INSERT
+    void insertProductImage(int productId, String imagePath, int orders);
+
+    // 2) 상품별 이미지 목록 조회
+    List<String> getImagesByProductId(int productId);
+
+    // 3) 상품 등록 시 여러 장 이미지 저장
+    void saveProductImages(int productId, List<String> imagePaths);
 }

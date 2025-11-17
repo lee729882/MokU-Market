@@ -3,27 +3,38 @@ package com.MokU.dao;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-
 import com.MokU.vo.ProductVO;
 
 @Mapper
 public interface ProductDAO {
 
-    // ✅ 상품 등록
+    // 기본 기능
     void insertProduct(ProductVO vo);
 
-    // ✅ 카테고리별 상품 목록
-    List<ProductVO> getProductsByCategory(String category);
+    List<ProductVO> getProductsByCategory(@Param("category") String category);
 
-    // ✅ 상품 상세보기
-    ProductVO getProductById(int productId);
+    ProductVO getProductById(@Param("productId") int productId);
 
-    // ✅ 조회수 증가
-    void increaseViewCount(int productId);
-    public int isLiked(@Param("userId") int userId, @Param("productId") int productId);
-    public void addLike(@Param("userId") int userId, @Param("productId") int productId);
-    public void removeLike(@Param("userId") int userId, @Param("productId") int productId);
-    public void increaseLikeCount(int productId);
-    public void decreaseLikeCount(int productId);
+    void increaseViewCount(@Param("productId") int productId);
 
+    int isLiked(@Param("userId") int userId,
+                @Param("productId") int productId);
+
+    void addLike(@Param("userId") int userId,
+                 @Param("productId") int productId);
+
+    void removeLike(@Param("userId") int userId,
+                    @Param("productId") int productId);
+
+    void increaseLikeCount(@Param("productId") int productId);
+
+    void decreaseLikeCount(@Param("productId") int productId);
+
+
+    // ⭐ 여러 장 이미지 기능
+    void insertProductImage(@Param("productId") int productId,
+                            @Param("imagePath") String imagePath,
+                            @Param("orders") int orders);
+
+    List<String> getImagesByProductId(@Param("productId") int productId);
 }

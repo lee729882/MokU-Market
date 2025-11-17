@@ -60,6 +60,7 @@ public class ProductServiceImpl implements ProductService {
     public void decreaseLikeCount(int productId) {
         productDAO.decreaseLikeCount(productId);
     }
+
     @Override
     public boolean toggleLike(int userId, int productId) {
 
@@ -82,5 +83,30 @@ public class ProductServiceImpl implements ProductService {
         return product.getLikeCount();
     }
 
+    /* ====================================================
+        🔥🔥 여러 장 이미지 기능 추가된 부분 (3개) 🔥🔥
+       ==================================================== */
 
+    /** 1) 단일 이미지 저장 */
+    @Override
+    public void insertProductImage(int productId, String imagePath, int orders) {
+        productDAO.insertProductImage(productId, imagePath, orders);
+    }
+
+    /** 2) 상품 이미지 목록 조회 */
+    @Override
+    public List<String> getImagesByProductId(int productId) {
+        return productDAO.getImagesByProductId(productId);
+    }
+
+    /** 3) 하나의 상품에 여러 장 이미지 저장 처리 */
+    @Override
+    public void saveProductImages(int productId, List<String> imagePaths) {
+        int order = 1;
+
+        for (String path : imagePaths) {
+            productDAO.insertProductImage(productId, path, order);
+            order++;
+        }
+    }
 }

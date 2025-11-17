@@ -7,6 +7,11 @@
 <title>마이페이지 | 목유마켓</title>
 <link href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic:wght@400;600;700&display=swap" rel="stylesheet">
 
+<!-- 🔥 이미지 캐시 차단 -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+
 <style>
 html, body {
     height: 100%;
@@ -18,7 +23,7 @@ html, body {
     flex-direction: column;
 }
 
-/* ✅ 상단 헤더 */
+/* ================= HEADER ================= */
 .header {
     background-color: #007A5C;
     color: white;
@@ -28,8 +33,6 @@ html, body {
     padding: 22px 40px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
-
-/* 로고 */
 .header .logo {
     display: flex;
     align-items: center;
@@ -48,8 +51,6 @@ html, body {
     margin: 0;
     color: white;
 }
-
-/* 네비게이션 & 사용자 메뉴 */
 .nav-links, .user-menu {
     display: flex;
     align-items: center;
@@ -59,8 +60,6 @@ html, body {
 }
 .nav-links { gap: 25px; margin-left: 60px; }
 .user-menu { gap: 25px; }
-
-/* 링크 스타일 */
 .nav-links a, .user-menu a {
     color: inherit;
     text-decoration: none;
@@ -68,14 +67,10 @@ html, body {
 .nav-links a:hover, .user-menu a:hover {
     text-decoration: underline;
 }
-
-/* 프로필 링크 */
 .profile-link {
     display: flex;
     align-items: center;
     gap: 8px;
-    text-decoration: none;
-    color: white;
 }
 .profile-link img {
     width: 36px;
@@ -87,7 +82,7 @@ html, body {
 }
 .profile-link:hover img { transform: scale(1.07); }
 
-/* 검색창 */
+/* ================= 검색창 ================= */
 .search-box {
     flex: 1;
     display: flex;
@@ -113,7 +108,7 @@ html, body {
     font-weight: bold;
 }
 
-/* ✅ 마이페이지 탭 */
+/* ============== 마이페이지 NAV ============== */
 .mypage-nav {
     display: flex;
     justify-content: center;
@@ -141,7 +136,7 @@ html, body {
     background-color: #fff;
 }
 
-/* ✅ 프로필 카드 */
+/* ================= 프로필 카드 ================= */
 .profile-card {
     width: 680px;
     background: #fff;
@@ -184,32 +179,11 @@ html, body {
 }
 .camera-btn:hover { background: #005f45; }
 
-/* ✅ 프로필 정보 */
+/* ================= 프로필 정보 ================= */
 .profile-info h2 { margin: 0; font-size: 19px; font-weight: bold; }
 .profile-info .stats { font-size: 14px; color: #555; margin-top: 3px; }
-.profile-info .verify-badge {
-    display: inline-block;
-    margin-top: 8px;
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 600;
-}
-.verify-badge.verified { background-color: #e8f9f1; color: #007a5c; }
-.verify-badge.unverified { background-color: #fce8e8; color: #cc2b2b; }
-.verify-btn {
-    background-color: #007A5C;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 6px 10px;
-    font-size: 12px;
-    cursor: pointer;
-    margin-left: 5px;
-}
-.verify-btn:hover { background-color: #005f45; }
 
-/* ✅ 정보 폼 */
+/* ================= 정보 폼 ================= */
 .info-box {
     width: 680px;
     background: #fff;
@@ -236,7 +210,6 @@ html, body {
 }
 .info-box input[readonly] { cursor: not-allowed; }
 
-/* ✅ 푸터 */
 .footer {
     background-color: #f1f1f1;
     text-align: center;
@@ -246,31 +219,96 @@ html, body {
     border-top: 1px solid #ddd;
     margin-top: auto;
 }
-/* ✅ 비밀번호 변경 링크 */
+
 .password-change {
     text-align: center;
     margin-top: 40px;
     margin-bottom: 40px;
 }
 .password-change a {
-    color: #ff4d4d;               /* 빨강 강조 */
-    text-decoration: none;        /* 밑줄 제거 */
+    color: #ff4d4d;
+    text-decoration: none;
     font-weight: 600;
     font-size: 14px;
     opacity: 0.85;
     transition: 0.2s;
 }
 .password-change a:hover {
-    text-decoration: underline;   /* 마우스 오버 시 밑줄 */
+    text-decoration: underline;
     opacity: 1;
 }
 
+/* ================= 플로팅 버튼 ================= */
+.floating-container {
+    position: fixed;
+    bottom: 35px;
+    right: 35px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    z-index: 999;
+}
+.floating-top {
+    background: transparent;
+    border: none;
+    color: #333;
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+    opacity: 0.85;
+    transition: 0.25s;
+    line-height: 1.1;
+}
+.floating-top span {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: -2px;
+}
+.floating-top:hover {
+    opacity: 1;
+    transform: translateY(-2px);
+}
+.floating-add {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #FF4D4D;
+    color: white;
+    font-size: 38px;
+    font-weight: bold;
+    text-decoration: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+    transition: 0.25s;
+}
+.floating-add:hover {
+    background-color: #E03B3B;
+    transform: scale(1.07);
+}
+
+@media (max-width: 768px) {
+    .floating-container {
+        bottom: 25px;
+        right: 25px;
+    }
+    .floating-add {
+        width: 55px;
+        height: 55px;
+        font-size: 34px;
+        line-height: 55px;
+    }
+}
 </style>
 </head>
 
 <body>
 
-<!-- ✅ 헤더 -->
+<!-- ================= HEADER ================= -->
 <div class="header">
     <div class="logo">
         <a href="${pageContext.request.contextPath}/home" 
@@ -292,22 +330,25 @@ html, body {
 
     <div class="user-menu">
         <a href="${pageContext.request.contextPath}/controller/myStore">내 상점</a>
+
+        <!-- 🔥 헤더 프로필 이미지 = ID 부여 -->
         <a href="${pageContext.request.contextPath}/controller/mypage" class="profile-link">
             <c:choose>
                 <c:when test="${not empty user.profileImagePath}">
-                    <img src="${pageContext.request.contextPath}${user.profileImagePath}" alt="프로필 이미지">
+                    <img id="headerProfileImg" src="${pageContext.request.contextPath}${user.profileImagePath}">
                 </c:when>
                 <c:otherwise>
-                    <img src="${pageContext.request.contextPath}/resources/images/default_profile.png" alt="기본 프로필">
+                    <img id="headerProfileImg" src="${pageContext.request.contextPath}/resources/images/default_profile.png">
                 </c:otherwise>
             </c:choose>
             <span>${user.name}</span>
         </a>
+
         <a href="${pageContext.request.contextPath}/logout">로그아웃</a>
     </div>
 </div>
 
-<!-- ✅ 마이페이지 네비게이션 -->
+<!-- ================= 마이페이지 NAV ================= -->
 <div class="mypage-nav">
     <a href="${pageContext.request.contextPath}/controller/myProducts">내 등록템</a>
     <a href="${pageContext.request.contextPath}/controller/mypage" class="active">개인정보 수정</a>
@@ -315,15 +356,15 @@ html, body {
     <a href="${pageContext.request.contextPath}/controller/reviews">내 후기</a>
 </div>
 
-<!-- ✅ 프로필 카드 -->
+<!-- ================= 프로필 카드 ================= -->
 <div class="profile-card">
     <div class="profile-img">
         <c:choose>
             <c:when test="${not empty user.profileImagePath}">
-                <img id="profilePreview" src="${pageContext.request.contextPath}${user.profileImagePath}" alt="프로필 이미지">
+                <img id="profilePreview" src="${pageContext.request.contextPath}${user.profileImagePath}">
             </c:when>
             <c:otherwise>
-                <img id="profilePreview" src="${pageContext.request.contextPath}/resources/images/default_profile.png" alt="기본 프로필">
+                <img id="profilePreview" src="${pageContext.request.contextPath}/resources/images/default_profile.png">
             </c:otherwise>
         </c:choose>
         <div class="camera-btn" onclick="document.getElementById('profileUpload').click()">📷</div>
@@ -332,19 +373,9 @@ html, body {
 
     <div class="profile-info">
         <h2>${user.name}</h2>
+
         <div class="stats"><span>매너온도: ${user.mannerTemp}℃ 🔥</span></div>
-        <div class="stats">
-            <c:choose>
-                <c:when test="${user.isLocationVerified eq 'Y'}">
-                    <span class="verify-badge verified">🎓 캠퍼스 인증 완료</span>
-                    <span style="font-size:13px; color:#777;">(${user.verifiedPlace})</span>
-                </c:when>
-                <c:otherwise>
-                    <span class="verify-badge unverified">❌ 캠퍼스 인증 미완료</span>
-                    <button type="button" class="verify-btn" onclick="verifyWifi()">📶 Wi-Fi 인증하기</button>
-                </c:otherwise>
-            </c:choose>
-        </div>
+
         <div class="stats">
             <span>내 등록템 ${user.productCount}개</span>
             <span>내 관심템 ${user.favoriteCount}개</span>
@@ -353,7 +384,7 @@ html, body {
     </div>
 </div>
 
-<!-- ✅ 개인정보 박스 -->
+<!-- ================= 개인정보 BOX ================= -->
 <div class="info-box">
     <label>아이디</label>
     <input type="email" value="${user.email}" readonly>
@@ -367,156 +398,62 @@ html, body {
     <button class="btn-save" disabled>저장하기</button>
 </div>
 
-<div class="password-change"> <a href="${pageContext.request.contextPath}/member/forgot-password">비밀번호 변경하기</a> </div>
+<div class="password-change">
+    <a href="${pageContext.request.contextPath}/member/forgot-password">비밀번호 변경하기</a>
+</div>
 
-<!-- ✅ 푸터 -->
+<!-- ================= FOOTER ================= -->
 <div class="footer">
     <p>© 2025 Mokpo National University | MokU Market</p>
 </div>
 
+<!-- ================= JS ================= -->
 <script>
-function verifyWifi() {
-  fetch("${pageContext.request.contextPath}/controller/verifyWifi")
-    .then(res => res.text())
-    .then(msg => {
-        alert(msg);
-        if (msg.includes("📡 캠퍼스 Wi-Fi 인증 완료")) {
-            const badge = document.querySelector(".verify-badge.unverified");
-            if (badge) {
-                badge.classList.remove("unverified");
-                badge.classList.add("verified");
-                badge.textContent = "🎓 캠퍼스 인증 완료";
-            }
-            const btn = document.querySelector(".verify-btn");
-            if (btn) btn.style.display = "none";
-
-            const place = document.createElement("span");
-            place.textContent = "(목포대학교 Wi-Fi 인증)";
-            place.style.fontSize = "13px";
-            place.style.color = "#777";
-            place.style.marginLeft = "8px";
-            badge.parentNode.appendChild(place);
-        }
-    })
-    .catch(() => alert("Wi-Fi 인증 중 오류가 발생했습니다."));
-}
-
 function uploadProfileImage(input) {
     const file = input.files[0];
     if (!file) return;
+
     const formData = new FormData();
     formData.append("file", file);
 
-    fetch("${pageContext.request.contextPath}/controller/updateProfileImage", {
+    fetch(`${pageContext.request.contextPath}/controller/updateProfileImage`, {
         method: "POST",
         body: formData,
-        credentials: "include"   // ✅ 세션 유지
+        credentials: "include"
     })
     .then(res => res.json())
     .then(data => {
-        alert(data.message);
-        if (data.success) {
-            // ✅ 업로드 성공 시: 미리보기 즉시 갱신
-            document.getElementById("profilePreview").src =
-                "${pageContext.request.contextPath}" + data.imagePath;
+        if (data.success && data.imagePath) {
 
-            // ✅ 헤더 프로필 사진도 즉시 갱신
-            const headerProfile = document.querySelector(".profile-link img");
-            if (headerProfile) {
-                headerProfile.src = "${pageContext.request.contextPath}" + data.imagePath;
-            }
+            // 🔥 알림 후 새로고침
+            alert("프로필 이미지가 정상적으로 변경되었습니다.");
+            location.reload();   // ← 새로고침 추가됨
+
+        } else {
+            alert(data.message ?? "업로드 중 문제가 발생했습니다.");
         }
     })
-    .catch(() => alert("업로드 중 오류가 발생했습니다."));
+    .catch(err => {
+        console.error("업로드 오류:", err);
+        alert("업로드 중 오류가 발생했습니다.");
+    });
 }
 
+
+
+
+
+
+document.getElementById("topBtn")?.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+});
 </script>
-<!-- ✅ Top + 등록 플로팅 버튼 세트 -->
+
+<!-- ================= 플로팅 버튼 ================= -->
 <div class="floating-container">
     <button id="topBtn" class="floating-top">^<br><span>Top</span></button>
     <a href="${pageContext.request.contextPath}/product/add" class="floating-add">+</a>
 </div>
-
-<style>
-/* ✅ 공통 영역 */
-.floating-container {
-    position: fixed;
-    bottom: 35px;
-    right: 35px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    z-index: 999;
-}
-
-/* ✅ Top 버튼 (강조 & 살짝 확대) */
-.floating-top {
-    background: transparent;
-    border: none;
-    color: #333;
-    font-size: 18px;             /* ↑ 화살표 크기 확대 */
-    font-weight: 700;            /* 굵게 */
-    text-align: center;
-    cursor: pointer;
-    opacity: 0.85;
-    transition: 0.25s;
-    line-height: 1.1;
-    font-family: 'Nanum Gothic', sans-serif;
-}
-.floating-top span {
-    display: block;
-    font-size: 13px;             /* “Top” 텍스트 크기 */
-    font-weight: 700;            /* 굵게 */
-    margin-top: -2px;
-}
-.floating-top:hover {
-    opacity: 1;
-    transform: translateY(-2px);
-}
-
-/* ✅ 등록 버튼 (+) */
-.floating-add {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background-color: #FF4D4D;
-    color: white;
-    font-size: 38px;
-    font-weight: bold;
-    text-decoration: none;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-    transition: 0.25s;
-}
-.floating-add:hover {
-    background-color: #E03B3B;
-    transform: scale(1.07);
-}
-
-/* ✅ 모바일 대응 */
-@media (max-width: 768px) {
-    .floating-container {
-        bottom: 25px;
-        right: 25px;
-    }
-    .floating-add {
-        width: 55px;
-        height: 55px;
-        font-size: 34px;
-        line-height: 55px;
-    }
-}
-</style>
-
-<script>
-// ✅ Top 버튼 기능
-document.getElementById("topBtn").addEventListener("click", () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-});
-</script>
 
 </body>
 </html>

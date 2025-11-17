@@ -290,27 +290,32 @@ html, body {
 <!-- ===================== DETAIL CONTENT ===================== -->
 <div class="detail-container">
 
-    <!-- 이미지 슬라이더 -->
-    <div class="image-slider">
+<!-- 이미지 슬라이더 -->
+<div class="image-slider">
 
-        <div class="slides">
-            <c:forEach var="img" items="${images}">
-                <div class="slide">
-                    <img src="${pageContext.request.contextPath}${img}">
-                </div>
-            </c:forEach>
-        </div>
+    <div class="slides">
+        <c:forEach var="img" items="${images}">
+            <div class="slide">
+                <img src="${pageContext.request.contextPath}${img}">
+            </div>
+        </c:forEach>
+    </div>
 
+    <!-- 좌우 화살표 -->
+    <c:if test="${fn:length(images) > 1}">
         <div class="arrow left" onclick="prevSlide()">&#10094;</div>
         <div class="arrow right" onclick="nextSlide()">&#10095;</div>
+    </c:if>
 
-        <div class="dots">
-            <c:forEach var="i" begin="0" end="${fn:length(images)-1}">
-                <span class="dot" onclick="currentSlide(${i})"></span>
-            </c:forEach>
-        </div>
-
+    <!-- 하단 도트 -->
+    <div class="dots">
+        <c:forEach var="i" begin="0" end="${fn:length(images)-1}">
+            <span class="dot" onclick="currentSlide(${i})"></span>
+        </c:forEach>
     </div>
+
+</div>
+
 
     <!-- 판매자 -->
     <div class="seller-box">
@@ -375,28 +380,38 @@ html, body {
 
 <!-- ===================== JS: 슬라이더 ===================== -->
 <script>
-let currentIndex = 0;
-const slides = document.querySelector(".slides");
-const slideCount = document.querySelectorAll(".slide").length;
-const dots = document.querySelectorAll(".dot");
+document.addEventListener("DOMContentLoaded", () => {
 
-function showSlide(index) {
-    if (index < 0) index = slideCount - 1;
-    if (index >= slideCount) index = 0;
-    currentIndex = index;
+    let currentIndex = 0;
+    const slides = document.querySelector(".slides");
+    const slideList = document.querySelectorAll(".slide");
+    const dots = document.querySelectorAll(".dot");
+    const slideCount = slideList.length;
 
-    slides.style.transform = `translateX(-${index * 100}%)`;
+    if (slideCount === 0) return;
 
-    dots.forEach(d => d.classList.remove("active"));
-    dots[index].classList.add("active");
-}
+    function showSlide(index) {
 
-function nextSlide() { showSlide(currentIndex + 1); }
-function prevSlide() { showSlide(currentIndex - 1); }
-function currentSlide(i) { showSlide(i); }
+        if (index < 0) index = slideCount - 1;
+        if (index >= slideCount) index = 0;
 
-if (slideCount > 0) showSlide(0);
+        currentIndex = index;
+
+        slides.style.transform = `translateX(-${index * 100}%)`;
+
+        dots.forEach(dot => dot.classList.remove("active"));
+        if (dots[index]) dots[index].classList.add("active");
+    }
+
+    window.nextSlide = () => showSlide(currentIndex + 1);
+    window.prevSlide = () => showSlide(currentIndex - 1);
+    window.currentSlide = (i) => showSlide(i);
+
+    // 초기 슬라이드 표시
+    showSlide(0);
+});
 </script>
+
 
 <!-- ===================== KAKAO MAP ===================== -->
 <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=85969b990129ae28ec3aa8ad0beeca55&libraries=services"></script>

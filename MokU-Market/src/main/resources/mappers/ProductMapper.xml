@@ -4,7 +4,6 @@
 
 <mapper namespace="com.MokU.dao.ProductDAO">
 
-    <!-- ✅ resultMap 정의 -->
     <resultMap id="ProductMap" type="com.MokU.vo.ProductVO">
         <id property="productId" column="PRODUCT_ID"/>
         <result property="sellerId" column="SELLER_ID"/>
@@ -23,25 +22,50 @@
         <result property="updatedAt" column="UPDATED_AT"/>
     </resultMap>
 
-    <!-- ✅ 상품 등록 -->
     <insert id="insertProduct" parameterType="com.MokU.vo.ProductVO">
+        <selectKey keyProperty="productId" resultType="int" order="BEFORE">
+            SELECT PRODUCT_SEQ.nextval FROM dual
+        </selectKey>
+
         INSERT INTO PRODUCT (
-            TITLE, CATEGORY, PRICE, DESCRIPTION,
+            PRODUCT_ID, TITLE, CATEGORY, PRICE, DESCRIPTION,
             SELLER_ID, LATITUDE, LONGITUDE, IMAGE_PATH, PLACE_NAME
         ) VALUES (
+            #{productId},
             #{title},
             #{category},
             #{price},
             #{description, jdbcType=CLOB},
-            #{sellerId, jdbcType=NUMERIC},
-            #{latitude, jdbcType=NUMERIC},
-            #{longitude, jdbcType=NUMERIC},
-            #{imagePath, jdbcType=VARCHAR},
-            #{placeName, jdbcType=VARCHAR}
+            #{sellerId},
+            #{latitude},
+            #{longitude},
+            #{imagePath},
+            #{placeName}
         )
     </insert>
 
-    <!-- ✅ 카테고리별 목록 -->
+    <select id="getLastProductId" resultType="int">
+        SELECT PRODUCT_SEQ.currval FROM dual
+    </select>
+
+    <insert id="insertProductImage">
+        INSERT INTO PRODUCT_IMAGES (
+            IMAGE_ID, PRODUCT_ID, IMAGE_PATH, ORDERS
+        ) VALUES (
+            PRODUCT_IMAGES_SEQ.nextval,
+            #{productId},
+            #{imagePath},
+            #{orders}
+        )
+    </insert>
+
+    <select id="getImagesByProductId" parameterType="int" resultType="string">
+        SELECT IMAGE_PATH
+        FROM PRODUCT_IMAGES
+        WHERE PRODUCT_ID = #{productId}
+        ORDER BY ORDERS ASC
+    </select>
+
     <select id="getProductsByCategory" parameterType="string" resultMap="ProductMap">
         SELECT PRODUCT_ID, TITLE, CATEGORY, PRICE, IMAGE_PATH, VIEW_COUNT, LIKE_COUNT, STATUS, CREATED_AT
         FROM PRODUCT
@@ -49,14 +73,12 @@
         ORDER BY CREATED_AT DESC
     </select>
 
-    <!-- ✅ 상품 상세 조회 -->
     <select id="getProductById" parameterType="int" resultMap="ProductMap">
         SELECT *
         FROM PRODUCT
         WHERE PRODUCT_ID = #{productId}
     </select>
 
-    <!-- ✅ 조회수 증가 -->
     <update id="increaseViewCount" parameterType="int">
         UPDATE PRODUCT
         SET VIEW_COUNT = VIEW_COUNT + 1,
@@ -64,40 +86,39 @@
         WHERE PRODUCT_ID = #{productId}
     </update>
 
-<!-- 1. 찜했는지 확인 -->
-<select id="isLiked" resultType="int">
-    SELECT COUNT(*) 
-    FROM likes 
-    WHERE user_id = #{userId} 
-    AND product_id = #{productId}
+    <select id="isLiked" resultType="int">
+        SELECT COUNT(*)
+        FROM LIKES
+        WHERE user_id = #{userId}
+        AND product_id = #{productId}
+    </select>
+
+    <insert id="addLike">
+        INSERT INTO likes (like_id, user_id, product_id)
+        VALUES (likes_seq.nextval, #{userId}, #{productId})
+    </insert>
+
+    <delete id="removeLike">
+        DELETE FROM likes
+        WHERE user_id = #{userId}
+        AND product_id = #{productId}
+    </delete>
+
+    <update id="increaseLikeCount">
+        UPDATE product
+        SET like_count = NVL(like_count, 0) + 1
+        WHERE product_id = #{productId}
+    </update>
+
+    <update id="decreaseLikeCount">
+        UPDATE product
+        SET like_count = NVL(like_count, 0) - 1
+        WHERE product_id = #{productId}
+    </update>
+<select id="getTotalLikesBySeller" parameterType="int" resultType="int">
+    SELECT NVL(SUM(like_count), 0)
+    FROM PRODUCT
+    WHERE seller_id = #{sellerId}
 </select>
-
-<!-- 2. 찜 추가 -->
-<insert id="addLike">
-    INSERT INTO likes (like_id, user_id, product_id)
-    VALUES (likes_seq.nextval, #{userId}, #{productId})
-</insert>
-
-<!-- 3. 찜 삭제 -->
-<delete id="removeLike">
-    DELETE FROM likes
-    WHERE user_id = #{userId}
-    AND product_id = #{productId}
-</delete>
-
-<!-- 4. 좋아요 카운트 증가 -->
-<update id="increaseLikeCount">
-    UPDATE product
-    SET like_count = NVL(like_count, 0) + 1
-    WHERE product_id = #{productId}
-</update>
-
-<update id="decreaseLikeCount">
-    UPDATE product
-    SET like_count = NVL(like_count, 0) - 1
-    WHERE product_id = #{productId}
-</update>
-
-
 
 </mapper>

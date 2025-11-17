@@ -13,11 +13,18 @@
   <!-- ✅ HikariCP 연결 설정 -->
   <bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
     <property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"/>
-<property name="jdbcUrl" 
-          value="jdbc:log4jdbc:oracle:thin:@//114.70.92.70:1521/XE"/>
-    <property name="username" value="book_213619"/>
-    <property name="password" value="book_213619"/>
+
+    <!-- ★ 여기만 네 Docker Oracle로 변경 -->
+    <property name="jdbcUrl" 
+              value="jdbc:log4jdbc:oracle:thin:@//localhost:1521/xe"/>
+
+    <!-- ★ 계정 (SYSTEM 말고 직접 만든 USER 쓰는 걸 추천) -->
+    <property name="username" value="boot_ex"/>
+
+    <!-- ★ 비밀번호 (방금 언락하고 바꾼 값) -->
+    <property name="password" value="boot_ex"/>
   </bean>
+
 
   <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
     <constructor-arg ref="hikariConfig"/>

@@ -47,7 +47,7 @@ public class ProductController {
     }
 
     /** ============================================
-     *  상품 등록 처리
+     *  상품 등록 처리 (여러 장 이미지 저장 포함)
      *  ============================================ */
     @PostMapping("/add")
     public String addProduct(@ModelAttribute ProductVO vo,
@@ -60,35 +60,46 @@ public class ProductController {
 
         vo.setSellerId(user.getUserId());
 
-        // ★★ 업로드 경로 변경 ★★
+        // 업로드 폴더
         String uploadDir = request.getServletContext().getRealPath("/upload/product/");
         File dir = new File(uploadDir);
         if (!dir.exists()) dir.mkdirs();
 
-        List<String> filePaths = new ArrayList<>();
+        List<String> imagePaths = new ArrayList<>();
+
+        // === 이미지 저장 ===
         for (MultipartFile file : files) {
             if (file != null && !file.isEmpty()) {
                 String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
                 File dest = new File(uploadDir, fileName);
+
                 file.transferTo(dest);
 
-                // ★★ DB에는 URL 경로만 저장 ★★
-                filePaths.add("/upload/product/" + fileName);
+                imagePaths.add("/upload/product/" + fileName); // DB 저장용
             }
         }
 
-        if (!filePaths.isEmpty()) {
-            vo.setImagePath(filePaths.get(0));  // 첫 사진 대표 이미지
+        // 대표 이미지 설정
+        if (!imagePaths.isEmpty()) {
+            vo.setImagePath(imagePaths.get(0));
         } else {
             vo.setImagePath("/upload/product/no_image.png");
         }
 
+        // === 상품 먼저 INSERT (productId 생성됨) ===
         productService.insertProduct(vo);
 
+        int productId = vo.getProductId();  // ★ Oracle INSERT 후 selectKey로 받아온 PK
+
+        // === 여러 장 이미지 insert ===
+        if (!imagePaths.isEmpty()) {
+            productService.saveProductImages(productId, imagePaths);
+        }
+
+        // 카테고리 인코딩 후 Redirect
         String encodedCategory = URLEncoder.encode(vo.getCategory(), StandardCharsets.UTF_8);
         return "redirect:/product/list?category=" + encodedCategory;
     }
-
 
     /** ============================================
      *  카테고리별 목록
@@ -107,28 +118,35 @@ public class ProductController {
         return "product_list";
     }
 
+    /** ============================================
+     *  상품 상세
+     *  ============================================ */
     @GetMapping("/detail")
     public String detail(@RequestParam("id") int id,
                          HttpSession session,
                          Model model) {
 
-        // --- 조회수 중복 증가 방지 ---
+        // 조회수 중복 방지
         String viewedKey = "viewed_" + id;
         if (session.getAttribute(viewedKey) == null) {
             productService.increaseViewCount(id);
             session.setAttribute(viewedKey, true);
         }
-        
+
         ProductVO product = productService.getProductById(id);
         model.addAttribute("product", product);
 
         MemberVO seller = memberService.getMemberById(product.getSellerId());
         model.addAttribute("seller", seller);
 
-        List<String> images = new ArrayList<>();
-        images.add(product.getImagePath());
-        model.addAttribute("images", images);
+        // === 여러 이미지 불러오기 ===
+        List<String> imageList = productService.getImagesByProductId(id);
+        if (imageList.isEmpty()) {
+            imageList.add(product.getImagePath());
+        }
+        model.addAttribute("images", imageList);
 
+        // 로그인 사용자 찜 여부
         MemberVO user = (MemberVO) session.getAttribute("loginUser");
         boolean liked = false;
 
@@ -146,9 +164,8 @@ public class ProductController {
     }
 
 
-
     /** ============================================
-     *  찜 토글 처리 (좋아요 / 좋아요 취소)
+     *  찜 토글
      *  ============================================ */
     @PostMapping("/toggleLike")
     @ResponseBody
@@ -166,22 +183,13 @@ public class ProductController {
         int userId = user.getUserId();
         int productId = req.get("productId");
 
-        // 찜 토글
         boolean liked = productService.toggleLike(userId, productId);
-
-        // 찜 개수 조회
         int likeCount = productService.getLikeCount(productId);
 
-        // JSON 반환
         result.put("status", "success");
         result.put("liked", liked);
         result.put("likeCount", likeCount);
 
         return result;
     }
-
-
-
-
-
 }

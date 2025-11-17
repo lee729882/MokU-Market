@@ -319,6 +319,8 @@ button[type="submit"]:hover { background-color: #008a6b; transform: translateY(-
         <div class="sub-slot">+</div>
       </div>
     </div>
+    <div id="fileInputsContainer"></div>
+    
     <input type="file" id="fileInput" name="files" accept="image/*" multiple style="display:none;">
 
     <label>제목</label>
@@ -513,45 +515,67 @@ form.addEventListener("submit", () => {
   priceInput.value = raw || 0;
 });
 
-// ✅ 이미지 미리보기
-let mainSet = false;
-const fileInput = document.getElementById("fileInput");
+//============================
+//여러 장 이미지 업로드 완전 구현
+//============================
+
 let clickedSlot = null;
+let fileCount = 0;
 
 document.querySelectorAll(".main-slot, .sub-slot").forEach(slot => {
-  slot.addEventListener("click", e => {
+slot.addEventListener("click", e => {
     clickedSlot = e.currentTarget;
-    fileInput.click();
-  });
+
+    fileCount++;
+
+    // ★ slot마다 별도 file input 만들어서 저장
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.name = "files"; // 서버로 multiple 전달됨
+    input.style.display = "none";
+    input.dataset.slot = fileCount; // 어떤 slot인지 tracking
+
+    document.getElementById("fileInputsContainer").appendChild(input);
+
+    input.click();
+
+    input.addEventListener("change", function () {
+        const file = this.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+
+        reader.onload = ev => {
+            clickedSlot.innerHTML = "";
+            const img = document.createElement("img");
+            img.src = ev.target.result;
+
+            clickedSlot.appendChild(img);
+
+            // 삭제 버튼 추가
+            const btn = document.createElement("button");
+            btn.className = "delete-btn";
+            btn.innerText = "×";
+
+            btn.addEventListener("click", e2 => {
+                e2.stopPropagation();
+                clickedSlot.innerHTML = clickedSlot.classList.contains("main-slot") ? "대표 +" : "+";
+                clickedSlot.classList.remove("loaded");
+
+                // file input도 제거
+                input.remove();
+            });
+
+            clickedSlot.appendChild(btn);
+            clickedSlot.classList.add("loaded");
+        };
+
+        reader.readAsDataURL(file);
+    });
+});
 });
 
-fileInput.addEventListener("change", e => {
-  const file = e.target.files[0];
-  if (!file || !clickedSlot) return;
-
-  const reader = new FileReader();
-  reader.onload = ev => {
-    const img = new Image();
-    img.src = ev.target.result;
-    img.onload = () => {
-      clickedSlot.innerHTML = "";
-      clickedSlot.appendChild(img);
-      const btn = document.createElement("button");
-      btn.textContent = "×";
-      btn.className = "delete-btn";
-      btn.addEventListener("click", ev2 => {
-        ev2.stopPropagation();
-        const slot = ev2.target.closest(".main-slot, .sub-slot");
-        slot.innerHTML = slot.classList.contains("main-slot") ? "대표 +" : "+";
-        slot.classList.remove("loaded");
-      });
-      clickedSlot.appendChild(btn);
-      clickedSlot.classList.add("loaded");
-    };
-  };
-  reader.readAsDataURL(file);
-  setTimeout(() => { clickedSlot = null; }, 300);
-});
 </script>
 
 </body>

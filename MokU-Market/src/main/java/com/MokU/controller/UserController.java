@@ -91,7 +91,6 @@ public class UserController {
         }
 
         try {
-            // **변경된 부분**
             String uploadDir = session.getServletContext().getRealPath("/upload/profile/");
             File folder = new File(uploadDir);
             if (!folder.exists()) folder.mkdirs();
@@ -100,16 +99,22 @@ public class UserController {
             File saveFile = new File(uploadDir, fileName);
             file.transferTo(saveFile);
 
-            // DB 저장 경로는 "/upload/..."
+            // 저장 경로
             String dbPath = "/upload/profile/" + fileName;
 
+            // DB 업데이트
             user.setProfileImagePath(dbPath);
             memberService.updateProfileImage(user);
 
-            session.setAttribute("loginUser", user);
+            // 🔥 중요! 업데이트 이후 DB에서 최신 사용자 정보 다시 읽기
+            MemberVO updatedUser = memberService.getMemberById(user.getUserId());
+
+            // 🔥 세션 갱신 (이걸 안 하면 JSP에서 예전 user가 그대로 유지됨)
+            session.setAttribute("loginUser", updatedUser);
 
             response.put("success", true);
-            response.put("imagePath", dbPath);
+            response.put("message", "프로필 이미지가 정상적으로 변경되었습니다.");
+            response.put("imagePath", updatedUser.getProfileImagePath());
             return response;
 
         } catch (Exception e) {
@@ -119,6 +124,7 @@ public class UserController {
             return response;
         }
     }
+
 
 
 
