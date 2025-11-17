@@ -31,5 +31,6 @@
         <!-- 기본 인코딩 -->
         <beans:property name="defaultEncoding" value="UTF-8" />
     </beans:bean>
+<resources mapping="/upload/**" location="/upload/" />
 
 </beans:beans>

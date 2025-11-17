@@ -217,6 +217,28 @@ html, body {
   border-top: 1px solid #ddd;
   margin-top: 50px;
 }
+.chat-btn {
+  background-color: #007A5C;
+  color: white;
+  border: none;
+  padding: 12px 22px;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.chat-btn:hover {
+  background-color: #009b75; /* 조금 밝은 그린 */
+  transform: translateY(-2px);
+}
+
+.chat-btn:active {
+  background-color: #006450;
+  transform: translateY(0);
+}
 
 </style>
 </head>
@@ -296,7 +318,7 @@ html, body {
         <div>
             <div style="font-weight:700; font-size:16px;">${seller.name}</div>
             <div style="font-size:13px; color:#777; margin-top:3px;">
-매너온도 ${seller.mannerTemp}°C · 찜 ${likeCount} · 채팅 ${seller.chatCount}
+매너온도 ${seller.mannerTemp}°C · 찜 <span id="likeCount">${likeCount}</span> · 채팅 ${seller.chatCount}
             </div>
         </div>
     </div>
@@ -317,7 +339,7 @@ html, body {
 
     <!-- 버튼 -->
     <div class="btn-row" style="display:flex; align-items:center; gap:15px; margin-top:20px;">
-        <button class="chat-btn">채팅하기</button>
+<button class="chat-btn">채팅하기</button>
 
         <div id="likeBtn" class="like-btn ${liked ? 'liked' : ''}">
             <svg class="heart-icon" viewBox="0 0 24 24">

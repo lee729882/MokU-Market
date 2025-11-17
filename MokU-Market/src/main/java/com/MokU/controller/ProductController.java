@@ -60,7 +60,8 @@ public class ProductController {
 
         vo.setSellerId(user.getUserId());
 
-        String uploadDir = request.getServletContext().getRealPath("/resources/uploads/");
+        // ★★ 업로드 경로 변경 ★★
+        String uploadDir = request.getServletContext().getRealPath("/upload/product/");
         File dir = new File(uploadDir);
         if (!dir.exists()) dir.mkdirs();
 
@@ -71,14 +72,15 @@ public class ProductController {
                 File dest = new File(uploadDir, fileName);
                 file.transferTo(dest);
 
-                filePaths.add("/resources/uploads/" + fileName);
+                // ★★ DB에는 URL 경로만 저장 ★★
+                filePaths.add("/upload/product/" + fileName);
             }
         }
 
         if (!filePaths.isEmpty()) {
-            vo.setImagePath(filePaths.get(0));
+            vo.setImagePath(filePaths.get(0));  // 첫 사진 대표 이미지
         } else {
-            vo.setImagePath("/resources/images/no_image.png");
+            vo.setImagePath("/upload/product/no_image.png");
         }
 
         productService.insertProduct(vo);
@@ -86,6 +88,7 @@ public class ProductController {
         String encodedCategory = URLEncoder.encode(vo.getCategory(), StandardCharsets.UTF_8);
         return "redirect:/product/list?category=" + encodedCategory;
     }
+
 
     /** ============================================
      *  카테고리별 목록
@@ -109,8 +112,13 @@ public class ProductController {
                          HttpSession session,
                          Model model) {
 
-        productService.increaseViewCount(id);
-
+        // --- 조회수 중복 증가 방지 ---
+        String viewedKey = "viewed_" + id;
+        if (session.getAttribute(viewedKey) == null) {
+            productService.increaseViewCount(id);
+            session.setAttribute(viewedKey, true);
+        }
+        
         ProductVO product = productService.getProductById(id);
         model.addAttribute("product", product);
 
@@ -131,12 +139,12 @@ public class ProductController {
 
         model.addAttribute("liked", liked);
 
-        // ⭐⭐⭐ 반드시 추가 — 찜 개수 전달 ⭐⭐⭐
         int likeCount = productService.getLikeCount(id);
         model.addAttribute("likeCount", likeCount);
 
         return "product_detail";
     }
+
 
 
     /** ============================================
