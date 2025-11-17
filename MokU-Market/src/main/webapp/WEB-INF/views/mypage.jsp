@@ -303,6 +303,19 @@ html, body {
         line-height: 55px;
     }
 }
+.verified-badge {
+    display: inline-block;
+    background-color: #007A5C;
+    color: white;
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: 20px;
+    margin-bottom: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+
+
 </style>
 </head>
 
@@ -371,16 +384,48 @@ html, body {
         <input type="file" id="profileUpload" accept="image/*" style="display:none;" onchange="uploadProfileImage(this)">
     </div>
 
-    <div class="profile-info">
-        <h2>${user.name}</h2>
+<div class="profile-info">
 
-        <div class="stats"><span>매너온도: ${user.mannerTemp}℃ 🔥</span></div>
+    <!-- 인증된 경우 뱃지 -->
+    <c:if test="${user.isLocationVerified == 'Y'}">
+        <div class="verified-badge">📡 캠퍼스 인증 완료</div>
+    </c:if>
 
-        <div class="stats">
-            <span>내 등록템 ${user.productCount}개</span>
-            <span>내 관심템 ${user.favoriteCount}개</span>
-            <span>채팅 ${user.chatCount}건</span>
-        </div>
+    <h2>${user.name}</h2>
+
+    <div class="stats"><span>매너온도: ${user.mannerTemp}℃ 🔥</span></div>
+
+    <div class="stats">
+        <span>내 등록템 ${user.productCount}개</span>
+        <span>내 관심템 ${user.favoriteCount}개</span>
+        <span>채팅 ${user.chatCount}건</span>
+    </div>
+
+    <!-- 인증되지 않은 경우 버튼 표시 -->
+    <c:if test="${user.isLocationVerified != 'Y'}">
+        <button onclick="verifyWifi()" 
+                style="margin-top:12px; padding:8px 14px; 
+                       background:#007A5C; color:white; 
+                       border:none; border-radius:6px; 
+                       font-weight:600; cursor:pointer;">
+            📡 캠퍼스 Wi-Fi 인증하기
+        </button>
+    </c:if>
+
+</div>
+
+
+<script>
+function verifyWifi() {
+    fetch('${pageContext.request.contextPath}/controller/verifyWifi')
+        .then(res => res.text())
+        .then(msg => {
+            alert(msg);
+            location.reload(); // 상태 갱신
+        });
+}
+</script>
+        
     </div>
 </div>
 
