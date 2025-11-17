@@ -388,29 +388,30 @@ document.addEventListener("DOMContentLoaded", () => {
     const dots = document.querySelectorAll(".dot");
     const slideCount = slideList.length;
 
-    if (slideCount === 0) return;
+    if (!slides || slideCount === 0) return;
 
     function showSlide(index) {
-
         if (index < 0) index = slideCount - 1;
         if (index >= slideCount) index = 0;
 
         currentIndex = index;
 
-        slides.style.transform = `translateX(-${index * 100}%)`;
+        // 🔥 여기 부분만 템플릿 문자열 → 문자열 더하기로 변경
+        slides.style.transform = 'translateX(-' + (index * 100) + '%)';
 
         dots.forEach(dot => dot.classList.remove("active"));
         if (dots[index]) dots[index].classList.add("active");
     }
 
-    window.nextSlide = () => showSlide(currentIndex + 1);
-    window.prevSlide = () => showSlide(currentIndex - 1);
-    window.currentSlide = (i) => showSlide(i);
+    window.nextSlide = function() { showSlide(currentIndex + 1); };
+    window.prevSlide = function() { showSlide(currentIndex - 1); };
+    window.currentSlide = function(i) { showSlide(i); };
 
     // 초기 슬라이드 표시
     showSlide(0);
 });
 </script>
+
 
 
 <!-- ===================== KAKAO MAP ===================== -->

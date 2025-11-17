@@ -48,23 +48,26 @@
         SELECT PRODUCT_SEQ.currval FROM dual
     </select>
 
-    <insert id="insertProductImage">
-        INSERT INTO PRODUCT_IMAGES (
-            IMAGE_ID, PRODUCT_ID, IMAGE_PATH, ORDERS
-        ) VALUES (
-            PRODUCT_IMAGES_SEQ.nextval,
-            #{productId},
-            #{imagePath},
-            #{orders}
-        )
-    </insert>
+<insert id="insertProductImage" parameterType="map">
+    INSERT INTO PRODUCT_IMAGES (
+        IMAGE_ID, PRODUCT_ID, IMAGE_PATH, ORDERS
+    ) VALUES (
+        PRODUCT_IMAGES_SEQ.nextval,
+        #{productId},
+        #{imagePath},
+        #{orders}
+    )
+</insert>
 
-    <select id="getImagesByProductId" parameterType="int" resultType="string">
-        SELECT IMAGE_PATH
-        FROM PRODUCT_IMAGES
-        WHERE PRODUCT_ID = #{productId}
-        ORDER BY ORDERS ASC
-    </select>
+
+
+<select id="getImagesByProductId" parameterType="int" resultType="string">
+    SELECT IMAGE_PATH AS IMAGE_PATH
+    FROM PRODUCT_IMAGES
+    WHERE PRODUCT_ID = #{productId}
+    ORDER BY ORDERS ASC
+</select>
+
 
     <select id="getProductsByCategory" parameterType="string" resultMap="ProductMap">
         SELECT PRODUCT_ID, TITLE, CATEGORY, PRICE, IMAGE_PATH, VIEW_COUNT, LIKE_COUNT, STATUS, CREATED_AT
