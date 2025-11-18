@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -333,13 +334,13 @@ button[type="submit"]:hover { background-color: #008a6b; transform: translateY(-
             <p style="margin-bottom:5px;">현재 등록된 이미지</p>
             <div class="thumb-list">
 <c:forEach var="img" items="${images}" varStatus="st">
-    <!-- 0번은 대표, 1~4번까지만 썸네일로 표시 -->
-    <c:if test="${st.index > 0 && st.index <= 4}">
+    <c:if test="${st.index <= 4}">
         <img src="${pageContext.request.contextPath}${img}"
              class="thumb-img"
              style="width:80px;height:80px;object-fit:cover;margin-right:8px;border-radius:6px;border:1px solid #ddd;">
     </c:if>
 </c:forEach>
+
 
             </div>
         </div>
@@ -348,17 +349,10 @@ button[type="submit"]:hover { background-color: #008a6b; transform: translateY(-
     <label>상품 이미지 (대표 1장 + 추가 4장)</label>
     <div class="image-wrapper">
       <!-- 대표 이미지 슬롯 -->
-      <div class="main-slot ${mode eq 'edit' and not empty product.imagePath ? 'loaded' : ''}" id="mainSlot">
-        <c:choose>
-          <c:when test="${mode eq 'edit' and not empty product.imagePath}">
-            <img src="${pageContext.request.contextPath}${product.imagePath}"
-                 alt="기존 대표 이미지">
-          </c:when>
-          <c:otherwise>
-            대표 +
-          </c:otherwise>
-        </c:choose>
-      </div>
+<div class="main-slot" id="mainSlot">
+    대표 +
+</div>
+
 
       <div class="sub-grid" id="subGrid">
         <div class="sub-slot">+</div>

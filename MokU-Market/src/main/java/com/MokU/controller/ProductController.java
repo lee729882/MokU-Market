@@ -146,13 +146,22 @@ public class ProductController {
         MemberVO seller = memberService.getMemberById(product.getSellerId());
         model.addAttribute("seller", seller);
 
-        // 여러 이미지 불러오기
+     // 🔹 여러 이미지 불러오기 (대표/서브 모두 PRODUCT_IMAGES 기준)
         List<String> imageList = productService.getImagesByProductId(id);
-        if (imageList.isEmpty()) {
-            imageList.add(product.getImagePath());
+
+        // PRODUCT_IMAGES에 아무 것도 없을 때만, 예외적으로 PRODUCT.IMAGE_PATH 사용
+        if (imageList == null || imageList.isEmpty()) {
+            imageList = new ArrayList<>();
+            String mainImage = product.getImagePath();
+            if (mainImage != null && !mainImage.trim().isEmpty()) {
+                imageList.add(mainImage);
+            }
         }
+
+        // ✅ 최종 리스트를 모델에 전달 (JSP에서는 images만 사용)
         model.addAttribute("images", imageList);
 
+        
         // 로그인 사용자
         MemberVO user = (MemberVO) session.getAttribute("loginUser");
         boolean liked = false;
@@ -223,10 +232,12 @@ public class ProductController {
      *  상품 수정 처리
      * ============================================ */
     @PostMapping("/edit")
-    public String editProduct(@ModelAttribute ProductVO product,
-                              @RequestParam(value = "files", required = false) List<MultipartFile> files,
-                              HttpSession session,
-                              HttpServletRequest request) throws Exception {
+    public String editProduct(
+            @ModelAttribute ProductVO product,
+            @RequestParam(value = "files", required = false) List<MultipartFile> files,
+            HttpSession session,
+            HttpServletRequest request
+    ) throws Exception {
 
         MemberVO user = (MemberVO) session.getAttribute("loginUser");
         if (user == null) {
@@ -237,31 +248,29 @@ public class ProductController {
 
         int productId = product.getProductId();
 
-        // 기본 정보 수정
-        boolean updated = productService.updateProduct(product, sellerId);
-        if (!updated) {
+        // 🔹 기존 상품 조회 (권한/대표이미지 확인)
+        ProductVO original = productService.getProductById(productId);
+        if (original == null || original.getSellerId() != sellerId) {
             return "redirect:/product/detail?id=" + productId;
         }
 
-        // 새 이미지가 올라온 경우에만 처리
+        // 🔹 새 이미지 업로드 여부 체크
         boolean hasNewImage =
                 (files != null
-                 && !files.isEmpty()
-                 && files.stream().anyMatch(f -> f != null && !f.isEmpty()));
+                        && !files.isEmpty()
+                        && files.stream().anyMatch(f -> f != null && !f.isEmpty()));
+
+        // 새로 업로드된 이미지 경로를 담을 리스트
+        List<String> imagePaths = new ArrayList<>();
 
         if (hasNewImage) {
-
+            // ✅ 새 이미지가 있으면, 전부 다시 업로드해서 리스트 구성
             String uploadDir = request.getServletContext().getRealPath("/upload/product/");
             File dir = new File(uploadDir);
             if (!dir.exists()) dir.mkdirs();
 
-            List<String> imagePaths = new ArrayList<>();
-
             for (MultipartFile file : files) {
                 if (file == null || file.isEmpty()) continue;
-
-                // ✅ 역시 최대 5장까지만
-                if (imagePaths.size() >= 5) break;
 
                 String originalName = file.getOriginalFilename();
                 String uuid = UUID.randomUUID().toString();
@@ -274,19 +283,34 @@ public class ProductController {
                 imagePaths.add(webPath);
             }
 
-
+            // ✅ 새로 업로드한 이미지 중 첫 번째를 대표 이미지로 사용
             if (!imagePaths.isEmpty()) {
-                // 대표 이미지 갱신
                 product.setImagePath(imagePaths.get(0));
-                productService.updateProduct(product, sellerId);
-
-                // 여러 장 이미지 전체 교체
-                productService.replaceProductImages(productId, imagePaths);
+            } else {
+                // 이론상 거의 없겠지만, 안전 장치로 기존 대표 유지
+                product.setImagePath(original.getImagePath());
             }
+
+        } else {
+            // ✅ 새 이미지가 없다면, 기존 대표 이미지 그대로 사용
+            product.setImagePath(original.getImagePath());
+        }
+
+        // 🔹 기본 상품 정보 수정 (제목/가격/설명/장소 등 + 대표이미지 경로)
+        boolean updated = productService.updateProduct(product, sellerId);
+        if (!updated) {
+            return "redirect:/product/detail?id=" + productId;
+        }
+
+        // 🔹 새 이미지가 있을 때만 PRODUCT_IMAGES 전체 교체
+        if (hasNewImage && !imagePaths.isEmpty()) {
+            productService.replaceProductImages(productId, imagePaths);
         }
 
         return "redirect:/product/detail?id=" + productId;
     }
+
+
 
     /* ============================================
      *  찜 토글 (AJAX)

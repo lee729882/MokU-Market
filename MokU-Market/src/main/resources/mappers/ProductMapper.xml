@@ -124,20 +124,24 @@
     WHERE seller_id = #{sellerId}
 </select>
     <!-- 🔧 상품 내용 수정 -->
-    <update id="updateProduct" parameterType="com.MokU.vo.ProductVO">
-        UPDATE PRODUCT
-        SET
-            TITLE       = #{title},
-            CATEGORY    = #{category},
-            PRICE       = #{price},
-            DESCRIPTION = #{description, jdbcType=CLOB},
-            IMAGE_PATH  = #{imagePath},
-            PLACE_NAME  = #{placeName},
-            LATITUDE    = #{latitude},
-            LONGITUDE   = #{longitude},
-            UPDATED_AT  = SYSDATE
-        WHERE PRODUCT_ID = #{productId}
-    </update>
+<update id="updateProduct" parameterType="com.MokU.vo.ProductVO">
+    UPDATE PRODUCT
+    <set>
+        TITLE       = #{title},
+        CATEGORY    = #{category},
+        PRICE       = #{price},
+        DESCRIPTION = #{description, jdbcType=CLOB},
+        PLACE_NAME  = #{placeName},
+        LATITUDE    = #{latitude},
+        LONGITUDE   = #{longitude},
+        UPDATED_AT  = SYSDATE
+        <if test="imagePath != null">
+            , IMAGE_PATH = #{imagePath, jdbcType=VARCHAR}
+        </if>
+    </set>
+    WHERE PRODUCT_ID = #{productId}
+</update>
+
 
     <!-- 🔧 상태 변경 (판매완료 등) -->
     <update id="updateStatus" parameterType="map">
