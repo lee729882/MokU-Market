@@ -35,22 +35,22 @@ public class ProductController {
     @Autowired
     private MemberService memberService;
 
-    /** ============================================
+    /* ============================================
      *  상품 등록 폼 이동
-     *  ============================================ */
+     * ============================================ */
     @GetMapping("/add")
     public String addForm(HttpSession session, Model model) {
         MemberVO user = (MemberVO) session.getAttribute("loginUser");
         if (user == null) return "redirect:/login";
 
         model.addAttribute("user", user);
-        model.addAttribute("mode", "add");   // ✅ 등록 모드 구분용
+        model.addAttribute("mode", "add");   // 등록 모드
         return "product_form";
     }
 
-    /** ============================================
+    /* ============================================
      *  상품 등록 처리 (여러 장 이미지 저장 포함)
-     *  ============================================ */
+     * ============================================ */
     @PostMapping("/add")
     public String addProduct(@ModelAttribute ProductVO vo,
                              @RequestParam("files") MultipartFile[] files,
@@ -70,16 +70,19 @@ public class ProductController {
 
         List<String> imagePaths = new ArrayList<>();
 
-        // === 이미지 저장 ===
         for (MultipartFile file : files) {
             if (file != null && !file.isEmpty()) {
+                // ✅ 최대 5장(대표 1 + 서브 4)까지만 허용
+                if (imagePaths.size() >= 5) break;
+
                 String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
                 File dest = new File(uploadDir, fileName);
                 file.transferTo(dest);
 
-                imagePaths.add("/upload/product/" + fileName); // DB 저장용 경로
+                imagePaths.add("/upload/product/" + fileName);
             }
         }
+
 
         // 대표 이미지 설정
         if (!imagePaths.isEmpty()) {
@@ -88,23 +91,23 @@ public class ProductController {
             vo.setImagePath("/upload/product/no_image.png");
         }
 
-        // === 상품 먼저 INSERT (productId 생성) ===
+        // 상품 INSERT (PK 생성)
         productService.insertProduct(vo);
-        int productId = vo.getProductId();  // Oracle selectKey 로 생성된 PK
+        int productId = vo.getProductId();
 
-        // === 여러 장 이미지 insert ===
+        // 여러 장 이미지 INSERT
         if (!imagePaths.isEmpty()) {
             productService.saveProductImages(productId, imagePaths);
         }
 
-        // 카테고리 인코딩 후 Redirect
+        // 카테고리 인코딩 후 목록으로
         String encodedCategory = URLEncoder.encode(vo.getCategory(), StandardCharsets.UTF_8);
         return "redirect:/product/list?category=" + encodedCategory;
     }
 
-    /** ============================================
+    /* ============================================
      *  카테고리별 목록
-     *  ============================================ */
+     * ============================================ */
     @GetMapping("/list")
     public String list(@RequestParam("category") String category,
                        HttpSession session,
@@ -119,9 +122,9 @@ public class ProductController {
         return "product_list";
     }
 
-    /** ============================================
+    /* ============================================
      *  상품 상세
-     *  ============================================ */
+     * ============================================ */
     @GetMapping("/detail")
     public String detail(@RequestParam("id") int id,
                          HttpSession session,
@@ -143,7 +146,7 @@ public class ProductController {
         MemberVO seller = memberService.getMemberById(product.getSellerId());
         model.addAttribute("seller", seller);
 
-        // === 여러 이미지 불러오기 ===
+        // 여러 이미지 불러오기
         List<String> imageList = productService.getImagesByProductId(id);
         if (imageList.isEmpty()) {
             imageList.add(product.getImagePath());
@@ -161,20 +164,133 @@ public class ProductController {
 
         model.addAttribute("liked", liked);
 
-        // 🔥 판매자 전체 찜 수
+        // 판매자 전체 찜 수
         int sellerTotalLikes = productService.getTotalLikesBySeller(product.getSellerId());
         model.addAttribute("likeCount", sellerTotalLikes);
 
-        // 🔥 현재 접속자가 이 상품의 판매자인지 여부
+        // 현재 접속자가 이 상품의 판매자인지 여부
         boolean isSeller = (user != null && user.getUserId() == product.getSellerId());
         model.addAttribute("isSeller", isSeller);
 
         return "product_detail";
     }
 
-    /** ============================================
+    /* ============================================
+     *  상품 수정 폼 이동 (판매자만)
+     * ============================================ */
+    @GetMapping("/edit")
+    public String editForm(@RequestParam("id") int productId,
+                           HttpSession session,
+                           Model model) {
+
+        MemberVO user = (MemberVO) session.getAttribute("loginUser");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        ProductVO product = productService.getProductById(productId);
+        if (product == null) {
+            return "redirect:/home";
+        }
+
+        // 🔹 판매자 본인만 수정 가능
+        if (product.getSellerId() != user.getUserId()) {
+            return "redirect:/product/detail?id=" + productId;
+        }
+
+        // 🔹 기본 상품 정보
+        model.addAttribute("user", user);
+        model.addAttribute("product", product);
+        model.addAttribute("mode", "edit");
+
+        // 🔹 여러 장 이미지 리스트
+        List<String> imageList = productService.getImagesByProductId(productId);
+        // 만약 테이블에는 여러 장 있고, product.imagePath에는 대표만 있어요
+        // imageList 비어 있으면 대표 한 장이라도 보여 주도록 보정
+        if (imageList == null || imageList.isEmpty()) {
+            imageList = new ArrayList<>();
+            if (product.getImagePath() != null) {
+                imageList.add(product.getImagePath());
+            }
+        }
+        model.addAttribute("images", imageList);
+
+        return "product_form";
+    }
+
+
+    /* ============================================
+     *  상품 수정 처리
+     * ============================================ */
+    @PostMapping("/edit")
+    public String editProduct(@ModelAttribute ProductVO product,
+                              @RequestParam(value = "files", required = false) List<MultipartFile> files,
+                              HttpSession session,
+                              HttpServletRequest request) throws Exception {
+
+        MemberVO user = (MemberVO) session.getAttribute("loginUser");
+        if (user == null) {
+            return "redirect:/login";
+        }
+        int sellerId = user.getUserId();
+        product.setSellerId(sellerId);
+
+        int productId = product.getProductId();
+
+        // 기본 정보 수정
+        boolean updated = productService.updateProduct(product, sellerId);
+        if (!updated) {
+            return "redirect:/product/detail?id=" + productId;
+        }
+
+        // 새 이미지가 올라온 경우에만 처리
+        boolean hasNewImage =
+                (files != null
+                 && !files.isEmpty()
+                 && files.stream().anyMatch(f -> f != null && !f.isEmpty()));
+
+        if (hasNewImage) {
+
+            String uploadDir = request.getServletContext().getRealPath("/upload/product/");
+            File dir = new File(uploadDir);
+            if (!dir.exists()) dir.mkdirs();
+
+            List<String> imagePaths = new ArrayList<>();
+
+            for (MultipartFile file : files) {
+                if (file == null || file.isEmpty()) continue;
+
+                // ✅ 역시 최대 5장까지만
+                if (imagePaths.size() >= 5) break;
+
+                String originalName = file.getOriginalFilename();
+                String uuid = UUID.randomUUID().toString();
+                String savedName = uuid + "_" + originalName;
+
+                File dest = new File(uploadDir, savedName);
+                file.transferTo(dest);
+
+                String webPath = "/upload/product/" + savedName;
+                imagePaths.add(webPath);
+            }
+
+
+            if (!imagePaths.isEmpty()) {
+                // 대표 이미지 갱신
+                product.setImagePath(imagePaths.get(0));
+                productService.updateProduct(product, sellerId);
+
+                // 여러 장 이미지 전체 교체
+                productService.replaceProductImages(productId, imagePaths);
+            }
+        }
+
+        return "redirect:/product/detail?id=" + productId;
+    }
+
+    /* ============================================
      *  찜 토글 (AJAX)
-     *  ============================================ */
+     * ============================================ */
     @PostMapping("/toggleLike")
     @ResponseBody
     public Map<String, Object> toggleLike(@RequestBody Map<String, Integer> req,
@@ -191,85 +307,26 @@ public class ProductController {
         int userId = user.getUserId();
         int productId = req.get("productId");
 
-        // 1) 좋아요 토글
         boolean liked = productService.toggleLike(userId, productId);
 
-        // 2) 이 상품의 판매자 정보 조회
         ProductVO product = productService.getProductById(productId);
         if (product == null) {
             result.put("status", "error");
             return result;
         }
 
-        // 3) 판매자가 받은 전체 찜 수 다시 계산
         int sellerTotalLikes = productService.getTotalLikesBySeller(product.getSellerId());
 
-        // 4) 응답
         result.put("status", "success");
         result.put("liked", liked);
-        result.put("likeCount", sellerTotalLikes);  // 판매자 전체 찜 수
+        result.put("likeCount", sellerTotalLikes);
 
         return result;
     }
 
-    /* ====================================================
-     *  🔥 판매자 기능 : 수정 / 판매완료 / 숨김 / 삭제
-     * ==================================================== */
-
-    /** 상품 수정 폼 (GET) */
-    @GetMapping("/edit")
-    public String editForm(@RequestParam("id") int productId,
-                           HttpSession session,
-                           Model model,
-                           RedirectAttributes rttr) {
-
-        MemberVO user = (MemberVO) session.getAttribute("loginUser");
-        if (user == null) {
-            rttr.addFlashAttribute("msg", "로그인이 필요합니다.");
-            return "redirect:/login";
-        }
-
-        ProductVO product = productService.getProductById(productId);
-        if (product == null) {
-            rttr.addFlashAttribute("msg", "존재하지 않는 상품입니다.");
-            return "redirect:/home";
-        }
-
-        // 판매자 본인 여부 체크
-        if (product.getSellerId() != user.getUserId()) {
-            rttr.addFlashAttribute("msg", "수정 권한이 없습니다.");
-            return "redirect:/product/detail?id=" + productId;
-        }
-
-        model.addAttribute("product", product);
-        model.addAttribute("user", user);
-        model.addAttribute("mode", "edit");   // JSP에서 등록/수정 구분용
-
-        // 기존 등록 폼 재사용
-        return "product_form";
-    }
-
-    /** 상품 수정 처리 (POST) */
-    @PostMapping("/edit")
-    public String editSubmit(@ModelAttribute ProductVO form,
-                             HttpSession session,
-                             RedirectAttributes rttr) {
-
-        MemberVO user = (MemberVO) session.getAttribute("loginUser");
-        if (user == null) {
-            rttr.addFlashAttribute("msg", "로그인이 필요합니다.");
-            return "redirect:/login";
-        }
-
-        boolean ok = productService.updateProduct(form, user.getUserId());
-        if (!ok) {
-            rttr.addFlashAttribute("msg", "수정 권한이 없거나 수정에 실패했습니다.");
-        } else {
-            rttr.addFlashAttribute("msg", "상품 정보가 수정되었습니다.");
-        }
-
-        return "redirect:/product/detail?id=" + form.getProductId();
-    }
+    /* ============================================
+     *  판매완료 / 숨김 / 삭제
+     * ============================================ */
 
     /** 판매완료로 상태 변경 */
     @GetMapping("/markSold")
@@ -288,28 +345,6 @@ public class ProductController {
             rttr.addFlashAttribute("msg", "판매완료 처리 권한이 없거나 실패했습니다.");
         } else {
             rttr.addFlashAttribute("msg", "판매완료 상태로 변경되었습니다.");
-        }
-
-        return "redirect:/product/detail?id=" + productId;
-    }
-
-    /** 상품 숨기기 (노출 off) */
-    @GetMapping("/hide")
-    public String hide(@RequestParam("id") int productId,
-                       HttpSession session,
-                       RedirectAttributes rttr) {
-
-        MemberVO user = (MemberVO) session.getAttribute("loginUser");
-        if (user == null) {
-            rttr.addFlashAttribute("msg", "로그인이 필요합니다.");
-            return "redirect:/login";
-        }
-
-        boolean ok = productService.hideProduct(productId, user.getUserId());
-        if (!ok) {
-            rttr.addFlashAttribute("msg", "숨기기 처리 권한이 없거나 실패했습니다.");
-        } else {
-            rttr.addFlashAttribute("msg", "상품이 목록에서 숨김 처리되었습니다.");
         }
 
         return "redirect:/product/detail?id=" + productId;
@@ -334,6 +369,6 @@ public class ProductController {
         }
 
         rttr.addFlashAttribute("msg", "상품이 삭제되었습니다.");
-        return "redirect:/home";   // 또는 내 상점, 목록 등 원하는 곳으로
+        return "redirect:/home";
     }
 }

@@ -5,26 +5,24 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
        xsi:schemaLocation="
-         http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
-         http://www.springframework.org/schema/tx https://www.springframework.org/schema/tx/spring-tx.xsd
-         http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd
-         http://mybatis.org/schema/mybatis-spring https://mybatis.org/schema/mybatis-spring.xsd">
+         http://www.springframework.org/schema/beans
+         http://www.springframework.org/schema/beans/spring-beans.xsd
+         http://www.springframework.org/schema/tx
+         http://www.springframework.org/schema/tx/spring-tx.xsd
+         http://www.springframework.org/schema/context
+         http://www.springframework.org/schema/context/spring-context.xsd
+         http://mybatis.org/schema/mybatis-spring
+         http://mybatis.org/schema/mybatis-spring.xsd">
 
   <!-- ✅ HikariCP 연결 설정 -->
   <bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
     <property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"/>
 
     <!-- ★ 여기만 네 Docker Oracle로 변경 -->
-    <property name="jdbcUrl" 
-              value="jdbc:log4jdbc:oracle:thin:@//localhost:1521/xe"/>
-
-    <!-- ★ 계정 (SYSTEM 말고 직접 만든 USER 쓰는 걸 추천) -->
-    <property name="username" value="boot_ex"/>
-
-    <!-- ★ 비밀번호 (방금 언락하고 바꾼 값) -->
-    <property name="password" value="boot_ex"/>
+    <property name="jdbcUrl" value="jdbc:log4jdbc:oracle:thin:@//localhost:1521/xe"/>
+    <property name="username" value="book_ex"/>
+    <property name="password" value="book_ex"/>
   </bean>
-
 
   <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
     <constructor-arg ref="hikariConfig"/>
@@ -35,7 +33,7 @@
     <property name="dataSource" ref="dataSource"/>
     <property name="mapperLocations" value="classpath:/mappers/**/*.xml" />
     <property name="typeAliasesPackage" value="com.MokU.vo"/>
-    
+
     <property name="configuration">
       <bean class="org.apache.ibatis.session.Configuration">
         <property name="mapUnderscoreToCamelCase" value="true"/>
@@ -43,7 +41,7 @@
     </property>
   </bean>
 
-  <!-- ✅ Mapper 자동 스캔 (패키지 이름 정확히 수정) -->
+  <!-- ✅ Mapper 자동 스캔 -->
   <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
     <property name="basePackage" value="com.MokU.dao"/>
     <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>

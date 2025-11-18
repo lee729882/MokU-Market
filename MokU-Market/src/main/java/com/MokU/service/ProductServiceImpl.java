@@ -115,7 +115,23 @@ public class ProductServiceImpl implements ProductService {
     public int getTotalLikesBySeller(int sellerId) {
         return productDAO.getTotalLikesBySeller(sellerId);
     }
+    /** 4) 여러 장 이미지 전체 교체 (수정 시 사용) */
+    @Override
+    @Transactional
+    public void replaceProductImages(int productId, List<String> imagePaths) {
 
+        productDAO.deleteImagesByProductId(productId);
+
+        if (imagePaths == null || imagePaths.isEmpty()) {
+            return;
+        }
+
+        int order = 1;
+        for (String path : imagePaths) {
+            if (path == null || path.isEmpty()) continue;
+            productDAO.insertProductImage(productId, path, order++);
+        }
+    }
     /* ====================================================
         🔥 판매자 전용 기능 (수정 / 판매완료 / 숨김 / 삭제)
        ==================================================== */

@@ -1,4 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -189,6 +190,7 @@ body {
     color: #666;
     border-top: 1px solid #ddd;
 }
+
 /* ✅ 프로필 링크 */
 .profile-link {
     display: flex;
@@ -209,6 +211,77 @@ body {
     transform: scale(1.07);
 }
 
+/* ✅ 공통 영역 */
+.floating-container {
+    position: fixed;
+    bottom: 35px;
+    right: 35px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    z-index: 999;
+}
+
+/* ✅ Top 버튼 (강조 & 살짝 확대) */
+.floating-top {
+    background: transparent;
+    border: none;
+    color: #333;
+    font-size: 18px;             /* ↑ 화살표 크기 확대 */
+    font-weight: 700;            /* 굵게 */
+    text-align: center;
+    cursor: pointer;
+    opacity: 0.85;
+    transition: 0.25s;
+    line-height: 1.1;
+    font-family: 'Nanum Gothic', sans-serif;
+}
+.floating-top span {
+    display: block;
+    font-size: 13px;             /* “Top” 텍스트 크기 */
+    font-weight: 700;            /* 굵게 */
+    margin-top: -2px;
+}
+.floating-top:hover {
+    opacity: 1;
+    transform: translateY(-2px);
+}
+
+/* ✅ 등록 버튼 (+) */
+.floating-add {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #FF4D4D;
+    color: white;
+    font-size: 38px;
+    font-weight: bold;
+    text-decoration: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    transition: 0.25s;
+}
+.floating-add:hover {
+    background-color: #E03B3B;
+    transform: scale(1.07);
+}
+
+/* ✅ 모바일 대응 */
+@media (max-width: 768px) {
+    .floating-container {
+        bottom: 25px;
+        right: 25px;
+    }
+    .floating-add {
+        width: 55px;
+        height: 55px;
+        font-size: 34px;
+        line-height: 55px;
+    }
+}
 </style>
 </head>
 
@@ -293,8 +366,6 @@ body {
         <img src="https://cdn-icons-png.flaticon.com/512/3081/3081559.png" alt="무료나눔" class="gift-icon">
         <span>무료나눔</span>
     </div>
-    
-    
 </div>
 
 <!-- ✅ 인기상품 -->
@@ -340,85 +411,12 @@ body {
         </div>
     </div>
 </div>
+
 <!-- ✅ Top + 등록 플로팅 버튼 세트 -->
 <div class="floating-container">
     <button id="topBtn" class="floating-top">^<br><span>Top</span></button>
     <a href="${pageContext.request.contextPath}/product/add" class="floating-add">+</a>
 </div>
-
-<style>
-/* ✅ 공통 영역 */
-.floating-container {
-    position: fixed;
-    bottom: 35px;
-    right: 35px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    z-index: 999;
-}
-
-/* ✅ Top 버튼 (강조 & 살짝 확대) */
-.floating-top {
-    background: transparent;
-    border: none;
-    color: #333;
-    font-size: 18px;             /* ↑ 화살표 크기 확대 */
-    font-weight: 700;            /* 굵게 */
-    text-align: center;
-    cursor: pointer;
-    opacity: 0.85;
-    transition: 0.25s;
-    line-height: 1.1;
-    font-family: 'Nanum Gothic', sans-serif;
-}
-.floating-top span {
-    display: block;
-    font-size: 13px;             /* “Top” 텍스트 크기 */
-    font-weight: 700;            /* 굵게 */
-    margin-top: -2px;
-}
-.floating-top:hover {
-    opacity: 1;
-    transform: translateY(-2px);
-}
-
-/* ✅ 등록 버튼 (+) */
-.floating-add {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background-color: #FF4D4D;
-    color: white;
-    font-size: 38px;
-    font-weight: bold;
-    text-decoration: none;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-    transition: 0.25s;
-}
-.floating-add:hover {
-    background-color: #E03B3B;
-    transform: scale(1.07);
-}
-
-/* ✅ 모바일 대응 */
-@media (max-width: 768px) {
-    .floating-container {
-        bottom: 25px;
-        right: 25px;
-    }
-    .floating-add {
-        width: 55px;
-        height: 55px;
-        font-size: 34px;
-        line-height: 55px;
-    }
-}
-</style>
 
 <script>
 // ✅ Top 버튼 기능
@@ -427,14 +425,15 @@ document.getElementById("topBtn").addEventListener("click", () => {
 });
 </script>
 
-
 <!-- ✅ 푸터 -->
 <div class="footer">
     <p>© 2025 Mokpo National University | MokU Market</p>
 </div>
-<c:if test="${not empty msg}">
+
+<!-- ✅ 삭제 후 한 번만 뜨는 알림 -->
+<c:if test="${not empty requestScope.msg}">
     <script>
-        alert("${msg}");
+        alert("${requestScope.msg}");
     </script>
 </c:if>
 

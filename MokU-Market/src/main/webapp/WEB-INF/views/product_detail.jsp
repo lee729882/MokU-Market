@@ -396,6 +396,85 @@ html, body {
   padding:6px 8px 10px;
   margin:0;
 }
+/* 🔥 판매자 액션 전체 영역: 좌/우 정렬 */
+.seller-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between; /* 왼쪽/오른쪽 분리 */
+  align-items: center;
+  gap: 10px;
+}
+
+/* 왼쪽/오른쪽 영역 */
+.seller-left,
+.seller-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 오른쪽은 버튼 두 개를 자연스럽게 나란히 */
+.seller-right {
+  justify-content: flex-end;
+}
+
+/* 공통 버튼 스타일 */
+.btn-seller {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: 0.18s ease;
+  white-space: nowrap;
+}
+
+/* ✅ 판매완료 – 메인 초록 버튼 */
+.btn-primary {
+  background-color: #00A67E;
+  color: #fff;
+}
+.btn-primary:hover {
+  background-color: #008a6b;
+  transform: translateY(-1px);
+}
+
+/* ✏️ 수정하기 – 흰 배경 + 초록 테두리 */
+.btn-outline {
+  background-color: #ffffff;
+  color: #00A67E;
+  border-color: #00A67E;
+}
+.btn-outline:hover {
+  background-color: #e6fff7;
+}
+
+/* 🗑 삭제 – 경고용 빨간 버튼 */
+.btn-danger {
+  background-color: #FF4D4D;
+  color: #fff;
+}
+.btn-danger:hover {
+  background-color: #E03B3B;
+  transform: translateY(-1px);
+}
+
+/* 모바일에서 버튼 깨지지 않도록 */
+@media (max-width: 768px) {
+  .seller-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .seller-left,
+  .seller-right {
+    justify-content: space-between;
+  }
+}
 
 </style>
 </head>
@@ -447,20 +526,32 @@ html, body {
 <!-- ===================== DETAIL CONTENT ===================== -->
 <div class="detail-container">
 
-    <c:if test="${isSeller}">
-        <div class="manage-bar">
-            <div class="manage-left">
-                <button onclick="location.href='${pageContext.request.contextPath}/product/markSold?id=${product.productId}'">
-                    판매완료로 변경
-                </button>
-            </div>
-            <div class="manage-right">
-                <a class="edit" href="${pageContext.request.contextPath}/product/edit?id=${product.productId}">Edit</a>
-                <a class="hide" href="${pageContext.request.contextPath}/product/hide?id=${product.productId}">Hide</a>
-                <a class="delete" href="${pageContext.request.contextPath}/product/delete?id=${product.productId}">Delete</a>
-            </div>
+<c:if test="${isSeller}">
+    <div class="seller-actions">
+        <!-- 왼쪽 : 판매완료 -->
+        <div class="seller-left">
+            <a href="${pageContext.request.contextPath}/product/markSold?id=${product.productId}"
+               class="btn-seller btn-primary">
+                ✅ 판매완료
+            </a>
         </div>
-    </c:if>
+
+        <!-- 오른쪽 : 수정 / 삭제 -->
+        <div class="seller-right">
+            <a href="${pageContext.request.contextPath}/product/edit?id=${product.productId}"
+               class="btn-seller btn-outline">
+                ✏️ 수정하기
+            </a>
+
+            <a href="${pageContext.request.contextPath}/product/delete?id=${product.productId}"
+               class="btn-seller btn-danger"
+               onclick="return confirm('정말 삭제하시겠습니까? 삭제 후에는 복구할 수 없습니다.');">
+                🗑 삭제하기
+            </a>
+        </div>
+    </div>
+</c:if>
+
 
     <!-- 이미지 슬라이더 -->
     <div class="image-slider">
@@ -749,7 +840,92 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 </script>
+<!-- ✅ Top + 등록 플로팅 버튼 세트 -->
+<div class="floating-container">
+    <button id="topBtn" class="floating-top">^<br><span>Top</span></button>
+    <a href="${pageContext.request.contextPath}/product/add" class="floating-add">+</a>
+</div>
 
+<style>
+/* ✅ 공통 영역 */
+.floating-container {
+    position: fixed;
+    bottom: 35px;
+    right: 35px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    z-index: 999;
+}
+
+/* ✅ Top 버튼 (강조 & 살짝 확대) */
+.floating-top {
+    background: transparent;
+    border: none;
+    color: #333;
+    font-size: 18px;             /* ↑ 화살표 크기 확대 */
+    font-weight: 700;            /* 굵게 */
+    text-align: center;
+    cursor: pointer;
+    opacity: 0.85;
+    transition: 0.25s;
+    line-height: 1.1;
+    font-family: 'Nanum Gothic', sans-serif;
+}
+.floating-top span {
+    display: block;
+    font-size: 13px;             /* “Top” 텍스트 크기 */
+    font-weight: 700;            /* 굵게 */
+    margin-top: -2px;
+}
+.floating-top:hover {
+    opacity: 1;
+    transform: translateY(-2px);
+}
+
+/* ✅ 등록 버튼 (+) */
+.floating-add {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #FF4D4D;
+    color: white;
+    font-size: 38px;
+    font-weight: bold;
+    text-decoration: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    transition: 0.25s;
+}
+.floating-add:hover {
+    background-color: #E03B3B;
+    transform: scale(1.07);
+}
+
+/* ✅ 모바일 대응 */
+@media (max-width: 768px) {
+    .floating-container {
+        bottom: 25px;
+        right: 25px;
+    }
+    .floating-add {
+        width: 55px;
+        height: 55px;
+        font-size: 34px;
+        line-height: 55px;
+    }
+}
+</style>
+
+<script>
+// ✅ Top 버튼 기능
+document.getElementById("topBtn").addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+});
+</script>
 
 </body>
 </html>

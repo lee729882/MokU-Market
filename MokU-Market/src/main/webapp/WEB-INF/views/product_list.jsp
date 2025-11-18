@@ -313,6 +313,91 @@ document.getElementById("topBtn").addEventListener("click", () => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
 </script>
+<!-- ✅ Top + 등록 플로팅 버튼 세트 -->
+<div class="floating-container">
+    <button id="topBtn" class="floating-top">^<br><span>Top</span></button>
+    <a href="${pageContext.request.contextPath}/product/add" class="floating-add">+</a>
+</div>
 
+<style>
+/* ✅ 공통 영역 */
+.floating-container {
+    position: fixed;
+    bottom: 35px;
+    right: 35px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    z-index: 999;
+}
+
+/* ✅ Top 버튼 (강조 & 살짝 확대) */
+.floating-top {
+    background: transparent;
+    border: none;
+    color: #333;
+    font-size: 18px;             /* ↑ 화살표 크기 확대 */
+    font-weight: 700;            /* 굵게 */
+    text-align: center;
+    cursor: pointer;
+    opacity: 0.85;
+    transition: 0.25s;
+    line-height: 1.1;
+    font-family: 'Nanum Gothic', sans-serif;
+}
+.floating-top span {
+    display: block;
+    font-size: 13px;             /* “Top” 텍스트 크기 */
+    font-weight: 700;            /* 굵게 */
+    margin-top: -2px;
+}
+.floating-top:hover {
+    opacity: 1;
+    transform: translateY(-2px);
+}
+
+/* ✅ 등록 버튼 (+) */
+.floating-add {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #FF4D4D;
+    color: white;
+    font-size: 38px;
+    font-weight: bold;
+    text-decoration: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    transition: 0.25s;
+}
+.floating-add:hover {
+    background-color: #E03B3B;
+    transform: scale(1.07);
+}
+
+/* ✅ 모바일 대응 */
+@media (max-width: 768px) {
+    .floating-container {
+        bottom: 25px;
+        right: 25px;
+    }
+    .floating-add {
+        width: 55px;
+        height: 55px;
+        font-size: 34px;
+        line-height: 55px;
+    }
+}
+</style>
+
+<script>
+// ✅ Top 버튼 기능
+document.getElementById("topBtn").addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+});
+</script>
 </body>
 </html>

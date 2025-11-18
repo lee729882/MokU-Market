@@ -19,7 +19,7 @@ body {
   background-color: #f8f9fa;
 }
 
-/* ✅ 헤더 */
+/* 헤더 */
 .header {
   background-color: #007A5C;
   color: white;
@@ -62,14 +62,14 @@ body {
     font-weight: bold;
 }
 
-/* ✅ 사용자 메뉴 */
+/* 사용자 메뉴 */
 .user-menu { display: flex; gap: 20px; align-items: center; }
 .user-menu a { color: white; text-decoration: none; font-weight: 600; }
 .user-menu a:hover { text-decoration: underline; }
 .profile-link { display: flex; align-items: center; gap: 8px; text-decoration: none; color: white; }
 .profile-link img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid white; }
 
-/* ✅ 상품 등록 폼 */
+/* 상품 등록 폼 */
 .container {
   background: #fff;
   width: 740px;
@@ -85,7 +85,7 @@ h2 {
   margin-bottom: 25px;
 }
 
-/* ✅ 이미지 업로드 */
+/* 이미지 업로드 */
 .image-wrapper {
   display: flex;
   justify-content: space-between;
@@ -157,7 +157,7 @@ h2 {
   z-index: 10;
 }
 
-/* ✅ 입력 */
+/* 입력 */
 label { font-weight: 600; display: block; margin-top: 12px; color: #333; }
 input, textarea, select {
   width: 100%;
@@ -169,7 +169,7 @@ input, textarea, select {
 }
 textarea { resize: vertical; height: 120px; }
 
-/* ✅ 버튼 */
+/* 버튼 */
 button[type="submit"] {
   width: 100%;
   background-color: #00A67E;
@@ -185,7 +185,7 @@ button[type="submit"] {
 }
 button[type="submit"]:hover { background-color: #008a6b; transform: translateY(-2px); }
 
-/* ✅ 지도 높이를 zone-box에 맞게 자동 조정 */
+/* 지도 + 거래장소 */
 .map-wrapper {
   display: flex;
   align-items: stretch;
@@ -234,7 +234,7 @@ button[type="submit"]:hover { background-color: #008a6b; transform: translateY(-
 .zone-list a { color:#333; text-decoration:none; display:block; padding:3px 0; }
 .zone-list a:hover { color:#007A5C; font-weight:600; }
 
-/* ✅ 푸터 */
+/* 푸터 */
 .footer {
   background-color: #f1f1f1;
   text-align: center;
@@ -245,6 +245,7 @@ button[type="submit"]:hover { background-color: #008a6b; transform: translateY(-
   margin-top: 50px;
 }
 
+/* 가격 입력 */
 .price-wrap {
   position: relative;
   width: 100%;
@@ -277,7 +278,7 @@ button[type="submit"]:hover { background-color: #008a6b; transform: translateY(-
 </head>
 
 <body>
-<!-- ✅ 헤더 -->
+<!-- 헤더 -->
 <div class="header">
   <div class="logo">
     <a href="${pageContext.request.contextPath}/home" style="display:flex; align-items:center; gap:10px; text-decoration:none; color:white;">
@@ -310,7 +311,7 @@ button[type="submit"]:hover { background-color: #008a6b; transform: translateY(-
   </div>
 </div>
 
-<!-- ✅ 상품 등록/수정 -->
+<!-- 상품 등록/수정 -->
 <div class="container">
   <h2>
     <c:choose>
@@ -319,19 +320,46 @@ button[type="submit"]:hover { background-color: #008a6b; transform: translateY(-
     </c:choose>
   </h2>
 
-  <!-- ✅ 등록/수정 공용 폼 -->
+  <!-- 등록/수정 공용 폼 -->
   <form action="${pageContext.request.contextPath}/product/${mode eq 'edit' ? 'edit' : 'add'}"
         method="post"
         enctype="multipart/form-data">
 
-    <!-- ✅ 수정 시 productId 전송 -->
+    <!-- 🔹 수정 모드일 때 productId, 기존 이미지 정보 전송 -->
     <c:if test="${mode eq 'edit'}">
-      <input type="hidden" name="productId" value="${product.productId}">
+        <input type="hidden" name="productId" value="${product.productId}" />
+
+        <div class="current-images-wrap" style="margin-bottom:10px;">
+            <p style="margin-bottom:5px;">현재 등록된 이미지</p>
+            <div class="thumb-list">
+<c:forEach var="img" items="${images}" varStatus="st">
+    <!-- 0번은 대표, 1~4번까지만 썸네일로 표시 -->
+    <c:if test="${st.index > 0 && st.index <= 4}">
+        <img src="${pageContext.request.contextPath}${img}"
+             class="thumb-img"
+             style="width:80px;height:80px;object-fit:cover;margin-right:8px;border-radius:6px;border:1px solid #ddd;">
+    </c:if>
+</c:forEach>
+
+            </div>
+        </div>
     </c:if>
 
     <label>상품 이미지 (대표 1장 + 추가 4장)</label>
     <div class="image-wrapper">
-      <div class="main-slot" id="mainSlot">대표 +</div>
+      <!-- 대표 이미지 슬롯 -->
+      <div class="main-slot ${mode eq 'edit' and not empty product.imagePath ? 'loaded' : ''}" id="mainSlot">
+        <c:choose>
+          <c:when test="${mode eq 'edit' and not empty product.imagePath}">
+            <img src="${pageContext.request.contextPath}${product.imagePath}"
+                 alt="기존 대표 이미지">
+          </c:when>
+          <c:otherwise>
+            대표 +
+          </c:otherwise>
+        </c:choose>
+      </div>
+
       <div class="sub-grid" id="subGrid">
         <div class="sub-slot">+</div>
         <div class="sub-slot">+</div>
@@ -340,7 +368,6 @@ button[type="submit"]:hover { background-color: #008a6b; transform: translateY(-
       </div>
     </div>
     <div id="fileInputsContainer"></div>
-    <input type="file" id="fileInput" name="files" accept="image/*" multiple style="display:none;">
 
     <label>제목</label>
     <input type="text"
@@ -403,7 +430,7 @@ button[type="submit"]:hover { background-color: #008a6b; transform: translateY(-
     <input type="hidden" id="latitude" name="latitude" value="${product.latitude}">
     <input type="hidden" id="longitude" name="longitude" value="${product.longitude}">
 
-    <!-- ✅ 지도 + 캠퍼스 구역 목록 -->
+    <!-- 지도 + 캠퍼스 구역 목록 -->
     <div class="map-wrapper">
       <div id="map"></div>
       <div class="zone-box">
@@ -502,14 +529,13 @@ button[type="submit"]:hover { background-color: #008a6b; transform: translateY(-
   <p>© 2025 Mokpo National University | MokU Market</p>
 </div>
 
-<!-- ✅ Kakao Map Script -->
+<!-- Kakao Map Script -->
 <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=85969b990129ae28ec3aa8ad0beeca55&libraries=services"></script>
 <script>
-//✅ 무료나눔 선택 시 가격 자동 0원 설정 및 비활성화
+// 무료나눔 선택 시 가격 자동 0원
 const categorySelect = document.querySelector("select[name='category']");
 const priceField = document.getElementById("priceInput");
 
-// 기존 값이 무료나눔일 때 초기 적용
 if (categorySelect.value === "무료나눔") {
   priceField.value = "0";
   priceField.setAttribute("readonly", true);
@@ -533,7 +559,6 @@ let map, marker, geocoder;
 kakao.maps.load(() => {
   const mapContainer = document.getElementById("map");
 
-  // 수정 시에는 기존 좌표가 있으면 거기로 센터 설정
   const defaultLat = ${empty product.latitude ? 34.90857525955331 : product.latitude};
   const defaultLng = ${empty product.longitude ? 126.43440540737004 : product.longitude};
 
@@ -548,7 +573,6 @@ kakao.maps.load(() => {
   });
   geocoder = new kakao.maps.services.Geocoder();
 
-  // 지도 클릭 시 거래장소 자동 입력
   kakao.maps.event.addListener(map, "click", function(mouseEvent) {
     const latlng = mouseEvent.latLng;
     const lat = latlng.getLat();
@@ -564,7 +588,6 @@ kakao.maps.load(() => {
   });
 });
 
-// ✅ 건물 클릭 시 거래장소 자동입력 + 스크롤 방지
 function setTradePlace(name, lat, lng) {
   const latlng = new kakao.maps.LatLng(lat, lng);
   map.panTo(latlng);
@@ -572,10 +595,9 @@ function setTradePlace(name, lat, lng) {
   document.getElementById("placeName").value = name;
   document.getElementById("latitude").value = lat;
   document.getElementById("longitude").value = lng;
-  return false; // 🚫 클릭 시 페이지 상단 이동 방지
+  return false;
 }
 
-// ✅ 구역 탭 전환
 document.querySelectorAll('.zone-tab').forEach(tab => {
   tab.addEventListener('click', () => {
     document.querySelectorAll('.zone-tab').forEach(t => t.classList.remove('active'));
@@ -585,7 +607,7 @@ document.querySelectorAll('.zone-tab').forEach(tab => {
   });
 });
 
-// ✅ 가격 콤마 표시
+// 가격 콤마 표시
 const priceInput = document.getElementById("priceInput");
 priceInput.addEventListener("input", (e) => {
   let value = e.target.value.replace(/[^0-9]/g, "");
@@ -598,9 +620,7 @@ form.addEventListener("submit", () => {
   priceInput.value = raw || 0;
 });
 
-//============================
-//여러 장 이미지 업로드 (기존 로직 유지)
-//============================
+// 여러 장 이미지 업로드
 let clickedSlot = null;
 let fileCount = 0;
 
@@ -655,5 +675,82 @@ document.querySelectorAll(".main-slot, .sub-slot").forEach(slot => {
 });
 </script>
 
+<!-- Top + 등록 플로팅 버튼 -->
+<div class="floating-container">
+    <button id="topBtn" class="floating-top">^<br><span>Top</span></button>
+    <a href="${pageContext.request.contextPath}/product/add" class="floating-add">+</a>
+</div>
+
+<style>
+.floating-container {
+    position: fixed;
+    bottom: 35px;
+    right: 35px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    z-index: 999;
+}
+.floating-top {
+    background: transparent;
+    border: none;
+    color: #333;
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+    opacity: 0.85;
+    transition: 0.25s;
+    line-height: 1.1;
+    font-family: 'Nanum Gothic', sans-serif;
+}
+.floating-top span {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: -2px;
+}
+.floating-top:hover {
+    opacity: 1;
+    transform: translateY(-2px);
+}
+.floating-add {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #FF4D4D;
+    color: white;
+    font-size: 38px;
+    font-weight: bold;
+    text-decoration: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    transition: 0.25s;
+}
+.floating-add:hover {
+    background-color: #E03B3B;
+    transform: scale(1.07);
+}
+@media (max-width: 768px) {
+    .floating-container {
+        bottom: 25px;
+        right: 25px;
+    }
+    .floating-add {
+        width: 55px;
+        height: 55px;
+        font-size: 34px;
+    }
+}
+</style>
+
+<script>
+document.getElementById("topBtn").addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+});
+</script>
 </body>
 </html>

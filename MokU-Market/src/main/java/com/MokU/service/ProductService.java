@@ -46,4 +46,8 @@ public interface ProductService {
     boolean hideProduct(int productId, int sellerId);
 
     boolean deleteProduct(int productId, int sellerId);
+    
+ // 여러 장 이미지 전체 교체 (수정 시 사용)
+    void replaceProductImages(int productId, List<String> imagePaths);
+
 }
