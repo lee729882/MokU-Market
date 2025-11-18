@@ -146,7 +146,7 @@ public class ProductController {
         }
         model.addAttribute("images", imageList);
 
-        // 로그인 사용자 찜 여부
+        // 로그인 사용자
         MemberVO user = (MemberVO) session.getAttribute("loginUser");
         boolean liked = false;
 
@@ -159,10 +159,15 @@ public class ProductController {
 
         // 🔥 판매자 전체 찜 수
         int sellerTotalLikes = productService.getTotalLikesBySeller(product.getSellerId());
-        model.addAttribute("likeCount", sellerTotalLikes);   // 🔥 여기서부터 JSP는 “전체 찜 수”만 본다
+        model.addAttribute("likeCount", sellerTotalLikes);
+
+        // 🔥 현재 접속자가 이 상품의 판매자인지 여부
+        boolean isSeller = (user != null && user.getUserId() == product.getSellerId());
+        model.addAttribute("isSeller", isSeller);
 
         return "product_detail";
     }
+
 
 
     /** ============================================
