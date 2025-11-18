@@ -37,8 +37,23 @@ public interface ProductDAO {
                             @Param("orders") int orders);
 
     List<String> getImagesByProductId(@Param("productId") int productId);
-    
-    
-    int getTotalLikesBySeller(int sellerId);   // 🔥 추가
 
+
+    // ⭐ 판매자 관련 기능
+    int getTotalLikesBySeller(@Param("sellerId") int sellerId);
+
+    int updateProduct(ProductVO product);   // POJO 하나라 @Param 불필요
+
+    int updateStatus(@Param("productId") int productId,
+                     @Param("status") String status);
+
+    int updateHiddenYn(@Param("productId") int productId,
+                       @Param("hiddenYn") String hiddenYn);
+
+    int deleteById(@Param("productId") int productId);
+    
+    // ✅ 자식 테이블 삭제용 메서드 추가
+    int deleteLikesByProductId(@Param("productId") int productId);
+
+    int deleteImagesByProductId(@Param("productId") int productId);
 }

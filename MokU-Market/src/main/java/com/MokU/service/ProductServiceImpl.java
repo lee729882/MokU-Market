@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.MokU.dao.ProductDAO;
 import com.MokU.vo.ProductVO;
@@ -12,7 +13,7 @@ import com.MokU.vo.ProductVO;
 public class ProductServiceImpl implements ProductService {
 
     @Autowired
-    private ProductDAO productDAO;
+    private ProductDAO productDAO;   // ✅ DAO만 사용
 
     @Override
     public void insertProduct(ProductVO vo) {
@@ -84,7 +85,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     /* ====================================================
-        🔥🔥 여러 장 이미지 기능 추가된 부분 (3개) 🔥🔥
+        🔥 여러 장 이미지 기능
        ==================================================== */
 
     /** 1) 단일 이미지 저장 */
@@ -109,8 +110,68 @@ public class ProductServiceImpl implements ProductService {
             order++;
         }
     }
+
     @Override
     public int getTotalLikesBySeller(int sellerId) {
         return productDAO.getTotalLikesBySeller(sellerId);
     }
+
+    /* ====================================================
+        🔥 판매자 전용 기능 (수정 / 판매완료 / 숨김 / 삭제)
+       ==================================================== */
+
+    @Override
+    @Transactional
+    public boolean updateProduct(ProductVO product, int sellerId) {
+
+        // 기존 상품 조회
+        ProductVO origin = productDAO.getProductById(product.getProductId());
+        if (origin == null) return false;
+
+        // 판매자 본인 확인
+        if (origin.getSellerId() != sellerId) return false;
+
+        // 실제 수정 처리 (title/price/description 등은 Mapper에서 처리)
+        return productDAO.updateProduct(product) == 1;
+    }
+
+    @Override
+    @Transactional
+    public boolean markSold(int productId, int sellerId) {
+        ProductVO origin = productDAO.getProductById(productId);
+        if (origin == null) return false;
+        if (origin.getSellerId() != sellerId) return false;
+
+        // STATUS 컬럼 값을 실제 사용 중인 값으로 맞추시면 됩니다. (예: SOLD, COMPLETED 등)
+        return productDAO.updateStatus(productId, "SOLD") == 1;
+    }
+
+    @Override
+    @Transactional
+    public boolean hideProduct(int productId, int sellerId) {
+        ProductVO origin = productDAO.getProductById(productId);
+        if (origin == null) return false;
+        if (origin.getSellerId() != sellerId) return false;
+
+        return productDAO.updateHiddenYn(productId, "Y") == 1;
+    }
+
+    @Override
+    @Transactional
+    public boolean deleteProduct(int productId, int sellerId) {
+
+        // 1) 기존 상품 조회 및 권한 체크
+        ProductVO origin = productDAO.getProductById(productId);
+        if (origin == null) return false;
+        if (origin.getSellerId() != sellerId) return false;
+
+        // 2) 자식 먼저 삭제 (좋아요 + 이미지)
+        productDAO.deleteLikesByProductId(productId);   // FK_LIKES_PRODUCT 해결
+        productDAO.deleteImagesByProductId(productId);  // 이미지 테이블도 정리
+
+        // 3) 마지막에 상품 삭제
+        int rows = productDAO.deleteById(productId);
+        return rows == 1;
+    }
+
 }

@@ -432,6 +432,11 @@ document.getElementById("topBtn").addEventListener("click", () => {
 <div class="footer">
     <p>© 2025 Mokpo National University | MokU Market</p>
 </div>
+<c:if test="${not empty msg}">
+    <script>
+        alert("${msg}");
+    </script>
+</c:if>
 
 </body>
 </html>

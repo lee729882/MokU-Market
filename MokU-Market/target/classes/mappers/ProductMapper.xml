@@ -123,5 +123,55 @@
     FROM PRODUCT
     WHERE seller_id = #{sellerId}
 </select>
+    <!-- 🔧 상품 내용 수정 -->
+    <update id="updateProduct" parameterType="com.MokU.vo.ProductVO">
+        UPDATE PRODUCT
+        SET
+            TITLE       = #{title},
+            CATEGORY    = #{category},
+            PRICE       = #{price},
+            DESCRIPTION = #{description, jdbcType=CLOB},
+            IMAGE_PATH  = #{imagePath},
+            PLACE_NAME  = #{placeName},
+            LATITUDE    = #{latitude},
+            LONGITUDE   = #{longitude},
+            UPDATED_AT  = SYSDATE
+        WHERE PRODUCT_ID = #{productId}
+    </update>
 
+    <!-- 🔧 상태 변경 (판매완료 등) -->
+    <update id="updateStatus" parameterType="map">
+        UPDATE PRODUCT
+        SET
+            STATUS     = #{status},
+            UPDATED_AT = SYSDATE
+        WHERE PRODUCT_ID = #{productId}
+    </update>
+
+    <!-- 🔧 숨김 처리 -->
+    <update id="updateHiddenYn" parameterType="map">
+        UPDATE PRODUCT
+        SET
+            HIDDEN_YN  = #{hiddenYn},
+            UPDATED_AT = SYSDATE
+        WHERE PRODUCT_ID = #{productId}
+    </update>
+
+
+<!-- ✅ 좋아요(찜) 먼저 삭제 -->
+<delete id="deleteLikesByProductId" parameterType="int">
+    DELETE FROM LIKES
+    WHERE PRODUCT_ID = #{productId}
+</delete>
+
+<!-- ✅ 이미지도 같이 삭제 (있으면) -->
+<delete id="deleteImagesByProductId" parameterType="int">
+    DELETE FROM PRODUCT_IMAGES
+    WHERE PRODUCT_ID = #{productId}
+</delete>
+    <!-- 🔧 삭제 -->
+    <delete id="deleteById" parameterType="int">
+        DELETE FROM PRODUCT
+        WHERE PRODUCT_ID = #{productId}
+    </delete>
 </mapper>

@@ -1,4 +1,4 @@
-	package com.MokU.controller;
+package com.MokU.controller;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,6 +23,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/product")
@@ -43,6 +44,7 @@ public class ProductController {
         if (user == null) return "redirect:/login";
 
         model.addAttribute("user", user);
+        model.addAttribute("mode", "add");   // ✅ 등록 모드 구분용
         return "product_form";
     }
 
@@ -58,6 +60,7 @@ public class ProductController {
         MemberVO user = (MemberVO) session.getAttribute("loginUser");
         if (user == null) return "redirect:/login";
 
+        // 판매자 ID 세팅
         vo.setSellerId(user.getUserId());
 
         // 업로드 폴더
@@ -72,10 +75,9 @@ public class ProductController {
             if (file != null && !file.isEmpty()) {
                 String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
                 File dest = new File(uploadDir, fileName);
-
                 file.transferTo(dest);
 
-                imagePaths.add("/upload/product/" + fileName); // DB 저장용
+                imagePaths.add("/upload/product/" + fileName); // DB 저장용 경로
             }
         }
 
@@ -86,10 +88,9 @@ public class ProductController {
             vo.setImagePath("/upload/product/no_image.png");
         }
 
-        // === 상품 먼저 INSERT (productId 생성됨) ===
+        // === 상품 먼저 INSERT (productId 생성) ===
         productService.insertProduct(vo);
-
-        int productId = vo.getProductId();  // ★ Oracle INSERT 후 selectKey로 받아온 PK
+        int productId = vo.getProductId();  // Oracle selectKey 로 생성된 PK
 
         // === 여러 장 이미지 insert ===
         if (!imagePaths.isEmpty()) {
@@ -134,6 +135,9 @@ public class ProductController {
         }
 
         ProductVO product = productService.getProductById(id);
+        if (product == null) {
+            return "redirect:/home";
+        }
         model.addAttribute("product", product);
 
         MemberVO seller = memberService.getMemberById(product.getSellerId());
@@ -168,10 +172,8 @@ public class ProductController {
         return "product_detail";
     }
 
-
-
     /** ============================================
-     *  찜 토글
+     *  찜 토글 (AJAX)
      *  ============================================ */
     @PostMapping("/toggleLike")
     @ResponseBody
@@ -189,21 +191,149 @@ public class ProductController {
         int userId = user.getUserId();
         int productId = req.get("productId");
 
-        // 1) 좋아요 토글 (likes + product.like_count 업데이트)
+        // 1) 좋아요 토글
         boolean liked = productService.toggleLike(userId, productId);
 
         // 2) 이 상품의 판매자 정보 조회
         ProductVO product = productService.getProductById(productId);
+        if (product == null) {
+            result.put("status", "error");
+            return result;
+        }
 
-        // 3) 🔥 판매자가 받은 전체 찜 수 다시 계산
+        // 3) 판매자가 받은 전체 찜 수 다시 계산
         int sellerTotalLikes = productService.getTotalLikesBySeller(product.getSellerId());
 
         // 4) 응답
         result.put("status", "success");
         result.put("liked", liked);
-        result.put("likeCount", sellerTotalLikes);  // 🔥 이제 항상 “판매자 전체 찜 수”만 내려감
+        result.put("likeCount", sellerTotalLikes);  // 판매자 전체 찜 수
 
         return result;
     }
 
+    /* ====================================================
+     *  🔥 판매자 기능 : 수정 / 판매완료 / 숨김 / 삭제
+     * ==================================================== */
+
+    /** 상품 수정 폼 (GET) */
+    @GetMapping("/edit")
+    public String editForm(@RequestParam("id") int productId,
+                           HttpSession session,
+                           Model model,
+                           RedirectAttributes rttr) {
+
+        MemberVO user = (MemberVO) session.getAttribute("loginUser");
+        if (user == null) {
+            rttr.addFlashAttribute("msg", "로그인이 필요합니다.");
+            return "redirect:/login";
+        }
+
+        ProductVO product = productService.getProductById(productId);
+        if (product == null) {
+            rttr.addFlashAttribute("msg", "존재하지 않는 상품입니다.");
+            return "redirect:/home";
+        }
+
+        // 판매자 본인 여부 체크
+        if (product.getSellerId() != user.getUserId()) {
+            rttr.addFlashAttribute("msg", "수정 권한이 없습니다.");
+            return "redirect:/product/detail?id=" + productId;
+        }
+
+        model.addAttribute("product", product);
+        model.addAttribute("user", user);
+        model.addAttribute("mode", "edit");   // JSP에서 등록/수정 구분용
+
+        // 기존 등록 폼 재사용
+        return "product_form";
+    }
+
+    /** 상품 수정 처리 (POST) */
+    @PostMapping("/edit")
+    public String editSubmit(@ModelAttribute ProductVO form,
+                             HttpSession session,
+                             RedirectAttributes rttr) {
+
+        MemberVO user = (MemberVO) session.getAttribute("loginUser");
+        if (user == null) {
+            rttr.addFlashAttribute("msg", "로그인이 필요합니다.");
+            return "redirect:/login";
+        }
+
+        boolean ok = productService.updateProduct(form, user.getUserId());
+        if (!ok) {
+            rttr.addFlashAttribute("msg", "수정 권한이 없거나 수정에 실패했습니다.");
+        } else {
+            rttr.addFlashAttribute("msg", "상품 정보가 수정되었습니다.");
+        }
+
+        return "redirect:/product/detail?id=" + form.getProductId();
+    }
+
+    /** 판매완료로 상태 변경 */
+    @GetMapping("/markSold")
+    public String markSold(@RequestParam("id") int productId,
+                           HttpSession session,
+                           RedirectAttributes rttr) {
+
+        MemberVO user = (MemberVO) session.getAttribute("loginUser");
+        if (user == null) {
+            rttr.addFlashAttribute("msg", "로그인이 필요합니다.");
+            return "redirect:/login";
+        }
+
+        boolean ok = productService.markSold(productId, user.getUserId());
+        if (!ok) {
+            rttr.addFlashAttribute("msg", "판매완료 처리 권한이 없거나 실패했습니다.");
+        } else {
+            rttr.addFlashAttribute("msg", "판매완료 상태로 변경되었습니다.");
+        }
+
+        return "redirect:/product/detail?id=" + productId;
+    }
+
+    /** 상품 숨기기 (노출 off) */
+    @GetMapping("/hide")
+    public String hide(@RequestParam("id") int productId,
+                       HttpSession session,
+                       RedirectAttributes rttr) {
+
+        MemberVO user = (MemberVO) session.getAttribute("loginUser");
+        if (user == null) {
+            rttr.addFlashAttribute("msg", "로그인이 필요합니다.");
+            return "redirect:/login";
+        }
+
+        boolean ok = productService.hideProduct(productId, user.getUserId());
+        if (!ok) {
+            rttr.addFlashAttribute("msg", "숨기기 처리 권한이 없거나 실패했습니다.");
+        } else {
+            rttr.addFlashAttribute("msg", "상품이 목록에서 숨김 처리되었습니다.");
+        }
+
+        return "redirect:/product/detail?id=" + productId;
+    }
+
+    /** 상품 삭제 */
+    @GetMapping("/delete")
+    public String delete(@RequestParam("id") int productId,
+                         HttpSession session,
+                         RedirectAttributes rttr) {
+
+        MemberVO user = (MemberVO) session.getAttribute("loginUser");
+        if (user == null) {
+            rttr.addFlashAttribute("msg", "로그인이 필요합니다.");
+            return "redirect:/login";
+        }
+
+        boolean ok = productService.deleteProduct(productId, user.getUserId());
+        if (!ok) {
+            rttr.addFlashAttribute("msg", "삭제 권한이 없거나 삭제에 실패했습니다.");
+            return "redirect:/product/detail?id=" + productId;
+        }
+
+        rttr.addFlashAttribute("msg", "상품이 삭제되었습니다.");
+        return "redirect:/home";   // 또는 내 상점, 목록 등 원하는 곳으로
+    }
 }

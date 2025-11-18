@@ -4,7 +4,12 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>상품 등록 | 목유마켓</title>
+<title>
+  <c:choose>
+    <c:when test="${mode eq 'edit'}">상품 수정 | 목유마켓</c:when>
+    <c:otherwise>상품 등록 | 목유마켓</c:otherwise>
+  </c:choose>
+</title>
 <link href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
@@ -30,6 +35,7 @@ body {
 .nav-links { display: flex; gap: 25px; align-items: center; margin-left: 60px; font-weight: 600; }
 .nav-links a { color: white; text-decoration: none; }
 .nav-links a:hover { text-decoration: underline; }
+
 /* 검색창 */
 .search-box {
     flex: 1;
@@ -55,7 +61,6 @@ body {
     color: #007A5C;
     font-weight: bold;
 }
-
 
 /* ✅ 사용자 메뉴 */
 .user-menu { display: flex; gap: 20px; align-items: center; }
@@ -183,13 +188,13 @@ button[type="submit"]:hover { background-color: #008a6b; transform: translateY(-
 /* ✅ 지도 높이를 zone-box에 맞게 자동 조정 */
 .map-wrapper {
   display: flex;
-  align-items: stretch; /* 높이를 자동으로 동일하게 맞춤 */
+  align-items: stretch;
   gap: 25px;
 }
 
 #map {
-  flex: 1; /* 남은 공간 꽉 채우기 */
-  min-height: 400px; /* 너무 작아지지 않도록 최소 높이 설정 */
+  flex: 1;
+  min-height: 400px;
   border-radius: 10px;
   border: 1px solid #ccc;
 }
@@ -239,6 +244,7 @@ button[type="submit"]:hover { background-color: #008a6b; transform: translateY(-
   border-top: 1px solid #ddd;
   margin-top: 50px;
 }
+
 .price-wrap {
   position: relative;
   width: 100%;
@@ -304,11 +310,25 @@ button[type="submit"]:hover { background-color: #008a6b; transform: translateY(-
   </div>
 </div>
 
-<!-- ✅ 상품 등록 -->
+<!-- ✅ 상품 등록/수정 -->
 <div class="container">
-  <h2>📦 상품 등록</h2>
-<form action="${pageContext.request.contextPath}/product/add" method="post" enctype="multipart/form-data">
-  
+  <h2>
+    <c:choose>
+      <c:when test="${mode eq 'edit'}">✏️ 상품 수정</c:when>
+      <c:otherwise>📦 상품 등록</c:otherwise>
+    </c:choose>
+  </h2>
+
+  <!-- ✅ 등록/수정 공용 폼 -->
+  <form action="${pageContext.request.contextPath}/product/${mode eq 'edit' ? 'edit' : 'add'}"
+        method="post"
+        enctype="multipart/form-data">
+
+    <!-- ✅ 수정 시 productId 전송 -->
+    <c:if test="${mode eq 'edit'}">
+      <input type="hidden" name="productId" value="${product.productId}">
+    </c:if>
+
     <label>상품 이미지 (대표 1장 + 추가 4장)</label>
     <div class="image-wrapper">
       <div class="main-slot" id="mainSlot">대표 +</div>
@@ -320,119 +340,161 @@ button[type="submit"]:hover { background-color: #008a6b; transform: translateY(-
       </div>
     </div>
     <div id="fileInputsContainer"></div>
-    
     <input type="file" id="fileInput" name="files" accept="image/*" multiple style="display:none;">
 
     <label>제목</label>
-    <input type="text" name="title" maxlength="20" placeholder="최대 20자까지 입력 가능합니다" required>
+    <input type="text"
+           name="title"
+           maxlength="20"
+           placeholder="최대 20자까지 입력 가능합니다"
+           value="${product.title}"
+           required>
 
     <label>가격</label>
     <div class="price-wrap">
-      <input type="text" name="price" id="priceInput" placeholder="희망 가격을 입력해주세요 !" required>
+      <input type="text"
+             name="price"
+             id="priceInput"
+             placeholder="희망 가격을 입력해주세요 !"
+             value="${product.price}"
+             required>
       <span class="won-label">원</span>
     </div>
 
     <label>카테고리</label>
     <select name="category" required>
-      <option value="" disabled selected>카테고리를 선택하세요</option>
-      <option value="전공서적">전공서적</option>
-      <option value="전자기기">전자기기</option>
-      <option value="생활용품">생활용품</option>
-      <option value="의류">의류</option>
-      <option value="음식">음식</option>
-      <option value="무료나눔">무료나눔</option>
+      <option value="" disabled
+        <c:if test="${empty product.category}">selected</c:if>>
+        카테고리를 선택하세요
+      </option>
+      <option value="전공서적"
+        <c:if test="${product.category == '전공서적'}">selected</c:if>>
+        전공서적
+      </option>
+      <option value="전자기기"
+        <c:if test="${product.category == '전자기기'}">selected</c:if>>
+        전자기기
+      </option>
+      <option value="생활용품"
+        <c:if test="${product.category == '생활용품'}">selected</c:if>>
+        생활용품
+      </option>
+      <option value="의류"
+        <c:if test="${product.category == '의류'}">selected</c:if>>
+        의류
+      </option>
+      <option value="음식"
+        <c:if test="${product.category == '음식'}">selected</c:if>>
+        음식
+      </option>
+      <option value="무료나눔"
+        <c:if test="${product.category == '무료나눔'}">selected</c:if>>
+        무료나눔
+      </option>
     </select>
 
     <label>거래장소</label>
-    <input type="text" id="placeName" name="placeName" placeholder="지도를 클릭하거나 오른쪽 목록에서 선택하세요." required>
-    <input type="hidden" id="latitude" name="latitude">
-    <input type="hidden" id="longitude" name="longitude">
+    <input type="text"
+           id="placeName"
+           name="placeName"
+           placeholder="지도를 클릭하거나 오른쪽 목록에서 선택하세요."
+           value="${product.placeName}"
+           required>
+    <input type="hidden" id="latitude" name="latitude" value="${product.latitude}">
+    <input type="hidden" id="longitude" name="longitude" value="${product.longitude}">
 
     <!-- ✅ 지도 + 캠퍼스 구역 목록 -->
-<div class="map-wrapper">
-  <div id="map"></div>
-	<div class="zone-box">
-	  <div class="zone-tabs">
-	    <div class="zone-tab active" data-target="A">A구역</div>
-	    <div class="zone-tab" data-target="B">B구역</div>
-	    <div class="zone-tab" data-target="C">C구역</div>
-	  </div>
-	
-<!-- A구역 -->
-<div id="zoneA" class="zone-list active">
-  <ul>
-    <li><a href="#" onclick="return setTradePlace('대학본부',34.9085069834,126.4343014031)">대학본부[A01]</a></li>
-    <li><a href="#" onclick="return setTradePlace('종합운동장',34.9068153672,126.4319616942)">종합운동장[A02]</a></li>
-    <li><a href="#" onclick="return setTradePlace('학군단',34.9057880643,126.4330331442)">학군단[A03]</a></li>
-    <li><a href="#" onclick="return setTradePlace('체육관',34.9069577184,126.4338666200)">체육관[A04]</a></li>
-    <li><a href="#" onclick="return setTradePlace('박물관',34.9073756474,126.4347571134)">박물관[A05]</a></li>
-    <li><a href="#" onclick="return setTradePlace('고시생활관',34.9073983769,126.4359354971)">고시생활관[A06]</a></li>
-    <li><a href="#" onclick="return setTradePlace('학생군사교육단',34.9061202417,126.4330212335)">학생군사교육단[A07]</a></li>
-    <li><a href="#" onclick="return setTradePlace('사회과학대학',34.9082378944,126.4364469051)">사회과학대학[A08]</a></li>
-    <li><a href="#" onclick="return setTradePlace('중앙도서관',34.9089021418,126.4355079613)">중앙도서관[A09]</a></li>
-    <li><a href="#" onclick="return setTradePlace('정보종합센터',34.9090832404,126.4348302564)">정보종합센터[A10]</a></li>
-    <li><a href="#" onclick="return setTradePlace('음악관',34.9083209877,126.4349875635)">음악관[A11]</a></li>
-    <li><a href="#" onclick="return setTradePlace('생활편의관',34.9102658703,126.4342580516)">생활편의관[A13]</a></li>
-    <li><a href="#" onclick="return setTradePlace('학생회관',34.9097776630,126.4358209673)">학생회관[A14]</a></li>
-    <li><a href="#" onclick="return setTradePlace('창조관',34.9056272145,126.4326029093)">창조관[A38]</a></li>
-    <li><a href="#" onclick="return setTradePlace('플라자60',34.9098761781,126.4344044625)">플라자60[A60]</a></li>
-    <li><a href="#" onclick="return setTradePlace('기념관',34.9075885768,126.4335966205)">60주년기념관[A70]</a></li>
-    <li><a href="#" onclick="return setTradePlace('차고지',34.9084907794,126.4342782994)">차고지</a></li>
-    <li><a href="#" onclick="return setTradePlace('수위실',34.9084907794,126.4342782994)">수위실</a></li>
-  </ul>
-</div>
+    <div class="map-wrapper">
+      <div id="map"></div>
+      <div class="zone-box">
+        <div class="zone-tabs">
+          <div class="zone-tab active" data-target="A">A구역</div>
+          <div class="zone-tab" data-target="B">B구역</div>
+          <div class="zone-tab" data-target="C">C구역</div>
+        </div>
 
-<!-- B구역 -->
-<div id="zoneB" class="zone-list">
-  <ul>
-    <li><a href="#" onclick="return setTradePlace('인문대학',34.9109037640,126.4353686571)">인문대학[B15]</a></li>
-    <li><a href="#" onclick="return setTradePlace('공동실험실습관',34.9116655299,126.4352488516)">공동실험실습관[B16]</a></li>
-    <li><a href="#" onclick="return setTradePlace('교수회관',34.9120431109,126.4358407258)">교수회관[B17]</a></li>
-    <li><a href="#" onclick="return setTradePlace('공과대학1호관',34.9123525904,126.4373741579)">공과대학 1호관[B18]</a></li>
-    <li><a href="#" onclick="return setTradePlace('공과대학2호관',34.9127536294,126.4365569781)">공과대학 2호관[B19]</a></li>
-    <li><a href="#" onclick="return setTradePlace('공과대학3호관',34.9133570171,126.4373169373)">공과대학 3호관[B20]</a></li>
-    <li><a href="#" onclick="return setTradePlace('공과대학4호관',34.9128518727,126.4379910657)">공과대학 4호관[B21]</a></li>
-    <li><a href="#" onclick="return setTradePlace('교수아파트',34.9137599429,126.4360305499)">교수아파트[B22]</a></li>
-    <li><a href="#" onclick="return setTradePlace('생활과학관',34.9134859677,126.4385336637)">생활과학관[B23]</a></li>
-    <li><a href="#" onclick="return setTradePlace('대외협력관',34.9141687283,126.4383714325)">대외협력관[B24]</a></li>
-    <li><a href="#" onclick="return setTradePlace('스포츠센터',34.9148584177,126.4383888244)">스포츠센터[B25]</a></li>
-    <li><a href="#" onclick="return setTradePlace('공과대학5호관',34.9144735182,126.4391183853)">공과대학 5호관[B26]</a></li>
-    <li><a href="#" onclick="return setTradePlace('법학관',34.9138625320,126.4390568518)">법학관[B27]</a></li>
-    <li><a href="#" onclick="return setTradePlace('전자정보통신관',34.9130622190,126.4390656599)">전자정보통신관[B28]</a></li>
-    <li><a href="#" onclick="return setTradePlace('국제협력관',34.9124075446,126.4396676885)">국제협력관[B29]</a></li>
-    <li><a href="#" onclick="return setTradePlace('창업보육센터',34.9135455565,126.4408750129)">창업보육센터</a></li>
-    <li><a href="#" onclick="return setTradePlace('산학융합센터',34.9084907794,126.4342782994)">산학융합센터</a></li>
-    <li><a href="#" onclick="return setTradePlace('부속공장',34.9136838633,126.4400872881)">부속공장</a></li>
-    <li><a href="#" onclick="return setTradePlace('부속농장',34.9142321982,126.4395520978)">부속농장</a></li>
-    <li><a href="#" onclick="return setTradePlace('위험물옥내저장소',34.9084907794,126.4342782994)">위험물옥내저장소</a></li>
-  </ul>
-</div>
+        <!-- A구역 -->
+        <div id="zoneA" class="zone-list active">
+          <ul>
+            <li><a href="#" onclick="return setTradePlace('대학본부',34.9085069834,126.4343014031)">대학본부[A01]</a></li>
+            <li><a href="#" onclick="return setTradePlace('종합운동장',34.9068153672,126.4319616942)">종합운동장[A02]</a></li>
+            <li><a href="#" onclick="return setTradePlace('학군단',34.9057880643,126.4330331442)">학군단[A03]</a></li>
+            <li><a href="#" onclick="return setTradePlace('체육관',34.9069577184,126.4338666200)">체육관[A04]</a></li>
+            <li><a href="#" onclick="return setTradePlace('박물관',34.9073756474,126.4347571134)">박물관[A05]</a></li>
+            <li><a href="#" onclick="return setTradePlace('고시생활관',34.9073983769,126.4359354971)">고시생활관[A06]</a></li>
+            <li><a href="#" onclick="return setTradePlace('학생군사교육단',34.9061202417,126.4330212335)">학생군사교육단[A07]</a></li>
+            <li><a href="#" onclick="return setTradePlace('사회과학대학',34.9082378944,126.4364469051)">사회과학대학[A08]</a></li>
+            <li><a href="#" onclick="return setTradePlace('중앙도서관',34.9089021418,126.4355079613)">중앙도서관[A09]</a></li>
+            <li><a href="#" onclick="return setTradePlace('정보종합센터',34.9090832404,126.4348302564)">정보종합센터[A10]</a></li>
+            <li><a href="#" onclick="return setTradePlace('음악관',34.9083209877,126.4349875635)">음악관[A11]</a></li>
+            <li><a href="#" onclick="return setTradePlace('생활편의관',34.9102658703,126.4342580516)">생활편의관[A13]</a></li>
+            <li><a href="#" onclick="return setTradePlace('학생회관',34.9097776630,126.4358209673)">학생회관[A14]</a></li>
+            <li><a href="#" onclick="return setTradePlace('창조관',34.9056272145,126.4326029093)">창조관[A38]</a></li>
+            <li><a href="#" onclick="return setTradePlace('플라자60',34.9098761781,126.4344044625)">플라자60[A60]</a></li>
+            <li><a href="#" onclick="return setTradePlace('기념관',34.9075885768,126.4335966205)">60주년기념관[A70]</a></li>
+            <li><a href="#" onclick="return setTradePlace('차고지',34.9084907794,126.4342782994)">차고지</a></li>
+            <li><a href="#" onclick="return setTradePlace('수위실',34.9084907794,126.4342782994)">수위실</a></li>
+          </ul>
+        </div>
 
-<!-- C구역 -->
-<div id="zoneC" class="zone-list">
-  <ul>
-    <li><a href="#" onclick="return setTradePlace('자연과학대학1호관',34.9101801166,126.4371442794)">자연과학대학 1호관[C30]</a></li>
-    <li><a href="#" onclick="return setTradePlace('자연과학대학2호관',34.9099887558,126.4383405447)">자연과학대학 2호관[C31]</a></li>
-    <li><a href="#" onclick="return setTradePlace('학생생활관관리동',34.9099553391,126.4393967935)">학생생활관 관리동[C32]</a></li>
-    <li><a href="#" onclick="return setTradePlace('가람관',34.9094446748,126.4398223706)">가람관[C33]</a></li>
-    <li><a href="#" onclick="return setTradePlace('다래관',34.9096202733,126.4404866644)">다래관[C34]</a></li>
-    <li><a href="#" onclick="return setTradePlace('햇귀관',34.9103023441,126.4401558585)">햇귀관[C35]</a></li>
-    <li><a href="#" onclick="return setTradePlace('한울관',34.9103171890,126.4408992921)">한울관[C36]</a></li>
-    <li><a href="#" onclick="return setTradePlace('마루·다솜관',34.9091802501,126.4405777545)">마루·다솜관[C37]</a></li>
-    <li><a href="#" onclick="return setTradePlace('약학관',34.9094600461,126.4375553767)">약학관[C38]</a></li>
-    <li><a href="#" onclick="return setTradePlace('국제관',34.9104301731,126.4403371810)">국제관[C39]</a></li>
-    <li><a href="#" onclick="return setTradePlace('국제교육교류원',34.9108981379,126.4408111572)">국제교육교류원[C40]</a></li>
-    <li><a href="#" onclick="return setTradePlace('장비지원센터',34.9084907794,126.4342782994)">장비지원센터</a></li>
-  </ul>
-</div>
+        <!-- B구역 -->
+        <div id="zoneB" class="zone-list">
+          <ul>
+            <li><a href="#" onclick="return setTradePlace('인문대학',34.9109037640,126.4353686571)">인문대학[B15]</a></li>
+            <li><a href="#" onclick="return setTradePlace('공동실험실습관',34.9116655299,126.4352488516)">공동실험실습관[B16]</a></li>
+            <li><a href="#" onclick="return setTradePlace('교수회관',34.9120431109,126.4358407258)">교수회관[B17]</a></li>
+            <li><a href="#" onclick="return setTradePlace('공과대학1호관',34.9123525904,126.4373741579)">공과대학 1호관[B18]</a></li>
+            <li><a href="#" onclick="return setTradePlace('공과대학2호관',34.9127536294,126.4365569781)">공과대학 2호관[B19]</a></li>
+            <li><a href="#" onclick="return setTradePlace('공과대학3호관',34.9133570171,126.4373169373)">공과대학 3호관[B20]</a></li>
+            <li><a href="#" onclick="return setTradePlace('공과대학4호관',34.9128518727,126.4379910657)">공과대학 4호관[B21]</a></li>
+            <li><a href="#" onclick="return setTradePlace('교수아파트',34.9137599429,126.4360305499)">교수아파트[B22]</a></li>
+            <li><a href="#" onclick="return setTradePlace('생활과학관',34.9134859677,126.4385336637)">생활과학관[B23]</a></li>
+            <li><a href="#" onclick="return setTradePlace('대외협력관',34.9141687283,126.4383714325)">대외협력관[B24]</a></li>
+            <li><a href="#" onclick="return setTradePlace('스포츠센터',34.9148584177,126.4383888244)">스포츠센터[B25]</a></li>
+            <li><a href="#" onclick="return setTradePlace('공과대학5호관',34.9144735182,126.4391183853)">공과대학 5호관[B26]</a></li>
+            <li><a href="#" onclick="return setTradePlace('법학관',34.9138625320,126.4390568518)">법학관[B27]</a></li>
+            <li><a href="#" onclick="return setTradePlace('전자정보통신관',34.9130622190,126.4390656599)">전자정보통신관[B28]</a></li>
+            <li><a href="#" onclick="return setTradePlace('국제협력관',34.9124075446,126.4396676885)">국제협력관[B29]</a></li>
+            <li><a href="#" onclick="return setTradePlace('창업보육센터',34.9135455565,126.4408750129)">창업보육센터</a></li>
+            <li><a href="#" onclick="return setTradePlace('산학융합센터',34.9084907794,126.4342782994)">산학융합센터</a></li>
+            <li><a href="#" onclick="return setTradePlace('부속공장',34.9136838633,126.4400872881)">부속공장</a></li>
+            <li><a href="#" onclick="return setTradePlace('부속농장',34.9142321982,126.4395520978)">부속농장</a></li>
+            <li><a href="#" onclick="return setTradePlace('위험물옥내저장소',34.9084907794,126.4342782994)">위험물옥내저장소</a></li>
+          </ul>
+        </div>
 
-	</div>
-</div>
+        <!-- C구역 -->
+        <div id="zoneC" class="zone-list">
+          <ul>
+            <li><a href="#" onclick="return setTradePlace('자연과학대학1호관',34.9101801166,126.4371442794)">자연과학대학 1호관[C30]</a></li>
+            <li><a href="#" onclick="return setTradePlace('자연과학대학2호관',34.9099887558,126.4383405447)">자연과학대학 2호관[C31]</a></li>
+            <li><a href="#" onclick="return setTradePlace('학생생활관관리동',34.9099553391,126.4393967935)">학생생활관 관리동[C32]</a></li>
+            <li><a href="#" onclick="return setTradePlace('가람관',34.9094446748,126.4398223706)">가람관[C33]</a></li>
+            <li><a href="#" onclick="return setTradePlace('다래관',34.9096202733,126.4404866644)">다래관[C34]</a></li>
+            <li><a href="#" onclick="return setTradePlace('햇귀관',34.9103023441,126.4401558585)">햇귀관[C35]</a></li>
+            <li><a href="#" onclick="return setTradePlace('한울관',34.9103171890,126.4408992921)">한울관[C36]</a></li>
+            <li><a href="#" onclick="return setTradePlace('마루·다솜관',34.9091802501,126.4405777545)">마루·다솜관[C37]</a></li>
+            <li><a href="#" onclick="return setTradePlace('약학관',34.9094600461,126.4375553767)">약학관[C38]</a></li>
+            <li><a href="#" onclick="return setTradePlace('국제관',34.9104301731,126.4403371810)">국제관[C39]</a></li>
+            <li><a href="#" onclick="return setTradePlace('국제교육교류원',34.9108981379,126.4408111572)">국제교육교류원[C40]</a></li>
+            <li><a href="#" onclick="return setTradePlace('장비지원센터',34.9084907794,126.4342782994)">장비지원센터</a></li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
 
     <label>본문</label>
-    <textarea name="description" placeholder="상품 상태, 사용기간 등을 적어주세요." required></textarea>
+    <textarea name="description"
+              placeholder="상품 상태, 사용기간 등을 적어주세요."
+              required>${product.description}</textarea>
 
-    <button type="submit">등록하기</button>
+    <button type="submit">
+      <c:choose>
+        <c:when test="${mode eq 'edit'}">수정 완료</c:when>
+        <c:otherwise>등록하기</c:otherwise>
+      </c:choose>
+    </button>
   </form>
 </div>
 
@@ -446,6 +508,13 @@ button[type="submit"]:hover { background-color: #008a6b; transform: translateY(-
 //✅ 무료나눔 선택 시 가격 자동 0원 설정 및 비활성화
 const categorySelect = document.querySelector("select[name='category']");
 const priceField = document.getElementById("priceInput");
+
+// 기존 값이 무료나눔일 때 초기 적용
+if (categorySelect.value === "무료나눔") {
+  priceField.value = "0";
+  priceField.setAttribute("readonly", true);
+  priceField.style.backgroundColor = "#f3f3f3";
+}
 
 categorySelect.addEventListener("change", () => {
   if (categorySelect.value === "무료나눔") {
@@ -463,8 +532,20 @@ let map, marker, geocoder;
 
 kakao.maps.load(() => {
   const mapContainer = document.getElementById("map");
-  const mapOption = { center: new kakao.maps.LatLng(34.90857525955331, 126.43440540737004), level: 4 };  map = new kakao.maps.Map(mapContainer, mapOption);
-  marker = new kakao.maps.Marker({ map: map });
+
+  // 수정 시에는 기존 좌표가 있으면 거기로 센터 설정
+  const defaultLat = ${empty product.latitude ? 34.90857525955331 : product.latitude};
+  const defaultLng = ${empty product.longitude ? 126.43440540737004 : product.longitude};
+
+  const mapOption = {
+    center: new kakao.maps.LatLng(defaultLat, defaultLng),
+    level: 4
+  };
+  map = new kakao.maps.Map(mapContainer, mapOption);
+  marker = new kakao.maps.Marker({
+    map: map,
+    position: new kakao.maps.LatLng(defaultLat, defaultLng)
+  });
   geocoder = new kakao.maps.services.Geocoder();
 
   // 지도 클릭 시 거래장소 자동 입력
@@ -503,12 +584,14 @@ document.querySelectorAll('.zone-tab').forEach(tab => {
     document.getElementById('zone' + tab.dataset.target).classList.add('active');
   });
 });
+
 // ✅ 가격 콤마 표시
 const priceInput = document.getElementById("priceInput");
 priceInput.addEventListener("input", (e) => {
   let value = e.target.value.replace(/[^0-9]/g, "");
   e.target.value = value ? Number(value).toLocaleString() : "";
 });
+
 const form = document.querySelector("form");
 form.addEventListener("submit", () => {
   const raw = priceInput.value.replace(/[^0-9]/g, "");
@@ -516,66 +599,60 @@ form.addEventListener("submit", () => {
 });
 
 //============================
-//여러 장 이미지 업로드 완전 구현
+//여러 장 이미지 업로드 (기존 로직 유지)
 //============================
-
 let clickedSlot = null;
 let fileCount = 0;
 
 document.querySelectorAll(".main-slot, .sub-slot").forEach(slot => {
-slot.addEventListener("click", e => {
+  slot.addEventListener("click", e => {
     clickedSlot = e.currentTarget;
 
     fileCount++;
 
-    // ★ slot마다 별도 file input 만들어서 저장
     const input = document.createElement("input");
     input.type = "file";
     input.accept = "image/*";
-    input.name = "files"; // 서버로 multiple 전달됨
+    input.name = "files";
     input.style.display = "none";
-    input.dataset.slot = fileCount; // 어떤 slot인지 tracking
+    input.dataset.slot = fileCount;
 
     document.getElementById("fileInputsContainer").appendChild(input);
 
     input.click();
 
     input.addEventListener("change", function () {
-        const file = this.files[0];
-        if (!file) return;
+      const file = this.files[0];
+      if (!file) return;
 
-        const reader = new FileReader();
+      const reader = new FileReader();
 
-        reader.onload = ev => {
-            clickedSlot.innerHTML = "";
-            const img = document.createElement("img");
-            img.src = ev.target.result;
+      reader.onload = ev => {
+        clickedSlot.innerHTML = "";
+        const img = document.createElement("img");
+        img.src = ev.target.result;
 
-            clickedSlot.appendChild(img);
+        clickedSlot.appendChild(img);
 
-            // 삭제 버튼 추가
-            const btn = document.createElement("button");
-            btn.className = "delete-btn";
-            btn.innerText = "×";
+        const btn = document.createElement("button");
+        btn.className = "delete-btn";
+        btn.innerText = "×";
 
-            btn.addEventListener("click", e2 => {
-                e2.stopPropagation();
-                clickedSlot.innerHTML = clickedSlot.classList.contains("main-slot") ? "대표 +" : "+";
-                clickedSlot.classList.remove("loaded");
+        btn.addEventListener("click", e2 => {
+          e2.stopPropagation();
+          clickedSlot.innerHTML = clickedSlot.classList.contains("main-slot") ? "대표 +" : "+";
+          clickedSlot.classList.remove("loaded");
+          input.remove();
+        });
 
-                // file input도 제거
-                input.remove();
-            });
+        clickedSlot.appendChild(btn);
+        clickedSlot.classList.add("loaded");
+      };
 
-            clickedSlot.appendChild(btn);
-            clickedSlot.classList.add("loaded");
-        };
-
-        reader.readAsDataURL(file);
+      reader.readAsDataURL(file);
     });
+  });
 });
-});
-
 </script>
 
 </body>
