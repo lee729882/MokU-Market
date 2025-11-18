@@ -19,10 +19,10 @@
               value="jdbc:log4jdbc:oracle:thin:@//localhost:1521/xe"/>
 
     <!-- ★ 계정 (SYSTEM 말고 직접 만든 USER 쓰는 걸 추천) -->
-    <property name="username" value="book_ex"/>
+    <property name="username" value="boot_ex"/>
 
     <!-- ★ 비밀번호 (방금 언락하고 바꾼 값) -->
-    <property name="password" value="book_ex"/>
+    <property name="password" value="boot_ex"/>
   </bean>
 
 

@@ -1,4 +1,4 @@
-package com.MokU.controller;
+	package com.MokU.controller;
 
 import java.io.File;
 import java.io.IOException;
@@ -157,8 +157,9 @@ public class ProductController {
 
         model.addAttribute("liked", liked);
 
-        int likeCount = productService.getLikeCount(id);
-        model.addAttribute("likeCount", likeCount);
+        // 🔥 판매자 전체 찜 수
+        int sellerTotalLikes = productService.getTotalLikesBySeller(product.getSellerId());
+        model.addAttribute("likeCount", sellerTotalLikes);   // 🔥 여기서부터 JSP는 “전체 찜 수”만 본다
 
         return "product_detail";
     }
@@ -183,13 +184,21 @@ public class ProductController {
         int userId = user.getUserId();
         int productId = req.get("productId");
 
+        // 1) 좋아요 토글 (likes + product.like_count 업데이트)
         boolean liked = productService.toggleLike(userId, productId);
-        int likeCount = productService.getLikeCount(productId);
 
+        // 2) 이 상품의 판매자 정보 조회
+        ProductVO product = productService.getProductById(productId);
+
+        // 3) 🔥 판매자가 받은 전체 찜 수 다시 계산
+        int sellerTotalLikes = productService.getTotalLikesBySeller(product.getSellerId());
+
+        // 4) 응답
         result.put("status", "success");
         result.put("liked", liked);
-        result.put("likeCount", likeCount);
+        result.put("likeCount", sellerTotalLikes);  // 🔥 이제 항상 “판매자 전체 찜 수”만 내려감
 
         return result;
     }
+
 }

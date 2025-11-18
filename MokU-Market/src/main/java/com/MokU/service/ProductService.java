@@ -33,4 +33,7 @@ public interface ProductService {
 
     // 3) 상품 등록 시 여러 장 이미지 저장
     void saveProductImages(int productId, List<String> imagePaths);
+    
+    int getTotalLikesBySeller(int sellerId);   // 🔥 추가
+
 }

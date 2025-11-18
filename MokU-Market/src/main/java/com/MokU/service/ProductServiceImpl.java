@@ -109,4 +109,8 @@ public class ProductServiceImpl implements ProductService {
             order++;
         }
     }
+    @Override
+    public int getTotalLikesBySeller(int sellerId) {
+        return productDAO.getTotalLikesBySeller(sellerId);
+    }
 }

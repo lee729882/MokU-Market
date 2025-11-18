@@ -37,4 +37,8 @@ public interface ProductDAO {
                             @Param("orders") int orders);
 
     List<String> getImagesByProductId(@Param("productId") int productId);
+    
+    
+    int getTotalLikesBySeller(int sellerId);   // 🔥 추가
+
 }
