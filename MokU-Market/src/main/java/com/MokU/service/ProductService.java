@@ -10,6 +10,9 @@ public interface ProductService {
     void insertProduct(ProductVO vo);
 
     List<ProductVO> getProductsByCategory(String category);
+    
+    List<ProductVO> getAllProducts();
+
 
     ProductVO getProductById(int productId);
 

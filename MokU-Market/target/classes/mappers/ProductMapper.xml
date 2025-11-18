@@ -69,12 +69,12 @@
 </select>
 
 
-    <select id="getProductsByCategory" parameterType="string" resultMap="ProductMap">
-        SELECT PRODUCT_ID, TITLE, CATEGORY, PRICE, IMAGE_PATH, VIEW_COUNT, LIKE_COUNT, STATUS, CREATED_AT
-        FROM PRODUCT
-        WHERE CATEGORY = #{category}
-        ORDER BY CREATED_AT DESC
-    </select>
+<select id="getProductsByCategory" parameterType="string" resultMap="ProductMap">
+    SELECT *
+    FROM PRODUCT
+    WHERE CATEGORY = #{category,jdbcType=VARCHAR}
+</select>
+
 
     <select id="getProductById" parameterType="int" resultMap="ProductMap">
         SELECT *
@@ -178,4 +178,10 @@
         DELETE FROM PRODUCT
         WHERE PRODUCT_ID = #{productId}
     </delete>
+    <select id="getAllProducts" resultMap="ProductMap">
+    SELECT PRODUCT_ID, TITLE, CATEGORY, PRICE, IMAGE_PATH, VIEW_COUNT, LIKE_COUNT, STATUS, CREATED_AT
+    FROM PRODUCT
+    ORDER BY CREATED_AT DESC
+</select>
+    
 </mapper>

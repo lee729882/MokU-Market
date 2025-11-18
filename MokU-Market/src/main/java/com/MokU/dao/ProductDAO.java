@@ -56,4 +56,7 @@ public interface ProductDAO {
     int deleteLikesByProductId(@Param("productId") int productId);
 
     int deleteImagesByProductId(@Param("productId") int productId);
+    
+    List<ProductVO> getAllProducts();
+
 }

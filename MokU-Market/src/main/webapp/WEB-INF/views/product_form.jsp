@@ -288,7 +288,7 @@ button[type="submit"]:hover { background-color: #008a6b; transform: translateY(-
     </a>
   </div>
   <div class="nav-links">
-    <a href="${pageContext.request.contextPath}/product/list?category=중고거래">중고거래</a>
+<a href="${pageContext.request.contextPath}/product/list">중고거래</a>
     <a href="${pageContext.request.contextPath}/product/list?category=무료나눔">무료나눔</a>
   </div>
   <div class="search-box">

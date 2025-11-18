@@ -109,18 +109,33 @@ public class ProductController {
      *  카테고리별 목록
      * ============================================ */
     @GetMapping("/list")
-    public String list(@RequestParam("category") String category,
-                       HttpSession session,
-                       Model model) {
+    public String list(
+            @RequestParam(value="category", required = false) String category,
+            HttpSession session,
+            Model model) {
 
-        model.addAttribute("products", productService.getProductsByCategory(category));
-        model.addAttribute("category", category);
-
+        // 🔹 로그인 사용자 가져오기
         MemberVO user = (MemberVO) session.getAttribute("loginUser");
-        if (user != null) model.addAttribute("user", user);
+        if (user != null) {
+            model.addAttribute("user", user);
+        }
+
+        List<ProductVO> products;
+
+        // 🔹 중고거래 = 전체보기
+        if (category == null || category.trim().isEmpty() || category.equals("중고거래")) {
+            products = productService.getAllProducts();
+            category = "전체보기";
+        } else {
+            products = productService.getProductsByCategory(category);
+        }
+
+        model.addAttribute("products", products);
+        model.addAttribute("category", category);
 
         return "product_list";
     }
+
 
     /* ============================================
      *  상품 상세

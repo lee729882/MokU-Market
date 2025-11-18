@@ -12,12 +12,18 @@ import com.MokU.vo.ProductVO;
 @Service
 public class ProductServiceImpl implements ProductService {
 
+	
     @Autowired
     private ProductDAO productDAO;   // ✅ DAO만 사용
 
     @Override
     public void insertProduct(ProductVO vo) {
         productDAO.insertProduct(vo);
+    }
+    
+    @Override
+    public List<ProductVO> getAllProducts() {
+        return productDAO.getAllProducts();
     }
 
     @Override
