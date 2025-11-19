@@ -6,6 +6,8 @@
 <meta charset="UTF-8">
 <title>목유마켓 홈</title>
 <link href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
 
 <style>
 body {
@@ -14,74 +16,124 @@ body {
     background-color: #f8f9fa;
 }
 
-/* ✅ 상단 헤더 */
+/* ✅ 상단 헤더 전체 배경만 담당 */
 .header {
     background-color: #007A5C;
     color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 25px 40px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.12);
 }
 
-/* 로고 */
+/* ✅ 가운데 1줄로 정렬하는 컨테이너 */
+.header-inner {
+    max-width: 1200px;       /* 가운데 박스 폭 */
+    margin: 0 auto;          /* 좌우 가운데 정렬 */
+    padding: 10px 24px;   /* 14px → 10px 정도로 살짝 줄이기 */
+    display: flex;
+    flex-direction: row;     /* 가로 정렬 */
+    align-items: center;
+    flex-wrap: nowrap;       /* 줄바꿈 금지 */
+    column-gap: 32px;        /* 덩어리 간 기본 간격 */
+}
+
+/* 로고 – 왼쪽, 가로로 크게 */
 .header .logo {
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-shrink: 0;          /* 로고는 줄어들지 않게 */
 }
 .header .logo img {
-    width: 45px;
-    height: 45px;
+    width: 52px;   /* 56 → 52 정도로 */
+    height: 56px;
     border-radius: 50%;
     background: white;
     padding: 4px;
 }
 .header .logo h1 {
     font-family: 'Jua', sans-serif;
-    font-size: 25px;
+    font-size: 30px;         /* 🔥 “목유마켓” 크게 */
     margin: 0;
     color: white;
+    white-space: nowrap;
 }
 
+/* 네비게이션 메뉴 – 로고 옆 */
 .nav-links {
     display: flex;
-    gap: 25px;
+    gap: 30px;               /* 메뉴 글자 사이 간격 넉넉하게 */
     align-items: center;
-    margin-left: 60px;
-    font-family: 'Nanum Gothic', sans-serif; /* ✅ 폰트 완전 동일화 */
-    font-weight: 600; /* ✅ 두께 통일 */
-    font-size: 15px;  /* ✅ 크기 통일 */
-    line-height: 1;   /* ✅ 렌더링 차이 제거 */
+    margin-left: 16px;       /* 로고와 메뉴 사이 여백 */
+    font-family: 'Nanum Gothic', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 1;
+    flex-shrink: 0;
 }
-
 .nav-links a {
     color: white;
     text-decoration: none;
-    font-weight: inherit; /* ✅ 부모에서 상속 */
-    font-size: inherit;
 }
-
 .nav-links a:hover {
     text-decoration: underline;
 }
 
-
-/* 검색창 */
+/* 검색창 – 가운데를 넓게 차지해서 양옆 공백 줄임 */
 .search-box {
-    flex: 1;
+    flex: 1;                        /* 🔥 가운데를 넓게 채우도록 */
     display: flex;
     justify-content: center;
     align-items: center;
 }
+.search-box-inner {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border-radius: 999px;
+    padding: 9px 42px 9px 18px;  /* 위·아래 10 → 9 */
+    width: 100%;
+    max-width: 720px;               /* 🔥 이전보다 길게 */
+        position: relative;  /* 🔥 아이콘을 절대 위치로 잡기 위해 필요 */
+    
+}
 .search-box input {
-    width: 60%;
+    width: 100%;
+    max-width: 520px;               /* 검색창 최대 길이 */
     padding: 9px 15px;
     border: none;
-    border-radius: 20px;
+    border-radius: 24px;
     outline: none;
     font-size: 14px;
+}
+.search-box-inner input::placeholder {
+    color: #9ca3af;
+}
+/* 🔍 아이콘 버튼 – 정확히 세로 중앙에 오게 */
+.search-box-inner button {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);   /* 🔥 세로 중앙 정렬 */
+    
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: none;
+    background: #f3f4f6;           /* 살짝 회색 배경(원하지 않으면 #fff 로) */
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    
+    cursor: pointer;
+    font-size: 14px;               /* 이모지 크기 */
+    color: #007A5C;
+}
+.search-box-inner button:hover {
+    background: #e5e7eb;
 }
 .search-box button {
     background: white;
@@ -96,11 +148,13 @@ body {
     font-weight: bold;
 }
 
-/* 사용자 메뉴 */
+/* 사용자 메뉴 – 오른쪽 작은 묶음 */
 .user-menu {
     display: flex;
     gap: 20px;
     align-items: center;
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 .user-menu a {
     color: white;
@@ -110,6 +164,7 @@ body {
 .user-menu a:hover {
     text-decoration: underline;
 }
+
 
 /* ✅ 이하 기존 유지 */
 .banner {
@@ -269,23 +324,18 @@ body {
     transform: scale(1.07);
 }
 
-/* ✅ 모바일 대응 */
-@media (max-width: 768px) {
-    .floating-container {
-        bottom: 25px;
-        right: 25px;
+@media (max-width: 1200px) {
+    .search-box-inner {
+        max-width: 560px;
     }
-    .floating-add {
-        width: 55px;
-        height: 55px;
-        font-size: 34px;
-        line-height: 55px;
+    .gnb-inner {
+        padding: 10px 20px 8px;
+        gap: 28px;
     }
-    
 }
+
 .hero-carousel {
     position: relative;
-    width: 80%;
     max-width: 1200px;
     margin: 0 auto 35px;
     overflow: hidden;
@@ -368,47 +418,179 @@ body {
     background: #007A5C;     /* 활성 점 색상 */
     transform: scale(1.2);   /* 살짝 커지게 */
 }
+.gnb {
+    background-color: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
 
+.gnb-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px 32px 8px;
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    font-size: 16px;           /* 18 → 16 살짝 줄이기 */
+    font-weight: 700;
+}
+
+/* 기본 */
+.gnb-inner a {
+    position: relative;
+    color: #374151;
+    text-decoration: none;
+    padding-bottom: 6px;
+}
+
+/* 호버 시 밑줄 대신 바 */
+.gnb-inner a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    height: 2px;
+    background: #007A5C;
+    transition: width .2s ease;
+}
+.gnb-inner a:hover {
+    color: #007A5C;
+}
+.gnb-inner a:hover::after {
+    width: 100%;
+}
+
+/* 현재 페이지용 클래스 예시 */
+.gnb-inner a.active {
+    color: #007A5C;
+}
+.gnb-inner a.active::after {
+    width: 100%;
+}
+
+.user-icons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* 아이콘 버튼 자체 */
+.icon-circle {
+    position: relative;              /* 🔥 배지 위치 기준이 되도록 */
+    border: none;
+    background: transparent;
+    padding: 0 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    outline: none;
+}
+
+/* 머티리얼 아이콘 크기/색 */
+.icon-circle .material-symbols-rounded {
+    font-size: 30px;                 /* ← 여기서 크기 조절 */
+    line-height: 1;
+    color: #ffffff;
+}
+
+/* hover 시 살짝 강조만 */
+.icon-circle:hover {
+    background: rgba(255,255,255,0.12);
+    border-radius: 999px;
+}
+
+/* 빨간 동그라미 배지 */
+.icon-badge {
+    position: absolute;
+    top: -3px;                       /* 아이콘 기준 위치 조정 */
+    right: -1px;
+    min-width: 14px;
+    height: 14px;
+    padding: 0 3px;
+    border-radius: 999px;
+    background: #FF4D4D;
+    color: #ffffff;
+    font-size: 10px;
+    line-height: 14px;
+    font-weight: 700;
+    text-align: center;
+}
 
 </style>
 </head>
 
 <body>
 
-<!-- ✅ 헤더 -->
+<!-- ✅ 헤더 (위 줄) -->
 <div class="header">
-    <div class="logo">
-        <a href="${pageContext.request.contextPath}/home" 
-           style="display:flex; align-items:center; gap:10px; text-decoration:none; color:white;">
-            <img src="${pageContext.request.contextPath}/resources/images/mokyu_logo.png" alt="로고">
-            <h1>목유마켓</h1>
-        </a>
-    </div>
+    <div class="header-inner">
 
-    <div class="nav-links">
-		<a href="${pageContext.request.contextPath}/product/list">중고거래</a>
-        <a href="${pageContext.request.contextPath}/controller/free">무료나눔</a>
-    </div>
+        <!-- 로고 -->
+        <div class="logo">
+            <a href="${pageContext.request.contextPath}/home" 
+               style="display:flex; align-items:center; gap:10px; text-decoration:none; color:white;">
+                <img src="${pageContext.request.contextPath}/resources/images/mokyu_logo.png" alt="로고">
+                <h1>목유마켓</h1>
+            </a>
+        </div>
 
-    <div class="search-box">
-        <input type="text" placeholder="원하는 상품을 검색해보세요!">
-        <button>🔍</button>
-    </div>
+        <!-- 검색창 -->
+        <div class="search-box">
+            <div class="search-box-inner">
+                <input type="text" placeholder="상품명·글 제목·학과/동아리 검색" />
+                <button>🔍</button>
+            </div>
+        </div>
 
-    <div class="user-menu">
-        <a href="${pageContext.request.contextPath}/controller/myStore">내 상점</a>
+<div class="user-menu">
 
-        <a href="${pageContext.request.contextPath}/controller/mypage" class="profile-link">
-            <c:choose>
-                <c:when test="${not empty user.profileImagePath}">
-                    <img src="${pageContext.request.contextPath}${user.profileImagePath}" alt="프로필 이미지">
-                </c:when>
-            </c:choose>
-            <span>${user.name}</span>
-        </a>
-        <a href="${pageContext.request.contextPath}/logout">로그아웃</a>
+<div class="user-icons">
+    <!-- ✅ 메시지 아이콘 (말풍선 + 점 3개 느낌: chat / chat_bubble 둘 다 가능) -->
+    <button type="button" class="icon-circle" title="메시지" aria-label="메시지함">
+        <span class="material-symbols-rounded">chat_bubble</span>
+        <%-- 읽지 않은 메시지 수가 있을 때만 배지 표시하도록 나중에 JSTL로 제어 가능 --%>
+        <span class="icon-badge">3</span>
+    </button>
+
+    <!-- ✅ 알림 아이콘 + 빨간 배지 -->
+    <button type="button" class="icon-circle" title="알림" aria-label="알림">
+        <span class="material-symbols-rounded">notifications</span>
+        <span class="icon-badge">5</span>
+    </button>
+</div>
+
+
+
+    <!-- 프로필 + 이름 -->
+    <a href="${pageContext.request.contextPath}/controller/mypage" class="profile-link">
+        <c:choose>
+            <c:when test="${not empty user.profileImagePath}">
+                <img src="${pageContext.request.contextPath}${user.profileImagePath}" alt="프로필 이미지">
+            </c:when>
+        </c:choose>
+        <span>${user.name}</span>
+    </a>
+
+    <!-- 로그아웃 -->
+    <a href="${pageContext.request.contextPath}/logout">로그아웃</a>
+	</div>
+</div>
+
+</div>
+<!-- ✅ 아래 네비게이션 바 (GNB) -->
+<div class="gnb">
+    <div class="gnb-inner">
+        <a href="${pageContext.request.contextPath}/product/list">중고거래</a>
+        <a href="#">대여/렌탈</a>
+        <a href="#">졸업생 마켓</a>
+        <a href="#">커뮤니티</a>
     </div>
 </div>
+
+
+
 <!-- 🎯 좌우 버튼으로 넘기는 이미지 슬라이더 -->
 <div class="hero-carousel">
 

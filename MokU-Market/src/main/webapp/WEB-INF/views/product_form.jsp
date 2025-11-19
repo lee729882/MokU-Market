@@ -12,6 +12,8 @@
   </c:choose>
 </title>
 <link href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" />
 
 <style>
 body {
@@ -19,56 +21,6 @@ body {
   margin: 0;
   background-color: #f8f9fa;
 }
-
-/* 헤더 */
-.header {
-  background-color: #007A5C;
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 25px 40px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-.header .logo { display: flex; align-items: center; gap: 10px; }
-.header .logo img { width: 45px; height: 45px; border-radius: 50%; background: white; padding: 4px; }
-.header .logo h1 { font-family: 'Jua', sans-serif; font-size: 25px; margin: 0; color: white; }
-.nav-links { display: flex; gap: 25px; align-items: center; margin-left: 60px; font-weight: 600; }
-.nav-links a { color: white; text-decoration: none; }
-.nav-links a:hover { text-decoration: underline; }
-
-/* 검색창 */
-.search-box {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.search-box input {
-    width: 60%;
-    padding: 9px 15px;
-    border: none;
-    border-radius: 20px;
-    outline: none;
-}
-.search-box button {
-    background: white;
-    border: none;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    margin-left: 8px;
-    cursor: pointer;
-    color: #007A5C;
-    font-weight: bold;
-}
-
-/* 사용자 메뉴 */
-.user-menu { display: flex; gap: 20px; align-items: center; }
-.user-menu a { color: white; text-decoration: none; font-weight: 600; }
-.user-menu a:hover { text-decoration: underline; }
-.profile-link { display: flex; align-items: center; gap: 8px; text-decoration: none; color: white; }
-.profile-link img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid white; }
 
 /* 상품 등록 폼 */
 .container {
@@ -158,9 +110,16 @@ h2 {
   z-index: 10;
 }
 
-/* 입력 */
-label { font-weight: 600; display: block; margin-top: 12px; color: #333; }
-input, textarea, select {
+/* ✅ 입력 스타일을 .container 내부로만 한정 */
+.container label {
+  font-weight: 600;
+  display: block;
+  margin-top: 12px;
+  color: #333;
+}
+.container input,
+.container textarea,
+.container select {
   width: 100%;
   padding: 12px;
   border: 1px solid #ddd;
@@ -168,10 +127,14 @@ input, textarea, select {
   font-size: 14px;
   margin-bottom: 10px;
 }
-textarea { resize: vertical; height: 120px; }
+.container textarea {
+  resize: vertical;
+  height: 120px;
+}
 
 /* 버튼 */
-button[type="submit"] {
+/* 상품등록 폼 내부 submit 버튼만 스타일 적용 */
+.container button[type="submit"] {
   width: 100%;
   background-color: #00A67E;
   color: #fff;
@@ -184,7 +147,11 @@ button[type="submit"] {
   margin-top: 10px;
   transition: 0.2s;
 }
-button[type="submit"]:hover { background-color: #008a6b; transform: translateY(-2px); }
+.container button[type="submit"]:hover {
+  background-color: #008a6b;
+  transform: translateY(-2px);
+}
+
 
 /* 지도 + 거래장소 */
 .map-wrapper {
@@ -279,38 +246,9 @@ button[type="submit"]:hover { background-color: #008a6b; transform: translateY(-
 </head>
 
 <body>
-<!-- 헤더 -->
-<div class="header">
-  <div class="logo">
-    <a href="${pageContext.request.contextPath}/home" style="display:flex; align-items:center; gap:10px; text-decoration:none; color:white;">
-      <img src="${pageContext.request.contextPath}/resources/images/mokyu_logo.png" alt="로고">
-      <h1>목유마켓</h1>
-    </a>
-  </div>
-  <div class="nav-links">
-<a href="${pageContext.request.contextPath}/product/list">중고거래</a>
-    <a href="${pageContext.request.contextPath}/product/list?category=무료나눔">무료나눔</a>
-  </div>
-  <div class="search-box">
-    <input type="text" placeholder="원하는 상품을 검색해보세요!">
-    <button type="button">🔍</button>
-  </div>
-  <div class="user-menu">
-    <a href="${pageContext.request.contextPath}/controller/myStore">내 상점</a>
-    <a href="${pageContext.request.contextPath}/controller/mypage" class="profile-link">
-      <c:choose>
-        <c:when test="${not empty user.profileImagePath}">
-          <img src="${pageContext.request.contextPath}${user.profileImagePath}" alt="프로필 이미지">
-        </c:when>
-        <c:otherwise>
-          <img src="${pageContext.request.contextPath}/resources/images/default_profile.png" alt="기본 프로필">
-        </c:otherwise>
-      </c:choose>
-      <span>${user.name}</span>
-    </a>
-    <a href="${pageContext.request.contextPath}/logout">로그아웃</a>
-  </div>
-</div>
+
+<!-- 공통 헤더 -->
+<jsp:include page="/WEB-INF/views/common/header.jsp" />
 
 <!-- 상품 등록/수정 -->
 <div class="container">
@@ -321,39 +259,30 @@ button[type="submit"]:hover { background-color: #008a6b; transform: translateY(-
     </c:choose>
   </h2>
 
-  <!-- 등록/수정 공용 폼 -->
   <form action="${pageContext.request.contextPath}/product/${mode eq 'edit' ? 'edit' : 'add'}"
         method="post"
         enctype="multipart/form-data">
 
-    <!-- 🔹 수정 모드일 때 productId, 기존 이미지 정보 전송 -->
     <c:if test="${mode eq 'edit'}">
         <input type="hidden" name="productId" value="${product.productId}" />
 
         <div class="current-images-wrap" style="margin-bottom:10px;">
             <p style="margin-bottom:5px;">현재 등록된 이미지</p>
             <div class="thumb-list">
-<c:forEach var="img" items="${images}" varStatus="st">
-    <c:if test="${st.index <= 4}">
-        <img src="${pageContext.request.contextPath}${img}"
-             class="thumb-img"
-             style="width:80px;height:80px;object-fit:cover;margin-right:8px;border-radius:6px;border:1px solid #ddd;">
-    </c:if>
-</c:forEach>
-
-
+              <c:forEach var="img" items="${images}" varStatus="st">
+                <c:if test="${st.index <= 4}">
+                  <img src="${pageContext.request.contextPath}${img}"
+                       class="thumb-img"
+                       style="width:80px;height:80px;object-fit:cover;margin-right:8px;border-radius:6px;border:1px solid #ddd;">
+                </c:if>
+              </c:forEach>
             </div>
         </div>
     </c:if>
 
     <label>상품 이미지 (대표 1장 + 추가 4장)</label>
     <div class="image-wrapper">
-      <!-- 대표 이미지 슬롯 -->
-<div class="main-slot" id="mainSlot">
-    대표 +
-</div>
-
-
+      <div class="main-slot" id="mainSlot">대표 +</div>
       <div class="sub-grid" id="subGrid">
         <div class="sub-slot">+</div>
         <div class="sub-slot">+</div>
@@ -424,7 +353,6 @@ button[type="submit"]:hover { background-color: #008a6b; transform: translateY(-
     <input type="hidden" id="latitude" name="latitude" value="${product.latitude}">
     <input type="hidden" id="longitude" name="longitude" value="${product.longitude}">
 
-    <!-- 지도 + 캠퍼스 구역 목록 -->
     <div class="map-wrapper">
       <div id="map"></div>
       <div class="zone-box">
@@ -434,6 +362,7 @@ button[type="submit"]:hover { background-color: #008a6b; transform: translateY(-
           <div class="zone-tab" data-target="C">C구역</div>
         </div>
 
+        <!-- A/B/C 구역 리스트는 생략 없이 그대로 사용 -->
         <!-- A구역 -->
         <div id="zoneA" class="zone-list active">
           <ul>
@@ -526,7 +455,6 @@ button[type="submit"]:hover { background-color: #008a6b; transform: translateY(-
 <!-- Kakao Map Script -->
 <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=85969b990129ae28ec3aa8ad0beeca55&libraries=services"></script>
 <script>
-// 무료나눔 선택 시 가격 자동 0원
 const categorySelect = document.querySelector("select[name='category']");
 const priceField = document.getElementById("priceInput");
 
@@ -746,5 +674,6 @@ document.getElementById("topBtn").addEventListener("click", () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
 });
 </script>
+
 </body>
 </html>

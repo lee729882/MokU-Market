@@ -10,6 +10,8 @@
 <title>${product.title} - 목유마켓</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" />
 
 <style>
 /* ===================== GLOBAL ===================== */
@@ -18,75 +20,6 @@ html, body {
   padding: 0;
   font-family: 'Nanum Gothic', sans-serif;
   background-color: #fafafa;
-}
-
-/* ===================== HEADER ===================== */
-.header {
-  background-color: #007A5C;
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 25px 40px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-.header .logo { display:flex; align-items:center; gap:10px; }
-.header .logo img { width:45px; height:45px; border-radius:50%; background:white; padding:4px; }
-.header .logo h1 { font-family:'Jua'; font-size:25px; margin:0; }
-
-.nav-links, .user-menu {
-  display:flex;
-  align-items:center;
-  font-weight:600;
-  font-size:15px;
-  color:white;
-}
-.nav-links { gap:25px; margin-left:60px; }
-.user-menu { gap:20px; }
-
-.nav-links a, .user-menu a {
-  color: white;
-  text-decoration: none;
-}
-.nav-links a:hover, .user-menu a:hover { text-decoration: underline; }
-
-/* 검색창 */
-.search-box {
-  flex:1;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
-.search-box input {
-  width: 60%;
-  padding: 9px 15px;
-  border: none;
-  border-radius: 20px;
-  outline: none;
-}
-.search-box button {
-  background: white;
-  border: none;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  margin-left: 8px;
-  cursor: pointer;
-  color: #007A5C;
-  font-weight: bold;
-}
-
-/* HEADER PROFILE */
-.profile-link {
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-.profile-link img {
-  width:36px; height:36px;
-  border-radius:50%;
-  object-fit:cover;
-  border:2px solid white;
 }
 
 /* ===================== DETAIL LAYOUT ===================== */
@@ -371,7 +304,7 @@ html, body {
   font-size:13px;
 }
 
-/* 연관상품 그리드(기존과 동일 가정) */
+/* 연관상품 그리드 */
 .related-grid {
   display:flex;
   flex-wrap:wrap;
@@ -396,24 +329,21 @@ html, body {
   padding:6px 8px 10px;
   margin:0;
 }
+
 /* 🔥 판매자 액션 전체 영역: 좌/우 정렬 */
 .seller-actions {
   margin-top: 20px;
   display: flex;
-  justify-content: space-between; /* 왼쪽/오른쪽 분리 */
+  justify-content: space-between;
   align-items: center;
   gap: 10px;
 }
-
-/* 왼쪽/오른쪽 영역 */
 .seller-left,
 .seller-right {
   display: flex;
   align-items: center;
   gap: 8px;
 }
-
-/* 오른쪽은 버튼 두 개를 자연스럽게 나란히 */
 .seller-right {
   justify-content: flex-end;
 }
@@ -433,8 +363,6 @@ html, body {
   transition: 0.18s ease;
   white-space: nowrap;
 }
-
-/* ✅ 판매완료 – 메인 초록 버튼 */
 .btn-primary {
   background-color: #00A67E;
   color: #fff;
@@ -443,8 +371,6 @@ html, body {
   background-color: #008a6b;
   transform: translateY(-1px);
 }
-
-/* ✏️ 수정하기 – 흰 배경 + 초록 테두리 */
 .btn-outline {
   background-color: #ffffff;
   color: #00A67E;
@@ -453,8 +379,6 @@ html, body {
 .btn-outline:hover {
   background-color: #e6fff7;
 }
-
-/* 🗑 삭제 – 경고용 빨간 버튼 */
 .btn-danger {
   background-color: #FF4D4D;
   color: #fff;
@@ -464,7 +388,6 @@ html, body {
   transform: translateY(-1px);
 }
 
-/* 모바일에서 버튼 깨지지 않도록 */
 @media (max-width: 768px) {
   .seller-actions {
     flex-direction: column;
@@ -476,52 +399,78 @@ html, body {
   }
 }
 
+/* ✅ 플로팅 공통 */
+.floating-container {
+    position: fixed;
+    bottom: 35px;
+    right: 35px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    z-index: 999;
+}
+.floating-top {
+    background: transparent;
+    border: none;
+    color: #333;
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+    opacity: 0.85;
+    transition: 0.25s;
+    line-height: 1.1;
+    font-family: 'Nanum Gothic', sans-serif;
+}
+.floating-top span {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: -2px;
+}
+.floating-top:hover {
+    opacity: 1;
+    transform: translateY(-2px);
+}
+.floating-add {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #FF4D4D;
+    color: white;
+    font-size: 38px;
+    font-weight: bold;
+    text-decoration: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    transition: 0.25s;
+}
+.floating-add:hover {
+    background-color: #E03B3B;
+    transform: scale(1.07);
+}
+@media (max-width: 768px) {
+    .floating-container {
+        bottom: 25px;
+        right: 25px;
+    }
+    .floating-add {
+        width: 55px;
+        height: 55px;
+        font-size: 34px;
+        line-height: 55px;
+    }
+}
 </style>
 </head>
 
 <body>
 
-<!-- ===================== HEADER ===================== -->
-<div class="header">
-
-  <div class="logo">
-    <a href="${pageContext.request.contextPath}/home"
-       style="display:flex; align-items:center; gap:10px; text-decoration:none; color:white;">
-      <img src="${pageContext.request.contextPath}/resources/images/mokyu_logo.png">
-      <h1>목유마켓</h1>
-    </a>
-  </div>
-
-  <div class="nav-links">
-<a href="${pageContext.request.contextPath}/product/list">중고거래</a>
-    <a href="${pageContext.request.contextPath}/product/list?category=무료나눔">무료나눔</a>
-  </div>
-
-  <div class="search-box">
-    <input type="text" placeholder="원하는 상품을 검색해보세요!">
-    <button>🔍</button>
-  </div>
-
-  <div class="user-menu">
-
-    <c:if test="${not empty user}">
-      <a href="${pageContext.request.contextPath}/controller/myStore">내 상점</a>
-
-      <a href="${pageContext.request.contextPath}/controller/mypage" class="profile-link">
-        <img src="${pageContext.request.contextPath}${user.profileImagePath}"
-             onerror="this.src='${pageContext.request.contextPath}/resources/images/default_profile.png';">
-        <span>${user.name}</span>
-      </a>
-
-      <a href="${pageContext.request.contextPath}/logout">로그아웃</a>
-    </c:if>
-
-    <c:if test="${empty user}">
-      <a href="${pageContext.request.contextPath}/login">로그인</a>
-    </c:if>
-
-  </div>
-</div>
+<%-- ✅ 공통 헤더/네비게이션 --%>
+<jsp:include page="/WEB-INF/views/common/header.jsp" />
 
 <!-- ===================== DETAIL CONTENT ===================== -->
 <div class="detail-container">

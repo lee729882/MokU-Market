@@ -5,7 +5,11 @@
 <head>
 <meta charset="UTF-8">
 <title>마이페이지 | 목유마켓</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic:wght@400;600;700&display=swap" rel="stylesheet">
+<!-- 메시지 / 알림 아이콘용 -->
+<link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" />
 
 <!-- 🔥 이미지 캐시 차단 -->
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
@@ -21,91 +25,6 @@ html, body {
     background-color: #fafafa;
     display: flex;
     flex-direction: column;
-}
-
-/* ================= HEADER ================= */
-.header {
-    background-color: #007A5C;
-    color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 22px 40px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-.header .logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-.header .logo img {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    background: white;
-    padding: 4px;
-}
-.header .logo h1 {
-    font-family: 'Jua', sans-serif;
-    font-size: 25px;
-    margin: 0;
-    color: white;
-}
-.nav-links, .user-menu {
-    display: flex;
-    align-items: center;
-    font-weight: 600;
-    font-size: 15px;
-    color: white;
-}
-.nav-links { gap: 25px; margin-left: 60px; }
-.user-menu { gap: 25px; }
-.nav-links a, .user-menu a {
-    color: inherit;
-    text-decoration: none;
-}
-.nav-links a:hover, .user-menu a:hover {
-    text-decoration: underline;
-}
-.profile-link {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.profile-link img {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid white;
-    transition: 0.2s ease;
-}
-.profile-link:hover img { transform: scale(1.07); }
-
-/* ================= 검색창 ================= */
-.search-box {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.search-box input {
-    width: 60%;
-    padding: 9px 15px;
-    border: none;
-    border-radius: 20px;
-    outline: none;
-}
-.search-box button {
-    background: white;
-    border: none;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    margin-left: 8px;
-    cursor: pointer;
-    color: #007A5C;
-    font-weight: bold;
 }
 
 /* ============== 마이페이지 NAV ============== */
@@ -303,6 +222,7 @@ html, body {
         line-height: 55px;
     }
 }
+
 .verified-badge {
     display: inline-block;
     background-color: #007A5C;
@@ -314,52 +234,13 @@ html, body {
     margin-bottom: 6px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.12);
 }
-
-
 </style>
 </head>
 
 <body>
 
-<!-- ================= HEADER ================= -->
-<div class="header">
-    <div class="logo">
-        <a href="${pageContext.request.contextPath}/home" 
-           style="display:flex; align-items:center; gap:10px; text-decoration:none; color:white;">
-            <img src="${pageContext.request.contextPath}/resources/images/mokyu_logo.png" alt="로고">
-            <h1>목유마켓</h1>
-        </a>
-    </div>
-
-    <div class="nav-links">
-		<a href="${pageContext.request.contextPath}/product/list">중고거래</a>
-        <a href="${pageContext.request.contextPath}/controller/free">무료나눔</a>
-    </div>
-
-    <div class="search-box">
-        <input type="text" placeholder="원하는 상품을 검색해보세요!">
-        <button>🔍</button>
-    </div>
-
-    <div class="user-menu">
-        <a href="${pageContext.request.contextPath}/controller/myStore">내 상점</a>
-
-        <!-- 🔥 헤더 프로필 이미지 = ID 부여 -->
-        <a href="${pageContext.request.contextPath}/controller/mypage" class="profile-link">
-            <c:choose>
-                <c:when test="${not empty user.profileImagePath}">
-                    <img id="headerProfileImg" src="${pageContext.request.contextPath}${user.profileImagePath}">
-                </c:when>
-                <c:otherwise>
-                    <img id="headerProfileImg" src="${pageContext.request.contextPath}/resources/images/default_profile.png">
-                </c:otherwise>
-            </c:choose>
-            <span>${user.name}</span>
-        </a>
-
-        <a href="${pageContext.request.contextPath}/logout">로그아웃</a>
-    </div>
-</div>
+<%-- ✅ 공통 헤더 + GNB 포함 (앞서 만든 header.jsp 사용) --%>
+<jsp:include page="/WEB-INF/views/common/header.jsp" />
 
 <!-- ================= 마이페이지 NAV ================= -->
 <div class="mypage-nav">

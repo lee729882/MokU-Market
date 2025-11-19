@@ -7,7 +7,8 @@
 <meta charset="UTF-8">
 <title>${category} 목록 - 목유마켓</title>
 <link href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic:wght@400;600;700&display=swap" rel="stylesheet">
-
+ <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" />
 <style>
 html, body {
   height: 100%;
@@ -19,74 +20,6 @@ html, body {
   flex-direction: column;
 }
 
-/* ✅ 헤더 */
-.header {
-  background-color: #007A5C;
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 25px 40px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-.header .logo { display:flex; align-items:center; gap:10px; }
-.header .logo img { width:45px; height:45px; border-radius:50%; background:white; padding:4px; }
-.header .logo h1 { font-family:'Jua',sans-serif; font-size:25px; margin:0; color:white; }
-/* 네비게이션 & 사용자 메뉴 */
-.nav-links, .user-menu {
-    display: flex;
-    align-items: center;
-    font-weight: 600;
-    font-size: 15px;
-    color: white;
-}
-.nav-links { gap: 25px; margin-left: 60px; }
-.user-menu { gap: 25px; }
-
-/* 링크 스타일 */
-.nav-links a, .user-menu a {
-    color: inherit;
-    text-decoration: none;
-}
-.nav-links a:hover, .user-menu a:hover {
-    text-decoration: underline;
-}
-
-
-/* 검색창 */
-.search-box {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.search-box input {
-    width: 60%;
-    padding: 9px 15px;
-    border: none;
-    border-radius: 20px;
-    outline: none;
-}
-.search-box button {
-    background: white;
-    border: none;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    margin-left: 8px;
-    cursor: pointer;
-    color: #007A5C;
-    font-weight: bold;
-}
-
-
-.profile-link { display:flex; align-items:center; gap:8px; color:white; text-decoration:none; }
-.profile-link img {
-  width:36px; height:36px; border-radius:50%; border:2px solid white;
-  object-fit:cover; transition:0.2s ease;
-}
-.profile-link:hover img { transform:scale(1.07); }
-
 /* ✅ 본문 */
 .container {
   flex: 1;
@@ -96,10 +29,10 @@ html, body {
   padding: 0 20px;
 }
 .container h2 {
+  font-family: 'Jua', sans-serif;
   text-align: center;
   color: #007A5C;
-  font-size: 24px;
-  margin-bottom: 35px;
+  margin-bottom: 25px;
 }
 
 /* ✅ 상품 카드 */
@@ -223,42 +156,9 @@ html, body {
 
 <body>
 
-<!-- ✅ 헤더 -->
-<div class="header">
-  <div class="logo">
-    <a href="${pageContext.request.contextPath}/home"
-       style="display:flex; align-items:center; gap:10px; text-decoration:none; color:white;">
-      <img src="${pageContext.request.contextPath}/resources/images/mokyu_logo.png" alt="로고">
-      <h1>목유마켓</h1>
-    </a>
-  </div>
+<!-- ✅ 공통 헤더 JSP 사용 -->
+<jsp:include page="/WEB-INF/views/common/header.jsp" />
 
-  <div class="nav-links">
-		<a href="${pageContext.request.contextPath}/product/list">중고거래</a>
-    <a href="${pageContext.request.contextPath}/product/list?category=무료나눔">무료나눔</a>
-  </div>
-
-  <div class="search-box">
-    <input type="text" placeholder="원하는 상품을 검색해보세요!">
-    <button>🔍</button>
-  </div>
-
-  <div class="user-menu">
-    <a href="${pageContext.request.contextPath}/controller/myStore">내 상점</a>
-    <a href="${pageContext.request.contextPath}/controller/mypage" class="profile-link">
-      <c:choose>
-        <c:when test="${not empty user.profileImagePath}">
-          <img src="${pageContext.request.contextPath}${user.profileImagePath}" alt="프로필 이미지">
-        </c:when>
-        <c:otherwise>
-          <img src="${pageContext.request.contextPath}/resources/images/default_profile.png" alt="기본 프로필">
-        </c:otherwise>
-      </c:choose>
-      <span>${user.name}</span>
-    </a>
-    <a href="${pageContext.request.contextPath}/logout">로그아웃</a>
-  </div>
-</div>
 
 <!-- ✅ 본문 -->
 <div class="container">
