@@ -281,7 +281,95 @@ body {
         font-size: 34px;
         line-height: 55px;
     }
+    
 }
+.hero-carousel {
+    position: relative;
+    width: 80%;
+    max-width: 1200px;
+    margin: 0 auto 35px;
+    overflow: hidden;
+    border-radius: 18px;
+    background: transparent;   /* 🔥 이 한 줄만 변경 */
+}
+
+
+
+.carousel-track {
+    display: flex;
+    transition: transform 0.4s ease;
+}
+
+.carousel-item {
+    flex: 0 0 100%;            /* 🔥 각 슬라이드가 hero-carousel 폭의 100%를 차지하도록 */
+    /* min-width: 100%;  ← 있어도 무방하지만 flex가 더 중요합니다 */
+    display: none;               /* 기본은 안 보이게 */
+    justify-content: center;
+    align-items: center;
+}
+
+/* 🔥 줍줍마켓처럼 배너를 고정 높이에 꽉 채우는 방식 */
+/* 🔥 원본 비율 유지 */
+.carousel-item img {
+    width: 100%;     /* 가로는 배너 폭에 맞게 */
+    height: auto;    /* 세로는 비율대로 자동 */
+    border-radius: 0;
+    display: block;
+    /* object-fit: cover;  ← 있었다면 꼭 지워주세요 (잘림·변형 원인) */
+}
+.carousel-item.active {
+    display: flex;              /* 활성 슬라이드만 보이게 */
+}
+/* 버튼 클릭 문제 해결 */
+.carousel-btn {
+    z-index: 9999 !important;
+    pointer-events: auto !important;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 45px;
+    height: 45px;
+    background: rgba(0,0,0,0.4);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.carousel-btn.left { left: 20px; }
+.carousel-btn.right { right: 20px; }
+
+.carousel-btn:hover {
+    background: rgba(0,0,0,0.65);
+}
+/* ▽▽ 슬라이드 하단 점(인디케이터) ▽▽ */
+.carousel-dots {
+    position: absolute;
+    left: 50%;
+    bottom: 12px;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 10000;
+}
+
+.carousel-dots .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.6);
+    border: 1px solid rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.carousel-dots .dot.active {
+    background: #007A5C;     /* 활성 점 색상 */
+    transform: scale(1.2);   /* 살짝 커지게 */
+}
+
+
 </style>
 </head>
 
@@ -321,13 +409,108 @@ body {
         <a href="${pageContext.request.contextPath}/logout">로그아웃</a>
     </div>
 </div>
+<!-- 🎯 좌우 버튼으로 넘기는 이미지 슬라이더 -->
+<div class="hero-carousel">
 
+    <!-- 왼쪽 버튼 -->
+    <button class="carousel-btn left" onclick="moveSlide(-1)">&#10094;</button>
 
-<!-- ✅ 메인 배너 -->
-<div class="banner">
-    <h2>📚 대학생을 위한 캠퍼스 중고거래</h2>
-    <p>전공책부터 자취용품까지, 목포대 학생 간 안전하게 거래하세요!</p>
+    <!-- 이미지 리스트 -->
+    <div class="carousel-track">
+    <div class="carousel-item active">
+            <img src="${pageContext.request.contextPath}/resources/images/banner1.png" alt="배너1">
+        </div>
+        <div class="carousel-item">
+            <img src="${pageContext.request.contextPath}/resources/images/banner2.png" alt="배너2">
+        </div>
+        <div class="carousel-item">
+            <img src="${pageContext.request.contextPath}/resources/images/banner3.png" alt="배너3">
+        </div>
+    </div>
+
+    <!-- 🔽 여기 추가 🔽 -->
+    <div class="carousel-dots">
+        <span class="dot active" onclick="goToSlide(0)"></span>
+        <span class="dot" onclick="goToSlide(1)"></span>
+        <span class="dot" onclick="goToSlide(2)"></span>
+    </div>
+    <!-- 🔼 여기 추가 🔼 -->
+
+    <!-- 오른쪽 버튼 -->
+    <button class="carousel-btn right" onclick="moveSlide(1)">&#10095;</button>
+
 </div>
+<script>
+let currentSlide = 0;
+const AUTO_DELAY = 5000;   // 5초마다 자동 이동
+let autoTimer = null;
+
+// 슬라이드 / 점 상태 갱신 공통 함수
+function updateCarousel() {
+    const items = document.querySelectorAll(".carousel-item");
+    const dots = document.querySelectorAll(".carousel-dots .dot");
+    const totalSlides = items.length;
+    if (totalSlides === 0) return;
+
+    // 인덱스 보정 (0 ~ totalSlides-1)
+    currentSlide = (currentSlide + totalSlides) % totalSlides;
+
+    // 슬라이드 active 처리
+    items.forEach((item, i) => {
+        item.classList.toggle("active", i === currentSlide);
+    });
+
+    // 점 active 처리
+    dots.forEach((dot, i) => {
+        dot.classList.toggle("active", i === currentSlide);
+    });
+}
+
+// 특정 인덱스로 이동
+function goToSlide(index) {
+    currentSlide = index;
+    updateCarousel();
+}
+
+// 좌우 버튼
+function moveSlide(delta) {
+    currentSlide += delta;
+    updateCarousel();
+}
+
+// 자동 슬라이드
+function startAuto() {
+    stopAuto();
+    autoTimer = setInterval(() => {
+        currentSlide += 1;
+        updateCarousel();
+    }, AUTO_DELAY);
+}
+
+function stopAuto() {
+    if (autoTimer) {
+        clearInterval(autoTimer);
+        autoTimer = null;
+    }
+}
+
+// 페이지 로드 후 초기화
+window.addEventListener("load", () => {
+    currentSlide = 0;
+    updateCarousel();   // 첫 장 표시
+
+    startAuto();        // 자동 넘김 시작
+
+    const hero = document.querySelector(".hero-carousel");
+    if (hero) {
+        hero.addEventListener("mouseenter", stopAuto);
+        hero.addEventListener("mouseleave", startAuto);
+    }
+});
+</script>
+
+
+
 
 <!-- ✅ 카테고리 -->
 <div class="categories">
@@ -436,6 +619,7 @@ document.getElementById("topBtn").addEventListener("click", () => {
         alert("${requestScope.msg}");
     </script>
 </c:if>
+
 
 </body>
 </html>
