@@ -19,14 +19,22 @@
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" />
 
     <style>
+    html, body {
+    height: 100%;
+}
         body {
             margin: 0;
             font-family: 'Nanum Gothic', sans-serif;
             background-color: #f5f5f5;
+            
+                display: flex;          /* 추가 */
+    flex-direction: column; /* 추가 */
         }
 
         .page-wrapper {
             margin-top: 80px; /* 기존 공통 헤더 높이만큼 */
+            flex: 1;                /* 추가: 본문이 남은 높이를 차지하도록 */
+            
         }
 
         .chat-container {
@@ -351,6 +359,73 @@
             color: #aaa;
             font-size: 14px;
         }
+         /* 푸터 */
+        .footer {
+            background-color: #f1f1f1;
+            text-align: center;
+            padding: 10px;
+            font-size: 13px;
+            color: #666;
+            border-top: 1px solid #ddd;
+            margin-top: 40px;
+        }
+         /* 플로팅 버튼 세트 */
+        .floating-container {
+            position: fixed;
+            bottom: 35px;
+            right: 35px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            z-index: 999;
+        }
+
+        /* Top 버튼 */
+        .floating-top {
+            background: transparent;
+            border: none;
+            color: #333;
+            font-size: 18px;
+            font-weight: 700;
+            text-align: center;
+            cursor: pointer;
+            opacity: 0.85;
+            transition: 0.25s;
+            line-height: 1.1;
+            font-family: 'Nanum Gothic', sans-serif;
+        }
+        .floating-top span {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            margin-top: -2px;
+        }
+        .floating-top:hover {
+            opacity: 1;
+            transform: translateY(-2px);
+        }
+
+        /* + 등록 버튼 */
+        .floating-add {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #FF4D4D;
+            color: white;
+            font-size: 38px;
+            font-weight: bold;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+            transition: 0.25s;
+        }
+        .floating-add:hover {
+            background-color: #E03B3B;
+            transform: scale(1.07);
+        }
     </style>
 </head>
 <body>
@@ -502,7 +577,82 @@
 
     </div>
 </div>
+    <!-- 푸터 -->
+    <div class="footer">
+        <p>© 2025 Mokpo National University | MokU Market</p>
+    </div>
+  <!-- 플로팅 버튼 -->
+        <div class="floating-container">
+            <button id="topBtn" class="floating-top">^<br><span>Top</span></button>
+            <a href="${pageContext.request.contextPath}/product/add" class="floating-add">+</a>
+        </div>
 
+    </div> <!-- /page-wrapper -->
+
+    <!-- Top 버튼 기능 -->
+    <script>
+        document.getElementById("topBtn").addEventListener("click", () => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+
+        // 슬라이더 스크립트
+        let currentSlide = 0;
+        const AUTO_DELAY = 5000;
+        let autoTimer = null;
+
+        function updateCarousel() {
+            const items = document.querySelectorAll(".carousel-item");
+            const dots = document.querySelectorAll(".carousel-dots .dot");
+            const totalSlides = items.length;
+            if (totalSlides === 0) return;
+
+            currentSlide = (currentSlide + totalSlides) % totalSlides;
+
+            items.forEach((item, i) => {
+                item.classList.toggle("active", i === currentSlide);
+            });
+            dots.forEach((dot, i) => {
+                dot.classList.toggle("active", i === currentSlide);
+            });
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateCarousel();
+        }
+
+        function moveSlide(delta) {
+            currentSlide += delta;
+            updateCarousel();
+        }
+
+        function startAuto() {
+            stopAuto();
+            autoTimer = setInterval(() => {
+                currentSlide += 1;
+                updateCarousel();
+            }, AUTO_DELAY);
+        }
+
+        function stopAuto() {
+            if (autoTimer) {
+                clearInterval(autoTimer);
+                autoTimer = null;
+            }
+        }
+
+        window.addEventListener("load", () => {
+            currentSlide = 0;
+            updateCarousel();
+            startAuto();
+
+            const hero = document.querySelector(".hero-carousel");
+            if (hero) {
+                hero.addEventListener("mouseenter", stopAuto);
+                hero.addEventListener("mouseleave", startAuto);
+            }
+        });
+    </script>
 <c:if test="${not empty activeRoom}">
 <script>
     (function() {
