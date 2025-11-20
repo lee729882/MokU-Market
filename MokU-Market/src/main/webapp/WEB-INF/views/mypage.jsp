@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c"   uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"  %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -7,11 +8,9 @@
 <title>마이페이지 | 목유마켓</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic:wght@400;600;700&display=swap" rel="stylesheet">
-<!-- 메시지 / 알림 아이콘용 -->
 <link rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" />
 
-<!-- 🔥 이미지 캐시 차단 -->
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
@@ -25,6 +24,14 @@ html, body {
     background-color: #fafafa;
     display: flex;
     flex-direction: column;
+}
+
+/* 공통 래퍼 */
+.mypage-wrapper {
+    width: 100%;
+    max-width: 1150px;
+    margin: 0 auto 80px;
+    padding: 0 20px 60px;
 }
 
 /* ============== 마이페이지 NAV ============== */
@@ -57,7 +64,8 @@ html, body {
 
 /* ================= 프로필 카드 ================= */
 .profile-card {
-    width: 680px;
+    width: 100%;
+    max-width: 680px;
     background: #fff;
     margin: 50px auto 20px;
     border-radius: 15px;
@@ -102,9 +110,30 @@ html, body {
 .profile-info h2 { margin: 0; font-size: 19px; font-weight: bold; }
 .profile-info .stats { font-size: 14px; color: #555; margin-top: 3px; }
 
+.verified-badge {
+    display: inline-block;
+    background-color: #007A5C;
+    color: white;
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: 20px;
+    margin-bottom: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+
+/* ============== 탭 컨텐츠 공통 ============== */
+.tab-content {
+    display: none;
+}
+.tab-content.active {
+    display: block;
+}
+
 /* ================= 정보 폼 ================= */
 .info-box {
-    width: 680px;
+    width: 100%;
+    max-width: 680px;
     background: #fff;
     margin: 0 auto;
     border-radius: 10px;
@@ -129,14 +158,15 @@ html, body {
 }
 .info-box input[readonly] { cursor: not-allowed; }
 
-.footer {
-    background-color: #f1f1f1;
-    text-align: center;
-    padding: 10px;
-    font-size: 13px;
-    color: #666;
-    border-top: 1px solid #ddd;
-    margin-top: auto;
+.btn-save {
+    width: 100%;
+    padding: 10px 0;
+    border-radius: 8px;
+    border: none;
+    font-weight: 700;
+    background: #ccc;
+    color: #fff;
+    cursor: not-allowed;
 }
 
 .password-change {
@@ -155,6 +185,135 @@ html, body {
 .password-change a:hover {
     text-decoration: underline;
     opacity: 1;
+}
+
+/* ================= 상품 카드 (내 등록템 / 내 관심템 공통) ================= */
+.section-title {
+    font-family: 'Jua', sans-serif;
+    font-size: 20px;
+    margin: 30px 0 15px;
+    color: #333;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 24px 20px;
+}
+.product {
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+    overflow: hidden;
+    text-align: left;
+    transition: 0.25s;
+}
+.product:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 12px rgba(0,0,0,0.15);
+}
+.product .thumb {
+    position: relative;
+    cursor: pointer;
+}
+.product img {
+    width: 100%;
+    height: 190px;
+    object-fit: cover;
+}
+
+/* ✅ 판매완료 비주얼 */
+.product.sold .thumb img {
+    filter: grayscale(0.5) brightness(0.7);
+}
+.product.sold .thumb::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+}
+.sold-badge {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.7);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 999px;
+    letter-spacing: 1px;
+}
+
+/* 상품 정보 */
+.product-info {
+    padding: 12px 14px 8px;
+}
+.product-info h3 {
+    font-size: 15px;
+    color: #333;
+    font-weight: 600;
+    margin: 6px 0;
+    line-height: 1.4;
+}
+.price {
+    font-weight: bold;
+    font-size: 15px;
+    color: #111;
+    margin: 3px 0 8px;
+}
+
+/* 카테고리 뱃지 */
+.badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 20px;
+    color: white;
+    margin-bottom: 3px;
+}
+.badge.무료나눔 { background-color: #4CAF50; }
+.badge.전자기기 { background-color: #3F51B5; }
+.badge.의류 { background-color: #FF7043; }
+.badge.생활용품 { background-color: #009688; }
+.badge.전공서적 { background-color: #9C27B0; }
+.badge.음식 { background-color: #795548; }
+.badge.default { background-color: #607D8B; }
+
+/* 관리 버튼 (내 등록템) */
+.product-actions {
+    display: flex;
+    justify-content: flex-start;
+    gap: 6px;
+    padding: 0 10px 10px;
+}
+.product-actions button {
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    background: #f9f9f9;
+    font-weight: 600;
+}
+.product-actions button:hover {
+    background: #fff;
+}
+.btn-edit   { border-color:#4caf50; color:#4caf50; }
+.btn-delete { border-color:#9e9e9e; color:#555;   }
+.btn-sold   { border-color:#f44336; color:#f44336; }
+
+/* ================= FOOTER ================= */
+.footer {
+    background-color: #f1f1f1;
+    text-align: center;
+    padding: 10px;
+    font-size: 13px;
+    color: #666;
+    border-top: 1px solid #ddd;
+    margin-top: auto;
 }
 
 /* ================= 플로팅 버튼 ================= */
@@ -202,7 +361,7 @@ html, body {
     font-size: 38px;
     font-weight: bold;
     text-decoration: none;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
     transition: 0.25s;
 }
 .floating-add:hover {
@@ -211,122 +370,222 @@ html, body {
 }
 
 @media (max-width: 768px) {
-    .floating-container {
-        bottom: 25px;
-        right: 25px;
-    }
-    .floating-add {
-        width: 55px;
-        height: 55px;
-        font-size: 34px;
-        line-height: 55px;
-    }
-}
-
-.verified-badge {
-    display: inline-block;
-    background-color: #007A5C;
-    color: white;
-    font-size: 12.5px;
-    font-weight: 700;
-    padding: 5px 10px;
-    border-radius: 20px;
-    margin-bottom: 6px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    .mypage-wrapper { padding: 0 15px 50px; }
+    .profile-card   { padding: 25px 20px; margin-top: 30px; }
+    .floating-container { bottom: 25px; right: 25px; }
+    .floating-add { width: 55px; height: 55px; font-size: 34px; line-height: 55px; }
 }
 </style>
 </head>
 
 <body>
 
-<%-- ✅ 공통 헤더 + GNB 포함 (앞서 만든 header.jsp 사용) --%>
 <jsp:include page="/WEB-INF/views/common/header.jsp" />
+<c:set var="activeTab" value="${empty param.tab ? 'info' : param.tab}" />
 
 <!-- ================= 마이페이지 NAV ================= -->
 <div class="mypage-nav">
-    <a href="${pageContext.request.contextPath}/controller/myProducts">내 등록템</a>
-    <a href="${pageContext.request.contextPath}/controller/mypage" class="active">개인정보 수정</a>
-    <a href="${pageContext.request.contextPath}/controller/favorites">내 관심템</a>
-    <a href="${pageContext.request.contextPath}/controller/reviews">내 후기</a>
+    <a href="javascript:void(0);"
+       class="tab-link ${activeTab eq 'myProducts' ? 'active' : ''}"
+       data-tab="myProducts">내 등록템</a>
+
+    <a href="javascript:void(0);"
+       class="tab-link ${activeTab eq 'info' ? 'active' : ''}"
+       data-tab="info">개인정보 수정</a>
+
+    <a href="javascript:void(0);"
+       class="tab-link ${activeTab eq 'favorites' ? 'active' : ''}"
+       data-tab="favorites">내 관심템</a>
+
+    <a href="javascript:void(0);"
+       class="tab-link ${activeTab eq 'reviews' ? 'active' : ''}"
+       data-tab="reviews">내 후기</a>
 </div>
 
-<!-- ================= 프로필 카드 ================= -->
-<div class="profile-card">
-    <div class="profile-img">
+<div class="mypage-wrapper">
+
+    <!-- ================= 프로필 카드 ================= -->
+    <div class="profile-card">
+        <div class="profile-img">
+            <c:choose>
+                <c:when test="${not empty user.profileImagePath}">
+                    <img id="profilePreview" src="${pageContext.request.contextPath}${user.profileImagePath}">
+                </c:when>
+                <c:otherwise>
+                    <img id="profilePreview" src="${pageContext.request.contextPath}/resources/images/default_profile.png">
+                </c:otherwise>
+            </c:choose>
+            <div class="camera-btn" onclick="document.getElementById('profileUpload').click()">📷</div>
+            <input type="file" id="profileUpload" accept="image/*"
+                   style="display:none;" onchange="uploadProfileImage(this)">
+        </div>
+
+        <div class="profile-info">
+            <c:if test="${user.isLocationVerified == 'Y'}">
+                <div class="verified-badge">📡 캠퍼스 인증 완료</div>
+            </c:if>
+
+            <h2>${user.name}</h2>
+
+            <div class="stats"><span>매너온도: ${user.mannerTemp}℃ 🔥</span></div>
+
+            <div class="stats">
+                <span>내 등록템 ${user.productCount}개</span>
+                <span>내 관심템 ${user.favoriteCount}개</span>
+                <span>채팅 ${user.chatCount}건</span>
+            </div>
+
+            <c:if test="${user.isLocationVerified != 'Y'}">
+                <button onclick="verifyWifi()"
+                        style="margin-top:12px; padding:8px 14px;
+                               background:#007A5C; color:white;
+                               border:none; border-radius:6px;
+                               font-weight:600; cursor:pointer;">
+                    📡 캠퍼스 Wi-Fi 인증하기
+                </button>
+            </c:if>
+        </div>
+    </div>
+
+    <!-- ============== 개인정보 수정 탭 ============== -->
+    <div class="tab-content ${activeTab eq 'info' ? 'active' : ''}" id="tab-info">
+        <div class="info-box">
+            <label>아이디</label>
+            <input type="email" value="${user.email}" readonly>
+
+            <label>이름</label>
+            <input type="text" value="${user.name}" readonly>
+
+            <label>전화번호</label>
+            <input type="text" value="${user.phone}" readonly>
+
+            <button class="btn-save" disabled>저장하기</button>
+        </div>
+
+        <div class="password-change">
+            <a href="${pageContext.request.contextPath}/member/forgot-password">비밀번호 변경하기</a>
+        </div>
+    </div>
+
+    <!-- ============== 내 등록템 탭 ============== -->
+    <div class="tab-content ${activeTab eq 'myProducts' ? 'active' : ''}" id="tab-myProducts">
+        <h3 class="section-title">내 등록템</h3>
+
         <c:choose>
-            <c:when test="${not empty user.profileImagePath}">
-                <img id="profilePreview" src="${pageContext.request.contextPath}${user.profileImagePath}">
+            <c:when test="${empty myProducts}">
+                <p style="text-align:center; color:#777; margin-top:30px;">
+                    등록한 상품이 없습니다. 첫 번째로 등록해 보세요!
+                </p>
             </c:when>
             <c:otherwise>
-                <img id="profilePreview" src="${pageContext.request.contextPath}/resources/images/default_profile.png">
+                <div class="product-grid">
+                    <c:forEach var="p" items="${myProducts}">
+                        <%-- SOLD 인 경우 product sold 클래스 부여 --%>
+                        <div class="product<c:if test='${p.status eq "SOLD"}'> sold</c:if>">
+                            <!-- 썸네일 -->
+                            <div class="thumb"
+                                 onclick="location.href='${pageContext.request.contextPath}/product/detail?id=${p.productId}'">
+                                <img src="${pageContext.request.contextPath}${p.imagePath}"
+                                     alt="${p.title}"
+                                     onerror="this.src='${pageContext.request.contextPath}/resources/images/no_image.png';" />
+
+                                <c:if test="${p.status == 'SOLD'}">
+                                    <div class="sold-badge">판매 완료</div>
+                                </c:if>
+                            </div>
+
+                            <div class="product-info">
+                                <span class="badge ${p.category != null ? p.category : 'default'}">
+                                    ${p.category}
+                                </span>
+                                <h3>${p.title}</h3>
+                                <p class="price">
+                                    <c:choose>
+                                        <c:when test="${p.price == 0}">무료나눔</c:when>
+                                        <c:otherwise>
+                                            <fmt:formatNumber value="${p.price}" type="number" pattern="#,###" /> 원
+                                        </c:otherwise>
+                                    </c:choose>
+                                </p>
+                            </div>
+
+                            <div class="product-actions">
+                                <button class="btn-edit"
+                                        onclick="location.href='${pageContext.request.contextPath}/product/edit?id=${p.productId}'">
+                                    수정
+                                </button>
+                                <button class="btn-delete"
+                                        onclick="deleteProduct(${p.productId});">
+                                    삭제
+                                </button>
+                                <button class="btn-sold"
+                                        onclick="toggleSold(${p.productId}, '${p.status}');">
+                                    <c:choose>
+                                        <c:when test="${p.status == 'SOLD'}">판매 완료 해제</c:when>
+                                        <c:otherwise>판매 완료 변경</c:otherwise>
+                                    </c:choose>
+                                </button>
+                            </div>
+                        </div>
+                    </c:forEach>
+                </div>
             </c:otherwise>
         </c:choose>
-        <div class="camera-btn" onclick="document.getElementById('profileUpload').click()">📷</div>
-        <input type="file" id="profileUpload" accept="image/*" style="display:none;" onchange="uploadProfileImage(this)">
     </div>
 
-<div class="profile-info">
+    <!-- ============== 내 관심템 탭 ============== -->
+    <div class="tab-content ${activeTab eq 'favorites' ? 'active' : ''}" id="tab-favorites">
+        <h3 class="section-title">내 관심템</h3>
 
-    <!-- 인증된 경우 뱃지 -->
-    <c:if test="${user.isLocationVerified == 'Y'}">
-        <div class="verified-badge">📡 캠퍼스 인증 완료</div>
-    </c:if>
-
-    <h2>${user.name}</h2>
-
-    <div class="stats"><span>매너온도: ${user.mannerTemp}℃ 🔥</span></div>
-
-    <div class="stats">
-        <span>내 등록템 ${user.productCount}개</span>
-        <span>내 관심템 ${user.favoriteCount}개</span>
-        <span>채팅 ${user.chatCount}건</span>
+        <c:choose>
+            <c:when test="${empty favoriteProducts}">
+                <p style="text-align:center; color:#777; margin-top:30px;">
+                    관심 등록한 상품이 없습니다.
+                </p>
+            </c:when>
+            <c:otherwise>
+                <div class="product-grid">
+                    <c:forEach var="p" items="${favoriteProducts}">
+                        <div class="product<c:if test='${p.status eq "SOLD"}'> sold</c:if>"
+                             onclick="location.href='${pageContext.request.contextPath}/product/detail?id=${p.productId}'">
+                            <div class="thumb">
+                                <img src="${pageContext.request.contextPath}${p.imagePath}"
+                                     alt="${p.title}"
+                                     onerror="this.src='${pageContext.request.contextPath}/resources/images/no_image.png';" />
+                                <c:if test="${p.status == 'SOLD'}">
+                                    <div class="sold-badge">판매 완료</div>
+                                </c:if>
+                            </div>
+                            <div class="product-info">
+                                <span class="badge ${p.category != null ? p.category : 'default'}">
+                                    ${p.category}
+                                </span>
+                                <h3>${p.title}</h3>
+                                <p class="price">
+                                    <c:choose>
+                                        <c:when test="${p.price == 0}">무료나눔</c:when>
+                                        <c:otherwise>
+                                            <fmt:formatNumber value="${p.price}" type="number" pattern="#,###" /> 원
+                                        </c:otherwise>
+                                    </c:choose>
+                                </p>
+                            </div>
+                        </div>
+                    </c:forEach>
+                </div>
+            </c:otherwise>
+        </c:choose>
     </div>
 
-    <!-- 인증되지 않은 경우 버튼 표시 -->
-    <c:if test="${user.isLocationVerified != 'Y'}">
-        <button onclick="verifyWifi()" 
-                style="margin-top:12px; padding:8px 14px; 
-                       background:#007A5C; color:white; 
-                       border:none; border-radius:6px; 
-                       font-weight:600; cursor:pointer;">
-            📡 캠퍼스 Wi-Fi 인증하기
-        </button>
-    </c:if>
-
-</div>
-
-
-<script>
-function verifyWifi() {
-    fetch('${pageContext.request.contextPath}/controller/verifyWifi')
-        .then(res => res.text())
-        .then(msg => {
-            alert(msg);
-            location.reload(); // 상태 갱신
-        });
-}
-</script>
-        
+    <!-- ============== 내 후기 탭 (임시) ============== -->
+    <div class="tab-content ${activeTab eq 'reviews' ? 'active' : ''}" id="tab-reviews">
+        <h3 class="section-title">내 후기</h3>
+        <p style="text-align:center; color:#777; margin-top:30px;">
+            아직 작성된 후기가 없습니다.
+        </p>
     </div>
-</div>
 
-<!-- ================= 개인정보 BOX ================= -->
-<div class="info-box">
-    <label>아이디</label>
-    <input type="email" value="${user.email}" readonly>
-
-    <label>이름</label>
-    <input type="text" value="${user.name}" readonly>
-
-    <label>전화번호</label>
-    <input type="text" value="${user.phone}" readonly>
-
-    <button class="btn-save" disabled>저장하기</button>
-</div>
-
-<div class="password-change">
-    <a href="${pageContext.request.contextPath}/member/forgot-password">비밀번호 변경하기</a>
-</div>
+</div> <!-- /mypage-wrapper -->
 
 <!-- ================= FOOTER ================= -->
 <div class="footer">
@@ -335,6 +594,31 @@ function verifyWifi() {
 
 <!-- ================= JS ================= -->
 <script>
+// 탭 전환 (클릭 시에는 기존처럼 JS로만 전환)
+document.querySelectorAll('.mypage-nav .tab-link').forEach(tab => {
+    tab.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.querySelectorAll('.mypage-nav .tab-link')
+            .forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+
+        const target = this.dataset.tab;
+        document.querySelectorAll('.tab-content')
+            .forEach(c => c.classList.remove('active'));
+        const content = document.getElementById('tab-' + target);
+        if (content) content.classList.add('active');
+    });
+});
+
+function verifyWifi() {
+    fetch('${pageContext.request.contextPath}/controller/verifyWifi')
+        .then(res => res.text())
+        .then(msg => {
+            alert(msg);
+            location.reload();
+        });
+}
+
 function uploadProfileImage(input) {
     const file = input.files[0];
     if (!file) return;
@@ -342,7 +626,7 @@ function uploadProfileImage(input) {
     const formData = new FormData();
     formData.append("file", file);
 
-    fetch(`${pageContext.request.contextPath}/controller/updateProfileImage`, {
+    fetch('${pageContext.request.contextPath}/controller/updateProfileImage', {
         method: "POST",
         body: formData,
         credentials: "include"
@@ -350,11 +634,8 @@ function uploadProfileImage(input) {
     .then(res => res.json())
     .then(data => {
         if (data.success && data.imagePath) {
-
-            // 🔥 알림 후 새로고침
             alert("프로필 이미지가 정상적으로 변경되었습니다.");
-            location.reload();   // ← 새로고침 추가됨
-
+            location.reload();
         } else {
             alert(data.message ?? "업로드 중 문제가 발생했습니다.");
         }
@@ -365,17 +646,60 @@ function uploadProfileImage(input) {
     });
 }
 
+// ✅ 삭제: from=mypage 를 함께 전달 (컨트롤러에서 활용 가능)
+function deleteProduct(id) {
+    if (!confirm("정말 삭제하시겠습니까? 삭제 후에는 복구할 수 없습니다.")) return;
+    location.href = '${pageContext.request.contextPath}/product/delete?id=' + id + '&from=mypage';
+}
 
+// ✅ 판매완료 토글: fetch로 호출 후, 알림만 띄우고 내 등록템 탭 유지
+function toggleSold(id, status) {
+    const isSold = (status === 'SOLD');
+    const confirmMsg = isSold
+        ? '판매 완료를 해제하시겠습니까?'
+        : '판매 완료로 변경하시겠습니까?';
 
+    if (!confirm(confirmMsg)) return;
 
+    const baseUrl = isSold
+        ? '${pageContext.request.contextPath}/product/markUnsold'
+        : '${pageContext.request.contextPath}/product/markSold';
 
+    const url = baseUrl + '?id=' + id + '&from=mypage';
 
+    fetch(url, {
+        method: 'GET',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(res => res.text())
+    .then(text => {
+        const msg = text && text.trim().length > 0
+            ? text.trim()
+            : '판매 상태가 변경되었습니다.';
+
+        alert(msg); // ✅ 현재 페이지 위에서 알림만
+
+        if (msg.indexOf('로그인이 필요') !== -1) {
+            // 로그인 필요 시 로그인 페이지로
+            location.href = '${pageContext.request.contextPath}/login';
+        } else {
+            // ✅ 내 등록템 탭 유지
+            location.href = '${pageContext.request.contextPath}/member/mypage?tab=myProducts';
+        }
+    })
+    .catch(err => {
+        console.error('판매 상태 변경 중 오류:', err);
+        alert('판매 상태 변경 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+    });
+}
+
+// Top 버튼
 document.getElementById("topBtn")?.addEventListener("click", () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
 });
 </script>
 
-<!-- ================= 플로팅 버튼 ================= -->
+<!-- 플로팅 버튼 -->
 <div class="floating-container">
     <button id="topBtn" class="floating-top">^<br><span>Top</span></button>
     <a href="${pageContext.request.contextPath}/product/add" class="floating-add">+</a>

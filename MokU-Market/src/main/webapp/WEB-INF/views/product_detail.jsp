@@ -464,6 +464,19 @@ html, body {
         line-height: 55px;
     }
 }
+
+/* 🔖 판매 상태 뱃지 */
+.status-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #ff4d4d;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  vertical-align: middle;
+}
 </style>
 </head>
 
@@ -477,12 +490,28 @@ html, body {
 
 <c:if test="${isSeller}">
     <div class="seller-actions">
-        <!-- 왼쪽 : 판매완료 -->
+
+        <!-- 왼쪽 : 판매완료 / 판매완료 해제 토글 -->
         <div class="seller-left">
-            <a href="${pageContext.request.contextPath}/product/markSold?id=${product.productId}"
-               class="btn-seller btn-primary">
-                ✅ 판매완료
-            </a>
+            <c:choose>
+                <%-- 이미 판매완료 상태라면: 해제 버튼 --%>
+                <c:when test="${product.status eq 'SOLD'}">
+                    <a href="javascript:void(0);"
+                       class="btn-seller btn-outline"
+                       onclick="toggleSoldFromDetail(${product.productId}, 'SOLD');">
+                        🔁 판매완료 해제
+                    </a>
+                </c:when>
+
+                <%-- 판매중이라면: 판매완료 버튼 --%>
+                <c:otherwise>
+                    <a href="javascript:void(0);"
+                       class="btn-seller btn-primary"
+                       onclick="toggleSoldFromDetail(${product.productId}, 'ONSALE');">
+                        ✅ 판매완료
+                    </a>
+                </c:otherwise>
+            </c:choose>
         </div>
 
         <!-- 오른쪽 : 수정 / 삭제 -->
@@ -498,6 +527,7 @@ html, body {
                 🗑 삭제하기
             </a>
         </div>
+
     </div>
 </c:if>
 
@@ -542,7 +572,6 @@ html, body {
 
     <!-- ================= 탭 구조 ================= -->
 <c:choose>
-    <%-- 판매자 화면 --%>
     <c:when test="${isSeller}">
         <!-- 탭 헤더 -->
         <div class="tab-header">
@@ -550,10 +579,14 @@ html, body {
             <div id="tab-chat" class="tab">채팅 내역</div>
         </div>
 
-        <%-- 상세정보 탭: 글 내용 + 지도만 --%>
         <div id="detail-wrap" style="padding-top:18px;">
             <!-- 제목 -->
-            <div class="title">제목 : ${product.title}</div>
+            <div class="title">
+                제목 : ${product.title}
+                <c:if test="${product.status eq 'SOLD'}">
+                    <span class="status-badge">판매완료</span>
+                </c:if>
+            </div>
 
             <!-- 작성일 -->
             <div class="meta">
@@ -572,7 +605,6 @@ html, body {
             <div class="btn-row"
                  style="display:flex; align-items:center; gap:15px; margin-top:20px;">
 
-
                 <div id="likeBtn" class="like-btn ${liked ? 'liked' : ''}">
                     <svg class="heart-icon" viewBox="0 0 24 24">
                         <path d="M12.1 8.64l-.1.1-.11-.1C9.14 5.92 5.6 6.28 4.07 8.36c-1.52 2.09-1 5.33 1.11 7.11L12 21l6.82-5.53c2.12-1.78 2.63-5.02 1.11-7.11-1.53-2.08-5.07-2.44-7.83.28z"
@@ -586,7 +618,6 @@ html, body {
             <div id="map"></div>
         </div>
 
-        <%-- 채팅 내역 탭: 채팅 패널만 --%>
         <div id="chat-wrap" style="display:none; padding-top:18px;">
             <div class="chat-panel">
                 <!-- 좌측: 채팅방 목록 (예시) -->
@@ -620,10 +651,14 @@ html, body {
         </div>
     </c:when>
 
-    <%-- 구매자 화면 (기존 로직 유지) --%>
     <c:otherwise>
         <!-- 제목 -->
-        <div class="title">제목 : ${product.title}</div>
+        <div class="title">
+            제목 : ${product.title}
+            <c:if test="${product.status eq 'SOLD'}">
+                <span class="status-badge">판매완료</span>
+            </c:if>
+        </div>
 
         <!-- 작성일 -->
         <div class="meta">
@@ -641,7 +676,20 @@ html, body {
         <!-- 버튼 (채팅하기 + 찜) -->
         <div class="btn-row"
              style="display:flex; align-items:center; gap:15px; margin-top:20px;">
-            <button class="chat-btn">채팅하기</button>
+
+            <c:choose>
+                <c:when test="${product.status eq 'SOLD'}">
+                    <button class="chat-btn"
+                            disabled
+                            style="background-color:#cccccc; cursor:not-allowed;">
+                        거래 완료된 상품입니다
+                    </button>
+                </c:when>
+
+                <c:otherwise>
+                    <button class="chat-btn">채팅하기</button>
+                </c:otherwise>
+            </c:choose>
 
             <div id="likeBtn" class="like-btn ${liked ? 'liked' : ''}">
                 <svg class="heart-icon" viewBox="0 0 24 24">
@@ -656,8 +704,6 @@ html, body {
         <div id="map"></div>
     </c:otherwise>
 </c:choose>
-
-
 
     <!-- 연관 상품 -->
     <h3 style="margin-top:40px;">연관상품</h3>
@@ -789,91 +835,53 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 </script>
+
 <!-- ✅ Top + 등록 플로팅 버튼 세트 -->
 <div class="floating-container">
     <button id="topBtn" class="floating-top">^<br><span>Top</span></button>
     <a href="${pageContext.request.contextPath}/product/add" class="floating-add">+</a>
 </div>
 
-<style>
-/* ✅ 공통 영역 */
-.floating-container {
-    position: fixed;
-    bottom: 35px;
-    right: 35px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    z-index: 999;
-}
-
-/* ✅ Top 버튼 (강조 & 살짝 확대) */
-.floating-top {
-    background: transparent;
-    border: none;
-    color: #333;
-    font-size: 18px;             /* ↑ 화살표 크기 확대 */
-    font-weight: 700;            /* 굵게 */
-    text-align: center;
-    cursor: pointer;
-    opacity: 0.85;
-    transition: 0.25s;
-    line-height: 1.1;
-    font-family: 'Nanum Gothic', sans-serif;
-}
-.floating-top span {
-    display: block;
-    font-size: 13px;             /* “Top” 텍스트 크기 */
-    font-weight: 700;            /* 굵게 */
-    margin-top: -2px;
-}
-.floating-top:hover {
-    opacity: 1;
-    transform: translateY(-2px);
-}
-
-/* ✅ 등록 버튼 (+) */
-.floating-add {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background-color: #FF4D4D;
-    color: white;
-    font-size: 38px;
-    font-weight: bold;
-    text-decoration: none;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-    transition: 0.25s;
-}
-.floating-add:hover {
-    background-color: #E03B3B;
-    transform: scale(1.07);
-}
-
-/* ✅ 모바일 대응 */
-@media (max-width: 768px) {
-    .floating-container {
-        bottom: 25px;
-        right: 25px;
-    }
-    .floating-add {
-        width: 55px;
-        height: 55px;
-        font-size: 34px;
-        line-height: 55px;
-    }
-}
-</style>
-
 <script>
 // ✅ Top 버튼 기능
 document.getElementById("topBtn").addEventListener("click", () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
 });
+</script>
+<script>
+function toggleSoldFromDetail(productId, currentStatus) {
+    const isSold = (currentStatus === 'SOLD');
+
+    const confirmMsg = isSold
+        ? '판매완료를 해제하시겠습니까?'
+        : '판매완료로 변경하시겠습니까?';
+
+    if (!confirm(confirmMsg)) {
+        return;
+    }
+
+    const url = isSold
+        ? '${pageContext.request.contextPath}/product/markUnsold?id=' + productId
+        : '${pageContext.request.contextPath}/product/markSold?id=' + productId;
+
+    // GET으로 호출만 하고, 응답 내용은 쓰지 않음 (인코딩 문제 방지)
+    fetch(url, {
+        method: 'GET',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(() => {
+        const alertMsg = isSold
+            ? '판매완료가 해제되어 다시 판매중으로 변경되었습니다.'
+            : '판매완료 상태로 변경되었습니다.';
+
+        alert(alertMsg);   // ✅ 현재 detail 페이지에서 알림만 표시
+        location.reload(); // ✅ 상태/버튼/뱃지 갱신 위해 현재 페이지 새로고침
+    })
+    .catch(err => {
+        console.error('toggleSold error:', err);
+        alert('처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+    });
+}
 </script>
 
 </body>

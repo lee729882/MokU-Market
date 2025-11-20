@@ -1,12 +1,12 @@
 package com.MokU.controller;
 
 import java.io.File;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.MokU.service.MemberService;
+import com.MokU.service.ProductService;   // ✅ 추가
 import com.MokU.vo.MemberVO;
+import com.MokU.vo.ProductVO;           // ✅ 필요 시 추가
 
 @Controller
 @RequestMapping("/controller")
@@ -23,21 +25,29 @@ public class UserController {
     @Autowired
     private MemberService memberService;
 
-    // ✅ 마이페이지
+    @Autowired
+    private ProductService productService;   // ✅ 내 등록템 / 찜템 조회용 서비스
+
+    // ✅ 마이페이지 (한 화면에서 탭 전환)
     @GetMapping("/mypage")
     public String myPage(HttpSession session, Model model) {
         MemberVO user = (MemberVO) session.getAttribute("loginUser");
         if (user == null) return "redirect:/login";
+
         model.addAttribute("user", user);
+
+        // 내 등록템 (판매자 기준)
+        model.addAttribute("myProducts",
+                productService.getMyProducts(user.getUserId()));
+
+        // 내 관심템 (좋아요 한 상품)
+        model.addAttribute("favoriteProducts",
+                productService.getMyFavoriteProducts(user.getUserId()));
+
         return "mypage";
     }
 
-    // ✅ 비밀번호 변경
-    @GetMapping("/changePassword")
-    public String changePassword() {
-        return "changePassword";
-    }
-
+    // ✅ (예전처럼 별도 페이지로 쓰지 않을 거라면 사실 아래 3개는 없어도 됩니다)
     @GetMapping("/myProducts")
     public String myProducts() { return "user_myProducts"; }
 
@@ -47,6 +57,13 @@ public class UserController {
     @GetMapping("/reviews")
     public String reviews() { return "user_reviews"; }
 
+    // ✅ 비밀번호 변경
+    @GetMapping("/changePassword")
+    public String changePassword() {
+        return "changePassword";
+    }
+
+    // ✅ Wi-Fi 인증, 프로필 이미지 변경 부분은 그대로 유지
     @GetMapping(value = "/verifyWifi", produces = "text/plain; charset=UTF-8")
     @ResponseBody
     public String verifyWifi(HttpServletRequest request, HttpSession session) {
@@ -71,9 +88,11 @@ public class UserController {
             return "❌ 캠퍼스 네트워크(Wi-Fi)에서만 인증 가능합니다. (현재 IP: " + ip + ")";
         }
     }
+
     @PostMapping(value = "/updateProfileImage", produces = "application/json; charset=UTF-8")
     @ResponseBody
-    public Map<String, Object> updateProfileImage(@RequestParam("file") MultipartFile file, HttpSession session) {
+    public Map<String, Object> updateProfileImage(@RequestParam("file") MultipartFile file,
+                                                  HttpSession session) {
 
         Map<String, Object> response = new HashMap<>();
 
@@ -99,17 +118,13 @@ public class UserController {
             File saveFile = new File(uploadDir, fileName);
             file.transferTo(saveFile);
 
-            // 저장 경로
             String dbPath = "/upload/profile/" + fileName;
 
-            // DB 업데이트
             user.setProfileImagePath(dbPath);
             memberService.updateProfileImage(user);
 
-            // 🔥 중요! 업데이트 이후 DB에서 최신 사용자 정보 다시 읽기
+            // 🔥 DB에서 다시 읽어 와서 세션 갱신
             MemberVO updatedUser = memberService.getMemberById(user.getUserId());
-
-            // 🔥 세션 갱신 (이걸 안 하면 JSP에서 예전 user가 그대로 유지됨)
             session.setAttribute("loginUser", updatedUser);
 
             response.put("success", true);
@@ -124,8 +139,4 @@ public class UserController {
             return response;
         }
     }
-
-
-
-
 }

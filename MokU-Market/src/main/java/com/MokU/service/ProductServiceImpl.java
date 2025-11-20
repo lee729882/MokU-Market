@@ -12,10 +12,10 @@ import com.MokU.vo.ProductVO;
 @Service
 public class ProductServiceImpl implements ProductService {
 
-	
     @Autowired
     private ProductDAO productDAO;   // ✅ DAO만 사용
 
+    // ================== 기본 기능 ==================
     @Override
     public void insertProduct(ProductVO vo) {
         productDAO.insertProduct(vo);
@@ -33,7 +33,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductVO getProductById(int productId) {
-        // ✅ 상세보기 시 자동으로 조회수 +1
+        // ⚠️ 여기서 조회수까지 올릴지, 컨트롤러에서만 올릴지 한쪽으로만 쓰시는 게 좋습니다.
         productDAO.increaseViewCount(productId);
         return productDAO.getProductById(productId);
     }
@@ -90,10 +90,7 @@ public class ProductServiceImpl implements ProductService {
         return product.getLikeCount();
     }
 
-    /* ====================================================
-        🔥 여러 장 이미지 기능
-       ==================================================== */
-
+    // ================== 여러 장 이미지 ==================
     /** 1) 단일 이미지 저장 */
     @Override
     public void insertProductImage(int productId, String imagePath, int orders) {
@@ -121,11 +118,13 @@ public class ProductServiceImpl implements ProductService {
     public int getTotalLikesBySeller(int sellerId) {
         return productDAO.getTotalLikesBySeller(sellerId);
     }
+
     /** 4) 여러 장 이미지 전체 교체 (수정 시 사용) */
     @Override
     @Transactional
     public void replaceProductImages(int productId, List<String> imagePaths) {
 
+        // 기존 이미지 전부 삭제
         productDAO.deleteImagesByProductId(productId);
 
         if (imagePaths == null || imagePaths.isEmpty()) {
@@ -138,10 +137,8 @@ public class ProductServiceImpl implements ProductService {
             productDAO.insertProductImage(productId, path, order++);
         }
     }
-    /* ====================================================
-        🔥 판매자 전용 기능 (수정 / 판매완료 / 숨김 / 삭제)
-       ==================================================== */
 
+    // ========== 판매자 전용 기능 (수정 / 판매완료 / 삭제) ==========
     @Override
     @Transactional
     public boolean updateProduct(ProductVO product, int sellerId) {
@@ -157,6 +154,7 @@ public class ProductServiceImpl implements ProductService {
         return productDAO.updateProduct(product) == 1;
     }
 
+    /** ✅ 판매완료 처리 (STATUS = 'SOLD') */
     @Override
     @Transactional
     public boolean markSold(int productId, int sellerId) {
@@ -164,18 +162,22 @@ public class ProductServiceImpl implements ProductService {
         if (origin == null) return false;
         if (origin.getSellerId() != sellerId) return false;
 
-        // STATUS 컬럼 값을 실제 사용 중인 값으로 맞추시면 됩니다. (예: SOLD, COMPLETED 등)
-        return productDAO.updateStatus(productId, "SOLD") == 1;
+        // ✅ Mapper의 markProductSold() 호출
+        productDAO.markProductSold(productId);   // STATUS = 'SOLD'
+        return true;
     }
 
+    /** ✅ 판매완료 해제 (다시 판매중, STATUS = 'ON_SALE') */
     @Override
     @Transactional
-    public boolean hideProduct(int productId, int sellerId) {
+    public boolean markUnsold(int productId, int sellerId) {
         ProductVO origin = productDAO.getProductById(productId);
         if (origin == null) return false;
         if (origin.getSellerId() != sellerId) return false;
 
-        return productDAO.updateHiddenYn(productId, "Y") == 1;
+        // ✅ Mapper의 markProductUnsold() 호출
+        productDAO.markProductUnsold(productId); // STATUS = 'ON_SALE'
+        return true;
     }
 
     @Override
@@ -196,4 +198,14 @@ public class ProductServiceImpl implements ProductService {
         return rows == 1;
     }
 
+    // ========== 마이페이지 조회 ==========
+    @Override
+    public List<ProductVO> getMyProducts(int sellerId) {
+        return productDAO.getProductsBySeller(sellerId);
+    }
+
+    @Override
+    public List<ProductVO> getMyFavoriteProducts(int userId) {
+        return productDAO.getFavoriteProductsByUser(userId);
+    }
 }

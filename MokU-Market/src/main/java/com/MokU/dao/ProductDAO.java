@@ -44,19 +44,25 @@ public interface ProductDAO {
 
     int updateProduct(ProductVO product);   // POJO 하나라 @Param 불필요
 
-    int updateStatus(@Param("productId") int productId,
-                     @Param("status") String status);
-
-    int updateHiddenYn(@Param("productId") int productId,
-                       @Param("hiddenYn") String hiddenYn);
+    // ❌ updateHiddenYn 는 완전히 삭제 (사용 안 함)
 
     int deleteById(@Param("productId") int productId);
-    
-    // ✅ 자식 테이블 삭제용 메서드 추가
-    int deleteLikesByProductId(@Param("productId") int productId);
 
+    // ✅ 자식 테이블 삭제용 메서드
+    int deleteLikesByProductId(@Param("productId") int productId);
     int deleteImagesByProductId(@Param("productId") int productId);
-    
+
     List<ProductVO> getAllProducts();
 
+    // ✅ 판매자 기준 상품 조회
+    List<ProductVO> getProductsBySeller(@Param("sellerId") int sellerId);
+
+    // ✅ 유저가 찜한 상품 조회
+    List<ProductVO> getFavoriteProductsByUser(@Param("userId") int userId);
+
+    /** ✅ 해당 상품을 판매완료 상태로 변경 */
+    void markProductSold(@Param("productId") int productId);
+
+    /** ✅ 해당 상품을 판매완료 해제(판매중) 상태로 변경 */
+    void markProductUnsold(@Param("productId") int productId);
 }

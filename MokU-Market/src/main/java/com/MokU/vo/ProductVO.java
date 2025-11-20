@@ -29,4 +29,7 @@ public class ProductVO {
 
     // 🔥 여러 장 이미지
     private List<String> imageList;
+    
+    private String soldYn;
+
 }

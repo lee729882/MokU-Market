@@ -143,23 +143,23 @@
 </update>
 
 
-    <!-- 🔧 상태 변경 (판매완료 등) -->
-    <update id="updateStatus" parameterType="map">
-        UPDATE PRODUCT
-        SET
-            STATUS     = #{status},
-            UPDATED_AT = SYSDATE
-        WHERE PRODUCT_ID = #{productId}
-    </update>
+<!-- ✅ 판매완료 처리 : STATUS = 'SOLD' -->
+<update id="markProductSold" parameterType="int">
+    UPDATE PRODUCT
+    SET STATUS    = 'SOLD',
+        UPDATED_AT = SYSDATE
+    WHERE PRODUCT_ID = #{productId}
+</update>
 
-    <!-- 🔧 숨김 처리 -->
-    <update id="updateHiddenYn" parameterType="map">
-        UPDATE PRODUCT
-        SET
-            HIDDEN_YN  = #{hiddenYn},
-            UPDATED_AT = SYSDATE
-        WHERE PRODUCT_ID = #{productId}
-    </update>
+<!-- ✅ 판매완료 해제 : STATUS = 'ON_SALE' -->
+<update id="markProductUnsold" parameterType="int">
+    UPDATE PRODUCT
+    SET STATUS    = 'ON_SALE',
+        UPDATED_AT = SYSDATE
+    WHERE PRODUCT_ID = #{productId}
+</update>
+
+
 
 
 <!-- ✅ 좋아요(찜) 먼저 삭제 -->
@@ -183,5 +183,28 @@
     FROM PRODUCT
     ORDER BY CREATED_AT DESC
 </select>
+<!-- 판매자가 등록한 상품 -->
+<select id="getProductsBySeller" parameterType="int"
+        resultMap="ProductMap">
+    SELECT  p.*
+    FROM    PRODUCT p
+    WHERE   p.SELLER_ID = #{sellerId}
+    ORDER BY p.PRODUCT_ID DESC
+</select>
+
+<!-- 사용자가 찜한 상품 -->
+<select id="getFavoriteProductsByUser" parameterType="int"
+        resultMap="ProductMap">
+    SELECT  p.*
+    FROM    PRODUCT p
+    JOIN    LIKES l
+           ON l.PRODUCT_ID = p.PRODUCT_ID
+    WHERE   l.USER_ID = #{userId}
+    ORDER BY l.LIKE_ID DESC
+</select>
+
+
+
+
     
 </mapper>

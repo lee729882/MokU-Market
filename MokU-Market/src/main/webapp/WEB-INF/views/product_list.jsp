@@ -7,8 +7,9 @@
 <meta charset="UTF-8">
 <title>${category} 목록 - 목유마켓</title>
 <link href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic:wght@400;600;700&display=swap" rel="stylesheet">
- <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" />
+<link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" />
+
 <style>
 html, body {
   height: 100%;
@@ -42,6 +43,7 @@ html, body {
   gap: 30px 25px;
 }
 .product {
+  position: relative;   /* 판매완료 오버레이/배지용 */
   background: #fff;
   border-radius: 15px;
   box-shadow: 0 3px 8px rgba(0,0,0,0.08);
@@ -54,11 +56,52 @@ html, body {
   transform: translateY(-3px);
   box-shadow: 0 5px 12px rgba(0,0,0,0.15);
 }
+
+/* 이미지 래퍼 */
+.product .thumb {
+  position: relative;
+}
 .product img {
   width: 100%;
   height: 200px;
   object-fit: cover;
 }
+
+/* ✅ 판매완료 비주얼 (마이페이지와 동일 스타일) */
+
+/* 이미지에 그레이 + 어둡게 */
+.product.sold-out .thumb img {
+  filter: grayscale(0.5) brightness(0.7);
+}
+
+/* 전체 반투명 오버레이 */
+.product.sold-out .thumb::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+/* 중앙 동그란 "판매 완료" 배지 */
+.sold-badge {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 999px;
+  letter-spacing: 1px;
+}
+
+.product.sold-out .sold-badge {
+  background: rgba(0,0,0,0.85);
+}
+
+/* 가격 옆 텍스트 */
 .product-info {
   padding: 15px;
 }
@@ -74,6 +117,12 @@ html, body {
   font-size: 15px;
   color: #111;
   margin: 5px 0;
+}
+.price .sold-text {
+  font-size: 12px;
+  color: #ff4d4d;
+  margin-left: 4px;
+  font-weight: 600;
 }
 
 /* ✅ 카테고리 뱃지 */
@@ -151,6 +200,20 @@ html, body {
   transition: 0.25s;
 }
 .floating-add:hover { background-color: #E03B3B; transform: scale(1.07); }
+
+/* ✅ 모바일 대응 */
+@media (max-width: 768px) {
+  .floating-container {
+    bottom: 25px;
+    right: 25px;
+  }
+  .floating-add {
+    width: 55px;
+    height: 55px;
+    font-size: 34px;
+    line-height: 55px;
+  }
+}
 </style>
 </head>
 
@@ -159,27 +222,37 @@ html, body {
 <!-- ✅ 공통 헤더 JSP 사용 -->
 <jsp:include page="/WEB-INF/views/common/header.jsp" />
 
-
 <!-- ✅ 본문 -->
 <div class="container">
   <h2>📦 ${category} 목록</h2>
 
   <c:choose>
     <c:when test="${empty products}">
-      <p style="text-align:center; color:#777; margin-top:40px;">등록된 상품이 없습니다. 첫 번째로 등록해보세요!</p>
+      <p style="text-align:center; color:#777; margin-top:40px;">
+        등록된 상품이 없습니다. 첫 번째로 등록해보세요!
+      </p>
     </c:when>
     <c:otherwise>
       <div class="product-grid">
         <c:forEach var="p" items="${products}">
-			<div class="product" onclick="location.href='${pageContext.request.contextPath}/product/detail?id=${p.productId}'">
-            
-            <!-- ✅ 이미지 -->
-            <img src="${pageContext.request.contextPath}${p.imagePath}"
-                 alt="${p.title}"
-                 onerror="this.src='${pageContext.request.contextPath}/resources/images/no_image.png';" />
+          <%-- 🔴 STATUS = 'SOLD_OUT' 이면 sold-out 클래스 추가 --%>
+          <div class="product<c:if test='${p.status eq "SOLD"}'> sold-out</c:if>"
+               onclick="location.href='${pageContext.request.contextPath}/product/detail?id=${p.productId}'">
+
+            <!-- ✅ 이미지 + 판매완료 배지 -->
+            <div class="thumb">
+              <img src="${pageContext.request.contextPath}${p.imagePath}"
+                   alt="${p.title}"
+                   onerror="this.src='${pageContext.request.contextPath}/resources/images/no_image.png';" />
+              <c:if test="${p.status eq 'SOLD'}">
+                <div class="sold-badge">판매완료</div>
+              </c:if>
+            </div>
 
             <div class="product-info">
-              <span class="badge ${p.category != null ? p.category : 'default'}">${p.category}</span>
+              <span class="badge ${p.category != null ? p.category : 'default'}">
+                ${p.category}
+              </span>
               <h3>${p.title}</h3>
               <p class="price">
                 <c:choose>
@@ -188,6 +261,11 @@ html, body {
                     <fmt:formatNumber value="${p.price}" type="number" pattern="#,###" /> 원
                   </c:otherwise>
                 </c:choose>
+
+                <%-- 🔴 가격 옆 텍스트로도 표시 (STATUS = SOLD_OUT 기준) --%>
+                <c:if test="${p.status eq 'SOLD'}">
+                  <span class="sold-text">· 판매완료</span>
+                </c:if>
               </p>
             </div>
           </div>
@@ -213,91 +291,6 @@ document.getElementById("topBtn").addEventListener("click", () => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
 </script>
-<!-- ✅ Top + 등록 플로팅 버튼 세트 -->
-<div class="floating-container">
-    <button id="topBtn" class="floating-top">^<br><span>Top</span></button>
-    <a href="${pageContext.request.contextPath}/product/add" class="floating-add">+</a>
-</div>
 
-<style>
-/* ✅ 공통 영역 */
-.floating-container {
-    position: fixed;
-    bottom: 35px;
-    right: 35px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    z-index: 999;
-}
-
-/* ✅ Top 버튼 (강조 & 살짝 확대) */
-.floating-top {
-    background: transparent;
-    border: none;
-    color: #333;
-    font-size: 18px;             /* ↑ 화살표 크기 확대 */
-    font-weight: 700;            /* 굵게 */
-    text-align: center;
-    cursor: pointer;
-    opacity: 0.85;
-    transition: 0.25s;
-    line-height: 1.1;
-    font-family: 'Nanum Gothic', sans-serif;
-}
-.floating-top span {
-    display: block;
-    font-size: 13px;             /* “Top” 텍스트 크기 */
-    font-weight: 700;            /* 굵게 */
-    margin-top: -2px;
-}
-.floating-top:hover {
-    opacity: 1;
-    transform: translateY(-2px);
-}
-
-/* ✅ 등록 버튼 (+) */
-.floating-add {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background-color: #FF4D4D;
-    color: white;
-    font-size: 38px;
-    font-weight: bold;
-    text-decoration: none;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-    transition: 0.25s;
-}
-.floating-add:hover {
-    background-color: #E03B3B;
-    transform: scale(1.07);
-}
-
-/* ✅ 모바일 대응 */
-@media (max-width: 768px) {
-    .floating-container {
-        bottom: 25px;
-        right: 25px;
-    }
-    .floating-add {
-        width: 55px;
-        height: 55px;
-        font-size: 34px;
-        line-height: 55px;
-    }
-}
-</style>
-
-<script>
-// ✅ Top 버튼 기능
-document.getElementById("topBtn").addEventListener("click", () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-});
-</script>
 </body>
 </html>

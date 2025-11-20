@@ -1,7 +1,6 @@
 package com.MokU.service;
 
 import java.util.List;
-
 import com.MokU.vo.ProductVO;
 
 public interface ProductService {
@@ -10,9 +9,8 @@ public interface ProductService {
     void insertProduct(ProductVO vo);
 
     List<ProductVO> getProductsByCategory(String category);
-    
-    List<ProductVO> getAllProducts();
 
+    List<ProductVO> getAllProducts();
 
     ProductVO getProductById(int productId);
 
@@ -41,16 +39,27 @@ public interface ProductService {
 
     int getTotalLikesBySeller(int sellerId);
 
-    // ===== 판매자 전용(수정 / 판매완료 / 숨김 / 삭제) =====
+    // ===== 판매자 전용(수정 / 판매완료 / 삭제) =====
     boolean updateProduct(ProductVO product, int sellerId);
 
+    /** ✅ 판매완료 처리 (STATUS = 'SOLD') */
     boolean markSold(int productId, int sellerId);
 
-    boolean hideProduct(int productId, int sellerId);
+    /** ✅ 판매완료 해제, 다시 판매중 (STATUS = 'ONSALE') */
+    boolean markUnsold(int productId, int sellerId);
 
     boolean deleteProduct(int productId, int sellerId);
-    
- // 여러 장 이미지 전체 교체 (수정 시 사용)
+
+    // 여러 장 이미지 전체 교체 (수정 시 사용)
     void replaceProductImages(int productId, List<String> imagePaths);
 
+    /* =========================================
+       ✅ 마이페이지용 조회 기능
+       ========================================= */
+
+    // 내가 등록한 상품(판매자 기준)
+    List<ProductVO> getMyProducts(int sellerId);
+
+    // 내가 찜한 상품(좋아요 기준)
+    List<ProductVO> getMyFavoriteProducts(int userId);
 }

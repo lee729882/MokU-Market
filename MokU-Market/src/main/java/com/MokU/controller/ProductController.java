@@ -24,6 +24,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import java.nio.charset.StandardCharsets;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
 @Controller
 @RequestMapping("/product")
@@ -364,32 +367,48 @@ public class ProductController {
     }
 
     /* ============================================
-     *  판매완료 / 숨김 / 삭제
+     *  판매완료 / 판매완료 해제 / 삭제
      * ============================================ */
 
-    /** 판매완료로 상태 변경 */
-    @GetMapping("/markSold")
+    /** ✅ 판매완료로 상태 변경 (STATUS = 'SOLD') */
+    @GetMapping(value = "/markSold", produces = "text/plain; charset=UTF-8")
+    @ResponseBody
     public String markSold(@RequestParam("id") int productId,
-                           HttpSession session,
-                           RedirectAttributes rttr) {
+                           HttpSession session) {
 
         MemberVO user = (MemberVO) session.getAttribute("loginUser");
         if (user == null) {
-            rttr.addFlashAttribute("msg", "로그인이 필요합니다.");
-            return "redirect:/login";
+            return "로그인이 필요합니다.";
         }
 
         boolean ok = productService.markSold(productId, user.getUserId());
         if (!ok) {
-            rttr.addFlashAttribute("msg", "판매완료 처리 권한이 없거나 실패했습니다.");
-        } else {
-            rttr.addFlashAttribute("msg", "판매완료 상태로 변경되었습니다.");
+            return "판매완료 처리 권한이 없거나 실패했습니다.";
         }
-
-        return "redirect:/product/detail?id=" + productId;
+        return "판매완료 상태로 변경되었습니다.";
     }
 
-    /** 상품 삭제 */
+    /** ✅ 판매완료 해제 → 다시 판매중 (STATUS = 'ONSALE') */
+    @GetMapping(value = "/markUnsold", produces = "text/plain; charset=UTF-8")
+    @ResponseBody
+    public String markUnsold(@RequestParam("id") int productId,
+                             HttpSession session) {
+
+        MemberVO user = (MemberVO) session.getAttribute("loginUser");
+        if (user == null) {
+            return "로그인이 필요합니다.";
+        }
+
+        boolean ok = productService.markUnsold(productId, user.getUserId());
+        if (!ok) {
+            return "판매완료 해제 권한이 없거나 실패했습니다.";
+        }
+        return "판매완료 상태가 해제되어 다시 판매중으로 변경되었습니다.";
+    }
+
+
+
+    /** ✅ 상품 삭제 */
     @GetMapping("/delete")
     public String delete(@RequestParam("id") int productId,
                          HttpSession session,
