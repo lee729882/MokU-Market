@@ -594,19 +594,42 @@ html, body {
 
 <!-- ================= JS ================= -->
 <script>
-// 탭 전환 (클릭 시에는 기존처럼 JS로만 전환)
+// ✅ 공통: 탭 활성화 함수
+function activateTab(tabName) {
+    // 상단 탭 버튼 active 처리
+    document.querySelectorAll('.mypage-nav .tab-link')
+        .forEach(t => {
+            if (t.dataset.tab === tabName) t.classList.add('active');
+            else t.classList.remove('active');
+        });
+
+    // 콘텐츠 영역 active 처리
+    document.querySelectorAll('.tab-content')
+        .forEach(c => c.classList.remove('active'));
+
+    const content = document.getElementById('tab-' + tabName);
+    if (content) content.classList.add('active');
+}
+
+// ✅ 페이지 로드 시: 마지막으로 열었던 탭 복원
+document.addEventListener('DOMContentLoaded', function() {
+    // 서버에서 넘어온 기본 탭(info / myProducts / favorites / reviews)
+    var serverTab = '${activeTab}';
+    // 브라우저에 저장된 마지막 탭
+    var savedTab = localStorage.getItem('mypageActiveTab');
+
+    var finalTab = savedTab || serverTab || 'info';
+    activateTab(finalTab);
+});
+
+// ✅ 탭 클릭 시: 화면 전환 + localStorage에 기억
 document.querySelectorAll('.mypage-nav .tab-link').forEach(tab => {
     tab.addEventListener('click', function(e) {
         e.preventDefault();
-        document.querySelectorAll('.mypage-nav .tab-link')
-            .forEach(t => t.classList.remove('active'));
-        this.classList.add('active');
-
         const target = this.dataset.tab;
-        document.querySelectorAll('.tab-content')
-            .forEach(c => c.classList.remove('active'));
-        const content = document.getElementById('tab-' + target);
-        if (content) content.classList.add('active');
+        activateTab(target);
+        // 마지막으로 선택한 탭 저장
+        localStorage.setItem('mypageActiveTab', target);
     });
 });
 
@@ -646,13 +669,19 @@ function uploadProfileImage(input) {
     });
 }
 
-// ✅ 삭제: from=mypage 를 함께 전달 (컨트롤러에서 활용 가능)
+// ✅ 삭제
 function deleteProduct(id) {
     if (!confirm("정말 삭제하시겠습니까? 삭제 후에는 복구할 수 없습니다.")) return;
+
+    // 현재 선택된 탭 기억
+    const currentTab = document.querySelector('.mypage-nav .tab-link.active')?.dataset.tab || 'info';
+    localStorage.setItem('mypageActiveTab', currentTab);
+
+    // from=mypage는 선택 사항 (컨트롤러에서 쓰면 유지)
     location.href = '${pageContext.request.contextPath}/product/delete?id=' + id + '&from=mypage';
 }
 
-// ✅ 판매완료 토글: fetch로 호출 후, 알림만 띄우고 내 등록템 탭 유지
+// ✅ 판매완료 토글 (중요: 별도 페이지로 안 가고, alert만 띄운 뒤 내 등록템 탭 유지)
 function toggleSold(id, status) {
     const isSold = (status === 'SOLD');
     const confirmMsg = isSold
@@ -665,7 +694,11 @@ function toggleSold(id, status) {
         ? '${pageContext.request.contextPath}/product/markUnsold'
         : '${pageContext.request.contextPath}/product/markSold';
 
-    const url = baseUrl + '?id=' + id + '&from=mypage';
+    const url = baseUrl + '?id=' + id;
+
+    // 현재 탭 저장 (대부분 myProducts일 것)
+    const currentTab = document.querySelector('.mypage-nav .tab-link.active')?.dataset.tab || 'info';
+    localStorage.setItem('mypageActiveTab', currentTab);
 
     fetch(url, {
         method: 'GET',
@@ -677,14 +710,13 @@ function toggleSold(id, status) {
             ? text.trim()
             : '판매 상태가 변경되었습니다.';
 
-        alert(msg); // ✅ 현재 페이지 위에서 알림만
+        alert(msg);   // ✅ 별도 페이지 안 열리고, 그냥 알림만
 
         if (msg.indexOf('로그인이 필요') !== -1) {
-            // 로그인 필요 시 로그인 페이지로
             location.href = '${pageContext.request.contextPath}/login';
         } else {
-            // ✅ 내 등록템 탭 유지
-            location.href = '${pageContext.request.contextPath}/member/mypage?tab=myProducts';
+            // ✅ 같은 URL로 새로고침 (localStorage에 저장해둔 탭으로 다시 열림)
+            location.reload();
         }
     })
     .catch(err => {
@@ -698,6 +730,7 @@ document.getElementById("topBtn")?.addEventListener("click", () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
 });
 </script>
+
 
 <!-- 플로팅 버튼 -->
 <div class="floating-container">

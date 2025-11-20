@@ -20,8 +20,8 @@
 
     <!-- ★ 여기만 네 Docker Oracle로 변경 -->
     <property name="jdbcUrl" value="jdbc:log4jdbc:oracle:thin:@//localhost:1521/xe"/>
-    <property name="username" value="boot_ex"/>
-    <property name="password" value="boot_ex"/>
+    <property name="username" value="book_ex"/>
+    <property name="password" value="book_ex"/>
   </bean>
 
   <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
