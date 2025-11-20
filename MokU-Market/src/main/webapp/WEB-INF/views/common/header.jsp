@@ -280,18 +280,22 @@
             </div>
         </div>
 
-        <!-- 우측 유저 메뉴 -->
+<!-- 우측 유저 메뉴 -->
         <div class="user-menu">
 
 <div class="user-icons">
-    <!-- ✅ 메시지 아이콘 (말풍선 + 점 3개 느낌: chat / chat_bubble 둘 다 가능) -->
-    <button type="button" class="icon-circle" title="메시지" aria-label="메시지함">
+    <!-- ✅ 메시지 아이콘 : 클릭 시 /chat 으로 이동 -->
+    <button type="button" class="icon-circle" title="메시지" aria-label="메시지함"
+            onclick="location.href='${pageContext.request.contextPath}/chat'">
         <span class="material-symbols-rounded">chat_bubble</span>
-        <%-- 읽지 않은 메시지 수가 있을 때만 배지 표시하도록 나중에 JSTL로 제어 가능 --%>
-        <span class="icon-badge">3</span>
+
+        <!-- 🔴 읽지 않은 메시지가 있을 때만 배지 표시 -->
+        <c:if test="${unreadCount gt 0}">
+            <span class="icon-badge">${unreadCount}</span>
+        </c:if>
     </button>
 
-    <!-- ✅ 알림 아이콘 + 빨간 배지 -->
+    <!-- ✅ 알림 아이콘(예시는 숫자 고정 / 추후 로직 연결 가능) -->
     <button type="button" class="icon-circle" title="알림" aria-label="알림">
         <span class="material-symbols-rounded">notifications</span>
         <span class="icon-badge">5</span>

@@ -2,6 +2,9 @@ package com.MokU.vo;
 
 import java.util.Date;
 
+import lombok.Data;
+
+@Data
 public class MemberVO {
     private int userId;
     private String email;
@@ -22,6 +25,8 @@ public class MemberVO {
     private Date verifiedAt;           // 인증 완료 시각
 
     private String profileImagePath;
+
+    private String nickname;
 
     // ===== Getter & Setter =====
     public int getUserId() { return userId; }

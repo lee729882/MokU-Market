@@ -686,9 +686,13 @@ html, body {
                     </button>
                 </c:when>
 
-                <c:otherwise>
-                    <button class="chat-btn">채팅하기</button>
-                </c:otherwise>
+<c:otherwise>
+    <button class="chat-btn"
+            onclick="location.href='${pageContext.request.contextPath}/chat/start?productId=${product.productId}'">
+        채팅하기
+    </button>
+</c:otherwise>
+
             </c:choose>
 
             <div id="likeBtn" class="like-btn ${liked ? 'liked' : ''}">

@@ -1,0 +1,172 @@
+package com.MokU.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpSession;
+
+import com.MokU.service.ChatService;
+import com.MokU.service.ProductService;
+import com.MokU.vo.ChatMessageVO;
+import com.MokU.vo.ChatRoomVO;
+import com.MokU.vo.MemberVO;
+import com.MokU.vo.ProductVO;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+@Controller
+@RequestMapping("/chat")
+public class ChatController {
+
+    @Autowired
+    private ChatService chatService;
+
+    @Autowired
+    private ProductService productService;
+
+    /**
+     * 상품 상세에서 "채팅하기" 버튼 클릭
+     */
+    /**
+     * 채팅 아이콘 클릭 시 진입 – 방 리스트만 먼저 보여줌
+     */
+    @GetMapping
+    public String chatHome(HttpSession session,
+                           Model model,
+                           RedirectAttributes rttr) {
+
+        MemberVO loginUser = (MemberVO) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            rttr.addFlashAttribute("msg", "로그인이 필요합니다.");
+            return "redirect:/login";
+        }
+
+        int userId = loginUser.getUserId();
+
+        // 내가 참여 중인 모든 채팅방 목록
+        List<ChatRoomVO> rooms = chatService.getRoomsByUser(userId);
+
+        model.addAttribute("rooms", rooms);
+        model.addAttribute("activeRoom", null); // 처음 진입 시 선택된 방 없음
+        model.addAttribute("messages", null);
+        model.addAttribute("loginUser", loginUser);
+
+        return "chat/chatRoom"; // 이미 쓰고 계신 채팅 JSP
+    }
+
+
+    @GetMapping("/start")
+    public String startChat(@RequestParam("productId") int productId,
+                            HttpSession session,
+                            RedirectAttributes rttr) {
+
+        MemberVO user = (MemberVO) session.getAttribute("loginUser");
+        if (user == null) {
+            rttr.addFlashAttribute("msg", "로그인이 필요합니다.");
+            return "redirect:/login";
+        }
+
+        ProductVO product = productService.getProductById(productId);
+        if (product == null) {
+            rttr.addFlashAttribute("msg", "존재하지 않는 상품입니다.");
+            return "redirect:/home";
+        }
+
+        int sellerId = product.getSellerId();
+        int buyerId = user.getUserId();
+
+        // 본인 상품이면 채팅 시작 X
+        if (sellerId == buyerId) {
+            return "redirect:/product/detail?id=" + productId;
+        }
+
+        ChatRoomVO room = chatService.createOrGetRoom(productId, sellerId, buyerId);
+
+        // ✅ roomId 쿼리스트링으로 넘겨서 /chat/room 으로 이동
+        return "redirect:/chat/room?roomId=" + room.getRoomId();
+    }
+
+    /**
+     * 특정 채팅방 화면
+     */
+    @GetMapping("/room")
+    public String viewRoom(@RequestParam("roomId") int roomId,
+                           HttpSession session,
+                           Model model,
+                           RedirectAttributes rttr) {
+
+        MemberVO loginUser = (MemberVO) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            rttr.addFlashAttribute("msg", "로그인이 필요합니다.");
+            return "redirect:/login";
+        }
+        int userId = loginUser.getUserId();
+
+        ChatRoomVO room = chatService.getRoom(roomId);
+        if (room == null) {
+            rttr.addFlashAttribute("msg", "존재하지 않는 채팅방입니다.");
+            return "redirect:/home";
+        }
+
+        // 권한 체크
+        if (room.getSellerId() != userId && room.getBuyerId() != userId) {
+            rttr.addFlashAttribute("msg", "접근 권한이 없습니다.");
+            return "redirect:/home";
+        }
+
+        // ✅ 왼쪽 리스트용 : 내가 참여 중인 모든 채팅방
+        List<ChatRoomVO> rooms = chatService.getRoomsByUser(userId);
+
+        // 메시지 목록 + 읽음 처리
+        List<ChatMessageVO> messages = chatService.getMessages(roomId, userId);
+
+        // 상단 상품 정보
+        ProductVO product = productService.getProductById(room.getProductId());
+
+        // ✅ JSP에서 사용할 이름 맞춰서 세팅
+        model.addAttribute("rooms", rooms);          // 왼쪽 리스트
+        model.addAttribute("activeRoom", room);      // 현재 방
+        model.addAttribute("messages", messages);    // 메시지들
+        model.addAttribute("product", product);      // 상품 정보(필요 시)
+        model.addAttribute("loginUser", loginUser);  // 로그인 유저
+
+        // /WEB-INF/views/chat/chatRoom.jsp
+        return "chat/chatRoom";
+    }
+
+    /**
+     * 메시지 전송 (AJAX)
+     */
+    @PostMapping(value = "/room/send", produces = "application/json; charset=UTF-8")
+    @ResponseBody
+    public Map<String, Object> sendMessage(@RequestParam("roomId") int roomId,
+                                           @RequestParam("content") String content,
+                                           HttpSession session) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        MemberVO user = (MemberVO) session.getAttribute("loginUser");
+        if (user == null) {
+            result.put("status", "login_required");
+            return result;
+        }
+        int userId = user.getUserId();
+
+        if (content == null || content.trim().isEmpty()) {
+            result.put("status", "error");
+            result.put("message", "메시지 내용을 입력해 주세요.");
+            return result;
+        }
+
+        ChatMessageVO msg = chatService.sendMessage(roomId, userId, content.trim());
+
+        result.put("status", "success");
+        result.put("message", msg);
+        return result;
+    }
+}
