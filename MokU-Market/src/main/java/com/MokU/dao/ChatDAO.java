@@ -40,4 +40,7 @@ public interface ChatDAO {
     int countTotalUnread(@Param("userId") int userId);
 
     int countUnreadByUser(@Param("userId") int userId);
+    
+    void resetTradeStatusByProduct(@Param("productId") int productId);
+
 }

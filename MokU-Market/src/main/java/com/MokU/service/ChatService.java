@@ -33,4 +33,7 @@ public interface ChatService {
     /* 🔹 거래 상태 변경 (NONE / REQUESTED / CONFIRMED 등)
        - Controller 에서 trade_status 문자열만 넘겨서 최소 수정으로 사용 */
     void updateTradeStatus(int roomId, String tradeStatus);
+    
+    void resetTradeStatusByProduct(int productId);
+
 }

@@ -27,6 +27,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.nio.charset.StandardCharsets;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import com.MokU.service.ChatService;   // 패키지는 프로젝트에 맞게
 
 @Controller
 @RequestMapping("/product")
@@ -38,6 +39,11 @@ public class ProductController {
     @Autowired
     private MemberService memberService;
 
+    // ✅ 추가
+    @Autowired
+    private ChatService chatService;
+    
+    
     /* ============================================
      *  상품 등록 폼 이동
      * ============================================ */
@@ -403,6 +409,10 @@ public class ProductController {
         if (!ok) {
             return "판매완료 해제 권한이 없거나 실패했습니다.";
         }
+
+        // ✅ 여기 추가: 해당 상품 관련 채팅방 거래 상태/구매자 정보 초기화
+        chatService.resetTradeStatusByProduct(productId);
+
         return "판매완료 상태가 해제되어 다시 판매중으로 변경되었습니다.";
     }
 

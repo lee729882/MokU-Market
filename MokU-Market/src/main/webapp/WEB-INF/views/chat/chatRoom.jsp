@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c"   uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"  %>
+<fmt:setTimeZone value="Asia/Seoul" />
 
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 
@@ -456,7 +457,7 @@
                     <div class="chat-room-meta">
                         <c:if test="${not empty room.lastMessageAt}">
                             <span>
-                                <fmt:formatDate value="${room.lastMessageAt}" pattern="HH:mm" />
+<fmt:formatDate value="${room.lastMessageAt}" pattern="HH:mm" timeZone="Asia/Seoul" />
                             </span>
                         </c:if>
                         <c:if test="${room.unreadCount gt 0}">
@@ -550,7 +551,7 @@
 
                                 <div class="message-meta">
                                     <div class="message-time">
-                                        <fmt:formatDate value="${msg.sentAt}" pattern="HH:mm" />
+<fmt:formatDate value="${msg.sentAt}" pattern="HH:mm" timeZone="Asia/Seoul" />
                                     </div>
                                 </div>
                             </div>
@@ -600,6 +601,7 @@
     const ctx       = '${ctx}';
     const roomId    = '${activeRoom.roomId}';
     const productId = '${activeRoom.productId}';
+    const productStatus = '${activeRoom.status}';   // 🔹 추가
 
     // 거래 상태 / 역할 정보
     const bannerEl = document.getElementById('tradeBanner');
@@ -618,7 +620,7 @@
     if (!textarea || !btnSend || !form) return;
 
     // ✅ 거래 상태별 UI 제어
-    if (tradeStatus === 'CONFIRMED') {
+if (tradeStatus === 'CONFIRMED' && productStatus === 'SOLD') {
         // 거래 완료: 채팅 차단
         textarea.disabled   = true;
         btnSend.disabled    = true;

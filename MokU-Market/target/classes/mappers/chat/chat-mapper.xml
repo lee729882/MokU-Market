@@ -273,5 +273,15 @@
         SET TRADE_STATUS = #{tradeStatus}
         WHERE ROOM_ID    = #{roomId}
     </update>
+    
+    
+    <!-- ✅ 상품 기준으로 채팅방 거래 상태 초기화 -->
+<update id="resetTradeStatusByProduct">
+    UPDATE chat_room
+    SET trade_status = 'NONE',
+        buyer_id = NULL
+    WHERE product_id = #{productId}
+</update>
+
 
 </mapper>

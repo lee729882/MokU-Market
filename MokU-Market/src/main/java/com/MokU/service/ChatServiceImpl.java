@@ -116,4 +116,10 @@ public class ChatServiceImpl implements ChatService {
     public void updateTradeStatus(int roomId, String tradeStatus) {
         chatDAO.updateTradeStatus(roomId, tradeStatus);
     }
+    
+
+    @Override
+    public void resetTradeStatusByProduct(int productId) {
+        chatDAO.resetTradeStatusByProduct(productId);
+    }
 }
