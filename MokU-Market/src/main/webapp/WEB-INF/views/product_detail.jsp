@@ -39,14 +39,12 @@ html, body {
   background: #ddd;
   margin-bottom: 25px;
 }
-
 .slides {
   display: flex;
   transition: transform 0.4s ease;
   width: 100%;
   height: 100%;
 }
-
 .slide {
   min-width: 100%;
   height: 100%;
@@ -54,13 +52,11 @@ html, body {
   justify-content: center;
   align-items: center;
 }
-
 .slide img {
   width: 100%;
   height: 100%;
   object-fit: contain;
 }
-
 /* arrows */
 .arrow {
   position: absolute;
@@ -75,7 +71,6 @@ html, body {
 }
 .arrow.left { left: 10px; }
 .arrow.right { right: 10px; }
-
 /* dots */
 .dots {
   position: absolute;
@@ -387,7 +382,6 @@ html, body {
   background-color: #E03B3B;
   transform: translateY(-1px);
 }
-
 @media (max-width: 768px) {
   .seller-actions {
     flex-direction: column;
@@ -477,21 +471,121 @@ html, body {
   font-weight: 700;
   vertical-align: middle;
 }
+
+/* ===================== 구매자 선택 모달 ===================== */
+.buyer-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: none; /* JS에서 block 으로 변경 */
+}
+.buyer-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+}
+.buyer-modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 360px;
+    max-height: 80vh;
+    background: #fff;
+    border-radius: 16px;
+    padding: 16px 18px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+    display: flex;
+    flex-direction: column;
+}
+.buyer-modal-content h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 16px;
+}
+#buyerList {
+    overflow-y: auto;
+    max-height: 55vh;
+    padding-right: 4px;
+}
+.buyer-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 4px;
+    cursor: pointer;
+    border-radius: 10px;
+}
+.buyer-item:hover {
+    background: #f5f5f5;
+}
+
+/* 🔹 여기 추가 */
+.buyer-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.buyer-radio {
+    width: 18px;
+    height: 18px;
+}
+.buyer-info-main {
+    flex: 1;
+}
+.buyer-name {
+    font-size: 13px;
+    font-weight: 700;
+}
+.buyer-last-message {
+    font-size: 12px;
+    color: #777;
+    margin-top: 2px;
+}
+.buyer-time {
+    font-size: 11px;
+    color: #999;
+}
+.buyer-modal-footer {
+    margin-top: 16px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+.buyer-modal-footer button {
+    padding: 7px 16px;
+    border-radius: 999px;
+    border: 1px solid #ddd;
+    background: #fff;
+    font-size: 13px;
+    cursor: pointer;
+}
+#btnConfirmBuyer {
+    background: #007A5C;
+    color: #fff;
+    border-color: #007A5C;
+}
+#btnConfirmBuyer:disabled {
+    background: #ccc;
+    border-color: #ccc;
+    cursor: default;
+}
+
 </style>
 </head>
 
 <body>
 
-<%-- ✅ 공통 헤더/네비게이션 --%>
 <jsp:include page="/WEB-INF/views/common/header.jsp" />
 
-<!-- ===================== DETAIL CONTENT ===================== -->
 <div class="detail-container">
 
 <c:if test="${isSeller}">
     <div class="seller-actions">
-
-        <!-- 왼쪽 : 판매완료 / 판매완료 해제 토글 -->
+        <!-- 왼쪽 : 판매완료 / 판매완료 해제 -->
         <div class="seller-left">
             <c:choose>
                 <%-- 이미 판매완료 상태라면: 해제 버튼 --%>
@@ -502,12 +596,11 @@ html, body {
                         🔁 판매완료 해제
                     </a>
                 </c:when>
-
-                <%-- 판매중이라면: 판매완료 버튼 --%>
+                <%-- 판매중이라면: 구매자 선택 모달 오픈 --%>
                 <c:otherwise>
                     <a href="javascript:void(0);"
                        class="btn-seller btn-primary"
-                       onclick="toggleSoldFromDetail(${product.productId}, 'ONSALE');">
+                       onclick="openBuyerModal(${product.productId});">
                         ✅ 판매완료
                     </a>
                 </c:otherwise>
@@ -520,21 +613,17 @@ html, body {
                class="btn-seller btn-outline">
                 ✏️ 수정하기
             </a>
-
             <a href="${pageContext.request.contextPath}/product/delete?id=${product.productId}"
                class="btn-seller btn-danger"
                onclick="return confirm('정말 삭제하시겠습니까? 삭제 후에는 복구할 수 없습니다.');">
                 🗑 삭제하기
             </a>
         </div>
-
     </div>
 </c:if>
 
-
     <!-- 이미지 슬라이더 -->
     <div class="image-slider">
-
         <div class="slides">
             <c:forEach var="img" items="${images}">
                 <div class="slide">
@@ -543,19 +632,16 @@ html, body {
             </c:forEach>
         </div>
 
-        <!-- 좌우 화살표 -->
         <c:if test="${fn:length(images) > 1}">
             <div class="arrow left" onclick="prevSlide()">&#10094;</div>
             <div class="arrow right" onclick="nextSlide()">&#10095;</div>
         </c:if>
 
-        <!-- 하단 도트 -->
         <div class="dots">
             <c:forEach var="i" begin="0" end="${fn:length(images)-1}">
                 <span class="dot" onclick="currentSlide(${i})"></span>
             </c:forEach>
         </div>
-
     </div>
 
     <!-- 판매자 정보 -->
@@ -580,7 +666,6 @@ html, body {
         </div>
 
         <div id="detail-wrap" style="padding-top:18px;">
-            <!-- 제목 -->
             <div class="title">
                 제목 : ${product.title}
                 <c:if test="${product.status eq 'SOLD'}">
@@ -588,23 +673,18 @@ html, body {
                 </c:if>
             </div>
 
-            <!-- 작성일 -->
             <div class="meta">
                 <fmt:formatDate value="${product.createdAt}" pattern="yyyy-MM-dd"/> · 조회수 ${product.viewCount}
             </div>
 
-            <!-- 가격 -->
             <div class="price">
                 <fmt:formatNumber value="${product.price}" pattern="#,###"/> 원
             </div>
 
-            <!-- 설명 -->
             <div class="description">${product.description}</div>
 
-            <!-- 버튼 (채팅 목록 / 찜) -->
             <div class="btn-row"
                  style="display:flex; align-items:center; gap:15px; margin-top:20px;">
-
                 <div id="likeBtn" class="like-btn ${liked ? 'liked' : ''}">
                     <svg class="heart-icon" viewBox="0 0 24 24">
                         <path d="M12.1 8.64l-.1.1-.11-.1C9.14 5.92 5.6 6.28 4.07 8.36c-1.52 2.09-1 5.33 1.11 7.11L12 21l6.82-5.53c2.12-1.78 2.63-5.02 1.11-7.11-1.53-2.08-5.07-2.44-7.83.28z"
@@ -613,14 +693,12 @@ html, body {
                 </div>
             </div>
 
-            <!-- 거래 장소 (지도) -->
             <h3 style="margin-top:45px; margin-bottom:10px;">거래 장소</h3>
             <div id="map"></div>
         </div>
 
         <div id="chat-wrap" style="display:none; padding-top:18px;">
             <div class="chat-panel">
-                <!-- 좌측: 채팅방 목록 (예시) -->
                 <div class="chat-list">
                     <div class="chat-room">
                         <div class="chat-room-info">
@@ -629,7 +707,6 @@ html, body {
                         </div>
                         <div class="badge">2</div>
                     </div>
-
                     <div class="chat-room">
                         <div class="chat-room-info">
                             <div class="name">닉네임B</div>
@@ -638,8 +715,6 @@ html, body {
                         <div class="badge">1</div>
                     </div>
                 </div>
-
-                <!-- 우측: 채팅 메시지 영역 (샘플) -->
                 <div class="chat-messages">
                     <div class="chat-messages-header">채팅 내역</div>
                     <div class="chat-empty">
@@ -652,7 +727,6 @@ html, body {
     </c:when>
 
     <c:otherwise>
-        <!-- 제목 -->
         <div class="title">
             제목 : ${product.title}
             <c:if test="${product.status eq 'SOLD'}">
@@ -660,20 +734,16 @@ html, body {
             </c:if>
         </div>
 
-        <!-- 작성일 -->
         <div class="meta">
             <fmt:formatDate value="${product.createdAt}" pattern="yyyy-MM-dd"/> · 조회수 ${product.viewCount}
         </div>
 
-        <!-- 가격 -->
         <div class="price">
             <fmt:formatNumber value="${product.price}" pattern="#,###"/> 원
         </div>
 
-        <!-- 설명 -->
         <div class="description">${product.description}</div>
 
-        <!-- 버튼 (채팅하기 + 찜) -->
         <div class="btn-row"
              style="display:flex; align-items:center; gap:15px; margin-top:20px;">
 
@@ -685,14 +755,12 @@ html, body {
                         거래 완료된 상품입니다
                     </button>
                 </c:when>
-
-<c:otherwise>
-    <button class="chat-btn"
-            onclick="location.href='${pageContext.request.contextPath}/chat/start?productId=${product.productId}'">
-        채팅하기
-    </button>
-</c:otherwise>
-
+                <c:otherwise>
+                    <button class="chat-btn"
+                            onclick="location.href='${pageContext.request.contextPath}/chat/start?productId=${product.productId}'">
+                        채팅하기
+                    </button>
+                </c:otherwise>
             </c:choose>
 
             <div id="likeBtn" class="like-btn ${liked ? 'liked' : ''}">
@@ -703,7 +771,6 @@ html, body {
             </div>
         </div>
 
-        <!-- 거래 장소 -->
         <h3 style="margin-top:45px; margin-bottom:10px;">거래 장소</h3>
         <div id="map"></div>
     </c:otherwise>
@@ -721,6 +788,23 @@ html, body {
         </c:forEach>
     </div>
 
+</div> <!-- /detail-container -->
+
+<!-- ✅ 구매자 확정 모달 (공통 영역에 한 번만) -->
+<div id="buyerModal" class="buyer-modal">
+    <div class="buyer-modal-backdrop" onclick="closeBuyerModal()"></div>
+    <div class="buyer-modal-content">
+        <h3>구매자 선택</h3>
+
+        <div id="buyerList">
+            <!-- AJAX로 채워질 영역 -->
+        </div>
+
+        <div class="buyer-modal-footer">
+            <button type="button" onclick="closeBuyerModal()">취소</button>
+            <button type="button" id="btnConfirmBuyer" disabled>구매자 확정하기</button>
+        </div>
+    </div>
 </div>
 
 <!-- FOOTER -->
@@ -728,10 +812,9 @@ html, body {
   <p>© 2025 Mokpo National University | MokU Market</p>
 </div>
 
-<!-- ===================== JS: 슬라이더 ===================== -->
+<!-- 슬라이더 -->
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-
     let currentIndex = 0;
     const slides = document.querySelector(".slides");
     const slideList = document.querySelectorAll(".slide");
@@ -759,7 +842,7 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 </script>
 
-<!-- ===================== KAKAO MAP ===================== -->
+<!-- KAKAO MAP -->
 <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=85969b990129ae28ec3aa8ad0beeca55&libraries=services"></script>
 <script>
 var map = new kakao.maps.Map(document.getElementById('map'), {
@@ -772,11 +855,11 @@ new kakao.maps.Marker({
 });
 </script>
 
-<!-- ===================== LIKE & TAB JS ===================== -->
+<!-- LIKE, 탭 -->
 <script>
 document.addEventListener("DOMContentLoaded", function() {
 
-    /* ====== 찜 버튼 ====== */
+    /* 찜 버튼 */
     const btn = document.getElementById("likeBtn");
     const countArea = document.getElementById("likeCount");
 
@@ -799,7 +882,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 else btn.classList.remove("liked");
 
                 if (countArea) {
-                    countArea.innerText = data.likeCount;   // 판매자 누적 찜 수
+                    countArea.innerText = data.likeCount;
                 }
             })
             .catch(function(err){
@@ -808,23 +891,19 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    /* ====== 탭 전환 (판매자 전용) ====== */
+    /* 탭 전환 (판매자 전용) */
     var tabDetail = document.getElementById("tab-detail");
     var tabChat   = document.getElementById("tab-chat");
     var detailWrap = document.getElementById("detail-wrap");
     var chatWrap   = document.getElementById("chat-wrap");
 
-    // 판매자 화면일 때만 존재
     if (tabDetail && tabChat && detailWrap && chatWrap) {
-
-        // 처음에는 상세정보만 보이도록
         detailWrap.style.display = "block";
         chatWrap.style.display = "none";
 
         tabDetail.addEventListener("click", function(){
             tabDetail.classList.add("active");
             tabChat.classList.remove("active");
-
             detailWrap.style.display = "block";
             chatWrap.style.display   = "none";
         });
@@ -832,7 +911,6 @@ document.addEventListener("DOMContentLoaded", function() {
         tabChat.addEventListener("click", function(){
             tabChat.classList.add("active");
             tabDetail.classList.remove("active");
-
             detailWrap.style.display = "none";
             chatWrap.style.display   = "block";
         });
@@ -840,18 +918,18 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 </script>
 
-<!-- ✅ Top + 등록 플로팅 버튼 세트 -->
+<!-- 플로팅 버튼 -->
 <div class="floating-container">
     <button id="topBtn" class="floating-top">^<br><span>Top</span></button>
     <a href="${pageContext.request.contextPath}/product/add" class="floating-add">+</a>
 </div>
-
 <script>
-// ✅ Top 버튼 기능
 document.getElementById("topBtn").addEventListener("click", () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
 });
 </script>
+
+<!-- 판매완료 토글 (해제용) -->
 <script>
 function toggleSoldFromDetail(productId, currentStatus) {
     const isSold = (currentStatus === 'SOLD');
@@ -868,7 +946,6 @@ function toggleSoldFromDetail(productId, currentStatus) {
         ? '${pageContext.request.contextPath}/product/markUnsold?id=' + productId
         : '${pageContext.request.contextPath}/product/markSold?id=' + productId;
 
-    // GET으로 호출만 하고, 응답 내용은 쓰지 않음 (인코딩 문제 방지)
     fetch(url, {
         method: 'GET',
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -877,9 +954,8 @@ function toggleSoldFromDetail(productId, currentStatus) {
         const alertMsg = isSold
             ? '판매완료가 해제되어 다시 판매중으로 변경되었습니다.'
             : '판매완료 상태로 변경되었습니다.';
-
-        alert(alertMsg);   // ✅ 현재 detail 페이지에서 알림만 표시
-        location.reload(); // ✅ 상태/버튼/뱃지 갱신 위해 현재 페이지 새로고침
+        alert(alertMsg);
+        location.reload();
     })
     .catch(err => {
         console.error('toggleSold error:', err);
@@ -887,6 +963,159 @@ function toggleSoldFromDetail(productId, currentStatus) {
     });
 }
 </script>
+
+<!-- 구매자 선택 모달 JS (1단계: 팝업 + 리스트만) -->
+<script>
+const ctx = '${pageContext.request.contextPath}';
+let selectedRoomId = null;
+let currentProductIdForModal = null;
+
+function openBuyerModal(productId) {
+    const modal = document.getElementById('buyerModal');
+    const buyerList = document.getElementById('buyerList');
+    const btnConfirm = document.getElementById('btnConfirmBuyer');
+
+    currentProductIdForModal = productId;
+    selectedRoomId = null;
+    btnConfirm.disabled = true;
+    buyerList.innerHTML = '로딩 중...';
+
+    modal.style.display = 'block';
+
+    // 채팅방 목록 불러오기
+    fetch(ctx + '/chat/rooms/by-product?productId=' + productId)
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+
+            if (data.status === 'login_required') {
+                alert('로그인이 필요합니다.');
+                location.href = ctx + '/login';
+                return;
+            }
+            if (data.status !== 'success') {
+                buyerList.innerHTML =
+                    '<p style="font-size:13px; color:#777;">채팅 목록을 불러오지 못했습니다.</p>';
+                return;
+            }
+
+            const rooms = data.rooms;
+            if (!rooms || rooms.length === 0) {
+                buyerList.innerHTML =
+                    '<p style="font-size:13px; color:#777;">이 상품으로 진행된 채팅이 없습니다.</p>';
+                return;
+            }
+
+            buyerList.innerHTML = '';
+            rooms.forEach(function(room) {
+                const item = document.createElement('div');
+                item.className = 'buyer-item';
+                item.dataset.roomId = room.roomId;
+
+                // 🔹 lastMessageAt → MM/DD HH:mm
+                let timeText = '';
+                if (room.lastMessageAt) {
+                    const d = new Date(room.lastMessageAt);
+                    const month = String(d.getMonth() + 1).padStart(2, '0');
+                    const day   = String(d.getDate()).padStart(2, '0');
+                    const hour  = String(d.getHours()).padStart(2, '0');
+                    const min   = String(d.getMinutes()).padStart(2, '0');
+                    timeText = month + '/' + day + ' ' + hour + ':' + min;
+                }
+
+                // 🔹 프로필 이미지
+                const profileSrc = room.opponentProfileImagePath
+                    ? (ctx + room.opponentProfileImagePath)
+                    : (ctx + '/resources/images/default_profile.png');
+
+                item.innerHTML =
+                    '<input type="radio" name="roomRadio" class="buyer-radio">' +
+                    '<img src="' + profileSrc + '" ' +
+                    '     class="buyer-avatar" ' +
+                    '     onerror="this.src=\'' + ctx + '/resources/images/default_profile.png\';">' +
+                    '<div class="buyer-info-main">' +
+                    '  <div class="buyer-name">' +
+                          (room.opponentName ? room.opponentName : '닉네임') +
+                    '  </div>' +
+                    '  <div class="buyer-last-message">' +
+                          (room.lastMessage ? room.lastMessage : '마지막 채팅 내용...') +
+                    '  </div>' +
+                    '</div>' +
+                    '<div class="buyer-time">' + timeText + '</div>';
+
+                item.addEventListener('click', function() {
+                    selectedRoomId = room.roomId;
+                    btnConfirm.disabled = false;
+                    document
+                        .querySelectorAll('input[name="roomRadio"]')
+                        .forEach(function(radio) { radio.checked = false; });
+                    item.querySelector('input[name="roomRadio"]').checked = true;
+                });
+
+                buyerList.appendChild(item);
+            });
+        })
+        .catch(function(err) {
+            console.error(err);
+            buyerList.innerHTML =
+                '<p style="font-size:13px; color:#777;">네트워크 오류로 목록을 불러오지 못했습니다.</p>';
+        });
+
+    // ✅ 구매자 확정 버튼 동작
+    btnConfirm.onclick = function() {
+        if (!selectedRoomId) {
+            alert('구매자를 선택해 주세요.');
+            return;
+        }
+
+        if (!confirm('선택한 채팅 상대를 최종 구매자로 확정하고, 상품을 판매완료로 처리하시겠습니까?')) {
+            return;
+        }
+
+        fetch(ctx + '/chat/confirmBuyer', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+                // (Spring Security CSRF 사용 시 여기 X-CSRF-TOKEN 헤더 추가)
+            },
+            body: JSON.stringify({
+                roomId: selectedRoomId,
+                productId: currentProductIdForModal
+            })
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (data.status === 'login_required') {
+                alert('로그인이 필요합니다.');
+                location.href = ctx + '/login';
+                return;
+            }
+            if (data.status !== 'success') {
+                alert(data.message || '구매자 확정 처리 중 오류가 발생했습니다.');
+                return;
+            }
+
+            alert('구매자가 확정되었으며, 상품이 판매완료로 변경되었습니다.');
+            closeBuyerModal();
+
+            // 🔁 현재 상품 상세 페이지로 이동(새로고침 효과)
+            location.href = ctx + '/product/detail?id=' + currentProductIdForModal;
+        })
+        .catch(function(err) {
+            console.error(err);
+            alert('서버 통신 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+        });
+    };
+}
+
+function closeBuyerModal() {
+    const modal = document.getElementById('buyerModal');
+    modal.style.display = 'none';
+}
+</script>
+
+
+
 
 </body>
 </html>

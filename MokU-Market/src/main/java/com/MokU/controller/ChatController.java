@@ -169,4 +169,100 @@ public class ChatController {
         result.put("message", msg);
         return result;
     }
+    /**
+     * 상품 기준 채팅방 목록 조회 (판매자가 판매완료 누를 때 사용)
+     */
+    @GetMapping(value = "/rooms/by-product", produces = "application/json; charset=UTF-8")
+    @ResponseBody
+    public Map<String, Object> getRoomsByProduct(@RequestParam("productId") int productId,
+                                                 HttpSession session) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        MemberVO loginUser = (MemberVO) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            result.put("status", "login_required");
+            return result;
+        }
+
+        // 이 상품의 실제 판매자인지 간단히 체크 (선택 사항)
+        // ProductService 에서 product 가져와서 sellerId 비교
+        ProductVO product = productService.getProductById(productId);
+        if (product == null || product.getSellerId() != loginUser.getUserId()) {
+            result.put("status", "forbidden");
+            return result;
+        }
+
+        List<ChatRoomVO> rooms = chatService.getRoomsByProduct(productId);
+        result.put("status", "success");
+        result.put("rooms", rooms);
+
+        return result;
+    }
+    /**
+     * 구매자 확정 (상품 판매완료 처리)
+     */
+    /**
+     * 구매자 확정 (상품 판매완료 처리)
+     */
+    @PostMapping(value = "/confirmBuyer", produces = "application/json; charset=UTF-8")
+    @ResponseBody
+    public Map<String, Object> confirmBuyer(@RequestBody Map<String, Object> payload,
+                                            HttpSession session) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        MemberVO loginUser = (MemberVO) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            result.put("status", "login_required");
+            return result;
+        }
+
+        try {
+            int roomId    = ((Number) payload.get("roomId")).intValue();
+            int productId = ((Number) payload.get("productId")).intValue();
+
+            // 1) 채팅방 조회
+            ChatRoomVO room = chatService.getRoom(roomId);
+            if (room == null) {
+                result.put("status", "error");
+                result.put("message", "채팅방을 찾을 수 없습니다.");
+                return result;
+            }
+
+            // 2) 현재 로그인 사용자가 판매자인지 검증
+            int sellerId = loginUser.getUserId();
+            if (room.getSellerId() != sellerId) {
+                result.put("status", "error");
+                result.put("message", "구매자를 확정할 권한이 없습니다.");
+                return result;
+            }
+
+            // 3) productId 일치 여부(안전 체크)
+            if (room.getProductId() != productId) {
+                result.put("status", "error");
+                result.put("message", "요청한 상품 정보가 올바르지 않습니다.");
+                return result;
+            }
+
+            // 4) 상품 판매완료 처리 (서비스 시그니처에 맞게 sellerId 함께 전달)
+            boolean ok = productService.markSold(productId, sellerId);
+            if (!ok) {
+                result.put("status", "error");
+                result.put("message", "상품 상태를 변경하지 못했습니다.");
+                return result;
+            }
+
+            result.put("status", "success");
+            return result;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "서버 처리 중 오류가 발생했습니다.");
+            return result;
+        }
+    }
+
+
 }

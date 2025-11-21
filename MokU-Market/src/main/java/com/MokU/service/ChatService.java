@@ -25,4 +25,6 @@ public interface ChatService {
     int countTotalUnread(int userId);
     int getTotalUnreadCount(int userId);
 
+    List<ChatRoomVO> getRoomsByProduct(int productId);
+
 }

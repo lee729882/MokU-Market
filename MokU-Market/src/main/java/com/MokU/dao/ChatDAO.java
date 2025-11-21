@@ -3,6 +3,8 @@ package com.MokU.dao;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.MokU.vo.ChatRoomVO;
 import com.MokU.vo.ChatMessageVO;
 
@@ -29,6 +31,8 @@ public interface ChatDAO {
     int countTotalUnread(int userId);
     
     int countUnreadByUser(int userId);
+    
+    List<ChatRoomVO> findRoomsByProduct(@Param("productId") int productId);
 
 
 }

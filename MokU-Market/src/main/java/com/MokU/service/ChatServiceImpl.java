@@ -102,4 +102,9 @@ public class ChatServiceImpl implements ChatService {
     public int getTotalUnreadCount(int userId) {
         return chatDAO.countUnreadByUser(userId);
     }
+    
+    @Override
+    public List<ChatRoomVO> getRoomsByProduct(int productId) {
+        return chatDAO.findRoomsByProduct(productId);
+    }
 }

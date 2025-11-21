@@ -216,5 +216,32 @@
           AND (r.SELLER_ID = #{userId}
                OR r.BUYER_ID  = #{userId})
     </select>
+<!-- 상품별 채팅방 목록 (구매 후보 리스트) -->
+<select id="findRoomsByProduct" parameterType="int"
+        resultType="com.MokU.vo.ChatRoomVO">
+
+SELECT
+    r.ROOM_ID         AS roomId,
+    r.PRODUCT_ID      AS productId,
+    r.SELLER_ID       AS sellerId,
+    r.BUYER_ID        AS buyerId,
+    r.CREATED_AT      AS createdAt,
+    r.LAST_MESSAGE_AT AS lastMessageAt,
+    r.LAST_MESSAGE    AS lastMessage,
+    m.NAME                 AS opponentName,
+    m.PROFILE_IMAGE_PATH   AS opponentProfileImagePath,
+    ( SELECT IMAGE_PATH
+        FROM PRODUCT_IMAGES
+       WHERE PRODUCT_ID = r.PRODUCT_ID
+         AND ORDERS = 1
+    ) AS productImageUrl
+FROM CHAT_ROOM r
+     JOIN MOKU_USER m ON r.BUYER_ID = m.USER_ID
+WHERE r.PRODUCT_ID = #{productId}
+ORDER BY r.LAST_MESSAGE_AT DESC NULLS LAST
+
+</select>
+
+
 
 </mapper>
