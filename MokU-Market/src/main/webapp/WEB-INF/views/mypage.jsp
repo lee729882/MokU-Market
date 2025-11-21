@@ -621,9 +621,10 @@ html, body {
                                         onclick="toggleSold(${p.productId}, '${p.status}');">
                                     <c:choose>
                                         <c:when test="${p.status == 'SOLD'}">판매 완료 해제</c:when>
-                                        <c:otherwise>판매 완료 변경</c:otherwise>
+                                        <c:otherwise>구매자 확정 요청</c:otherwise>
                                     </c:choose>
                                 </button>
+
                             </div>
                         </div>
                     </c:forEach>
@@ -698,7 +699,7 @@ html, body {
 
         <div class="buyer-modal-footer">
             <button type="button" onclick="closeBuyerModal()">취소</button>
-            <button type="button" id="btnConfirmBuyer" disabled>구매자 확정하기</button>
+            <button type="button" id="btnConfirmBuyer" disabled>구매자 확정 요청</button>
         </div>
     </div>
 </div>
@@ -801,12 +802,12 @@ function deleteProduct(id) {
     location.href = ctx + '/product/delete?id=' + id + '&from=mypage';
 }
 
-// ✅ 판매완료 토글
+// ✅ 판매완료 토글 / 구매자 확정 요청
 function toggleSold(id, status) {
     const isSold = (status === 'SOLD');
 
     if (isSold) {
-        // 이미 판매완료 → 판매완료 해제 (기존 로직 유지)
+        // 이미 판매완료 → 판매완료 해제
         const confirmMsg = '판매 완료를 해제하시겠습니까?';
         if (!confirm(confirmMsg)) return;
 
@@ -839,7 +840,7 @@ function toggleSold(id, status) {
         });
 
     } else {
-        // 판매중 → 구매자 선택 모달 열기
+        // 판매중 → 구매자 선택 모달 열기 (거래 확정 요청 흐름)
         const currentTab = document.querySelector('.mypage-nav .tab-link.active')?.dataset.tab || 'info';
         localStorage.setItem('mypageActiveTab', currentTab);
 
@@ -849,8 +850,8 @@ function toggleSold(id, status) {
 
 // ✅ 구매자 선택 모달 열기
 function openBuyerModal(productId) {
-    const modal     = document.getElementById('buyerModal');
-    const buyerList = document.getElementById('buyerList');
+    const modal      = document.getElementById('buyerModal');
+    const buyerList  = document.getElementById('buyerList');
     const btnConfirm = document.getElementById('btnConfirmBuyer');
 
     currentProductIdForModal = productId;
@@ -924,7 +925,6 @@ function openBuyerModal(productId) {
                     '</div>' +
                     '<div class="buyer-time">' + timeText + '</div>';
 
-
                 item.addEventListener('click', () => {
                     selectedRoomId = room.roomId;
                     btnConfirm.disabled = false;
@@ -942,11 +942,14 @@ function openBuyerModal(productId) {
                 '<p style="font-size:13px; color:#777;">네트워크 오류로 목록을 불러오지 못했습니다.</p>';
         });
 
-    // 🔥 구매자 확정 API 호출
+    // 🔥 거래 확정 요청 API 호출 (chatRoom.jsp 흐름과 동일 컨셉)
     btnConfirm.onclick = function() {
         if (!selectedRoomId || !currentProductIdForModal) return;
 
-        if (!confirm('선택한 채팅방의 사용자를 구매자로 확정하고, 상품을 판매완료로 변경하시겠습니까?')) {
+        if (!confirm(
+            '선택한 채팅방의 사용자를 구매자로 지정하고, 거래 확정을 요청하시겠습니까?\n' +
+            '상대방이 채팅방에서 거래를 확정하면 게시글이 판매완료로 변경됩니다.'
+        )) {
             return;
         }
 
@@ -969,17 +972,20 @@ function openBuyerModal(productId) {
                 return;
             }
             if (data.status !== 'success') {
-                alert(data.message || '구매자 확정 처리 중 오류가 발생했습니다.');
+                alert(data.message || '거래 확정 요청 처리 중 오류가 발생했습니다.');
                 return;
             }
 
-            alert('구매자 확정 및 판매완료 처리가 완료되었습니다.');
+            alert(
+                '해당 구매자에게 거래 확정을 요청했습니다.\n' +
+                '구매자가 채팅방에서 거래를 확정하면 상품이 판매완료로 변경됩니다.'
+            );
             closeBuyerModal();
             location.reload();
         })
         .catch(err => {
             console.error('confirmBuyer error:', err);
-            alert('구매자 확정 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+            alert('거래 확정 요청 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
         });
     };
 }

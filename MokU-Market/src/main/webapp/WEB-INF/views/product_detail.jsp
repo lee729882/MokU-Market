@@ -753,7 +753,7 @@ html, body {
 
         <div class="buyer-modal-footer">
             <button type="button" onclick="closeBuyerModal()">취소</button>
-            <button type="button" id="btnConfirmBuyer" disabled>구매자에게 거래 요청</button>
+            <button type="button" id="btnConfirmBuyer" disabled>구매자에게 확정 요청</button>
         </div>
     </div>
 </div>
