@@ -22,9 +22,15 @@ public interface ChatService {
     // 메시지 보내기 (DB insert + 마지막 메시지 갱신 후, 방금 저장된 메시지 리턴)
     ChatMessageVO sendMessage(int roomId, int senderId, String content);
     
+    // 전체 미읽음 (기존)
     int countTotalUnread(int userId);
+
     int getTotalUnreadCount(int userId);
 
+    // 상품 기준 채팅방 목록
     List<ChatRoomVO> getRoomsByProduct(int productId);
 
+    /* 🔹 거래 상태 변경 (NONE / REQUESTED / CONFIRMED 등)
+       - Controller 에서 trade_status 문자열만 넘겨서 최소 수정으로 사용 */
+    void updateTradeStatus(int roomId, String tradeStatus);
 }

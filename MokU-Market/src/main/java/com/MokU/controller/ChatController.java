@@ -207,7 +207,7 @@ public class ChatController {
      */
     @PostMapping(value = "/confirmBuyer", produces = "application/json; charset=UTF-8")
     @ResponseBody
-    public Map<String, Object> confirmBuyer(@RequestBody Map<String, Object> payload,
+    public Map<String, Object> confirmBuyer(@RequestBody Map<String, Object> body,
                                             HttpSession session) {
 
         Map<String, Object> result = new HashMap<>();
@@ -218,50 +218,114 @@ public class ChatController {
             return result;
         }
 
-        try {
-            int roomId    = ((Number) payload.get("roomId")).intValue();
-            int productId = ((Number) payload.get("productId")).intValue();
+        // body 에서 roomId / productId 꺼내기
+        Integer roomIdObj    = (Integer) body.get("roomId");
+        Integer productIdObj = (Integer) body.get("productId");
 
-            // 1) 채팅방 조회
-            ChatRoomVO room = chatService.getRoom(roomId);
-            if (room == null) {
-                result.put("status", "error");
-                result.put("message", "채팅방을 찾을 수 없습니다.");
-                return result;
-            }
-
-            // 2) 현재 로그인 사용자가 판매자인지 검증
-            int sellerId = loginUser.getUserId();
-            if (room.getSellerId() != sellerId) {
-                result.put("status", "error");
-                result.put("message", "구매자를 확정할 권한이 없습니다.");
-                return result;
-            }
-
-            // 3) productId 일치 여부(안전 체크)
-            if (room.getProductId() != productId) {
-                result.put("status", "error");
-                result.put("message", "요청한 상품 정보가 올바르지 않습니다.");
-                return result;
-            }
-
-            // 4) 상품 판매완료 처리 (서비스 시그니처에 맞게 sellerId 함께 전달)
-            boolean ok = productService.markSold(productId, sellerId);
-            if (!ok) {
-                result.put("status", "error");
-                result.put("message", "상품 상태를 변경하지 못했습니다.");
-                return result;
-            }
-
-            result.put("status", "success");
-            return result;
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (roomIdObj == null || productIdObj == null) {
             result.put("status", "error");
-            result.put("message", "서버 처리 중 오류가 발생했습니다.");
+            result.put("message", "잘못된 요청입니다.");
             return result;
         }
+
+        int roomId    = roomIdObj;
+        int productId = productIdObj;
+
+        // 채팅방 조회
+        ChatRoomVO room = chatService.getRoom(roomId);
+        if (room == null || room.getProductId() != productId) {
+            result.put("status", "error");
+            result.put("message", "채팅방 정보를 찾을 수 없습니다.");
+            return result;
+        }
+
+        // 🔒 판매자 본인인지 확인
+        if (room.getSellerId() != loginUser.getUserId()) {
+            result.put("status", "forbidden");
+            result.put("message", "판매자만 구매자를 선택할 수 있습니다.");
+            return result;
+        }
+
+        // 🔹 여기서 “바로 SOLD 처리”는 하지 않고,
+        //    채팅방에만 거래 상태 REQUESTED 를 기록합니다.
+        chatService.updateTradeStatus(roomId, "REQUESTED");
+
+        // (추가로, 나중에 원하시면 이 시점에 시스템 메시지도 한 줄 넣을 수 있습니다.)
+
+        result.put("status", "success");
+        return result;
+    }
+    @PostMapping(value = "/confirmTradeByBuyer", produces = "application/json; charset=UTF-8")
+    @ResponseBody
+    public Map<String, Object> confirmTradeByBuyer(@RequestBody Map<String, Object> body,
+                                                   HttpSession session) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        MemberVO loginUser = (MemberVO) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            result.put("status", "login_required");
+            return result;
+        }
+
+        // roomId, productId 꺼내기
+        Integer roomIdObj    = (Integer) body.get("roomId");
+        Integer productIdObj = (Integer) body.get("productId");
+
+        if (roomIdObj == null || productIdObj == null) {
+            result.put("status", "error");
+            result.put("message", "잘못된 요청입니다.");
+            return result;
+        }
+
+        int roomId    = roomIdObj;
+        int productId = productIdObj;
+
+        // 채팅방 조회
+        ChatRoomVO room = chatService.getRoom(roomId);
+        if (room == null || room.getProductId() != productId) {
+            result.put("status", "error");
+            result.put("message", "채팅방 정보를 찾을 수 없습니다.");
+            return result;
+        }
+
+        // 🔒 구매자 본인인지 확인
+        if (room.getBuyerId() != loginUser.getUserId()) {
+            result.put("status", "forbidden");
+            result.put("message", "구매자만 거래를 확정할 수 있습니다.");
+            return result;
+        }
+
+        // 🔒 판매자가 먼저 REQUESTED 한 상태인지 확인
+        if (!"REQUESTED".equals(room.getTradeStatus())) {
+            result.put("status", "error");
+            result.put("message", "판매자가 아직 거래 확정을 요청하지 않았습니다.");
+            return result;
+        }
+
+        // 🔒 상품 상태도 한번 체크 (원하실 경우)
+        ProductVO product = productService.getProductById(productId);
+        if (product == null) {
+            result.put("status", "error");
+            result.put("message", "상품 정보를 찾을 수 없습니다.");
+            return result;
+        }
+        if ("SOLD".equals(product.getStatus())) {
+            result.put("status", "error");
+            result.put("message", "이미 판매완료된 상품입니다.");
+            return result;
+        }
+
+        // 1) 채팅방 거래 상태 CONFIRMED로 변경
+        chatService.updateTradeStatus(roomId, "CONFIRMED");
+
+        // 2) 상품 상태 SOLD 처리 (판매자 id 확인해서 넣기)
+        productService.markSold(productId, room.getSellerId());
+
+        // (추후: 여기서 후기 작성용 플래그나 시스템 메시지 추가도 가능)
+
+        result.put("status", "success");
+        return result;
     }
 
 

@@ -3,6 +3,8 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
+<c:set var="ctx" value="${pageContext.request.contextPath}" />
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -164,52 +166,71 @@ html, body {
 }
 
 /* ===================== 판매자용 상단 관리바 ===================== */
-.manage-bar {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:10px;
+.seller-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
 }
-.manage-left button {
-  padding:7px 14px;
-  border-radius:18px;
-  border:1px solid #007A5C;
-  background:#fff;
-  color:#007A5C;
-  font-weight:600;
-  cursor:pointer;
+.seller-left,
+.seller-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
-.manage-left button:hover {
-  background:#e6fff7;
+.seller-right {
+  justify-content: flex-end;
 }
-.manage-right {
-  display:flex;
-  gap:8px;
+
+/* 공통 버튼 스타일 */
+.btn-seller {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: 0.18s ease;
+  white-space: nowrap;
 }
-.manage-right a {
-  font-size:13px;
-  text-decoration:none;
-  padding:4px 10px;
-  border-radius:14px;
-  border:1px solid transparent;
+.btn-primary {
+  background-color: #00A67E;
+  color: #fff;
 }
-.manage-right a.edit {
-  color:#555;
-  border-color:#ddd;
-  background:#fff;
+.btn-primary:hover {
+  background-color: #008a6b;
+  transform: translateY(-1px);
 }
-.manage-right a.hide {
-  color:#555;
-  border-color:#ddd;
-  background:#fff;
+.btn-outline {
+  background-color: #ffffff;
+  color: #00A67E;
+  border-color: #00A67E;
 }
-.manage-right a.delete {
-  color:#ff4d4d;
-  border-color:#ffb3b3;
-  background:#fff5f5;
+.btn-outline:hover {
+  background-color: #e6fff7;
 }
-.manage-right a:hover {
-  filter:brightness(0.97);
+.btn-danger {
+  background-color: #FF4D4D;
+  color: #fff;
+}
+.btn-danger:hover {
+  background-color: #E03B3B;
+  transform: translateY(-1px);
+}
+@media (max-width: 768px) {
+  .seller-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .seller-left,
+  .seller-right {
+    justify-content: space-between;
+  }
 }
 
 /* ===================== 탭 헤더 ===================== */
@@ -323,74 +344,6 @@ html, body {
   font-size:13px;
   padding:6px 8px 10px;
   margin:0;
-}
-
-/* 🔥 판매자 액션 전체 영역: 좌/우 정렬 */
-.seller-actions {
-  margin-top: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-}
-.seller-left,
-.seller-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.seller-right {
-  justify-content: flex-end;
-}
-
-/* 공통 버튼 스타일 */
-.btn-seller {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 9px 18px;
-  border-radius: 999px;
-  font-size: 14px;
-  font-weight: 600;
-  text-decoration: none;
-  cursor: pointer;
-  border: 1px solid transparent;
-  transition: 0.18s ease;
-  white-space: nowrap;
-}
-.btn-primary {
-  background-color: #00A67E;
-  color: #fff;
-}
-.btn-primary:hover {
-  background-color: #008a6b;
-  transform: translateY(-1px);
-}
-.btn-outline {
-  background-color: #ffffff;
-  color: #00A67E;
-  border-color: #00A67E;
-}
-.btn-outline:hover {
-  background-color: #e6fff7;
-}
-.btn-danger {
-  background-color: #FF4D4D;
-  color: #fff;
-}
-.btn-danger:hover {
-  background-color: #E03B3B;
-  transform: translateY(-1px);
-}
-@media (max-width: 768px) {
-  .seller-actions {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .seller-left,
-  .seller-right {
-    justify-content: space-between;
-  }
 }
 
 /* ✅ 플로팅 공통 */
@@ -520,7 +473,7 @@ html, body {
     background: #f5f5f5;
 }
 
-/* 🔹 여기 추가 */
+/* 프로필 아바타 */
 .buyer-avatar {
     width: 36px;
     height: 36px;
@@ -588,7 +541,6 @@ html, body {
         <!-- 왼쪽 : 판매완료 / 판매완료 해제 -->
         <div class="seller-left">
             <c:choose>
-                <%-- 이미 판매완료 상태라면: 해제 버튼 --%>
                 <c:when test="${product.status eq 'SOLD'}">
                     <a href="javascript:void(0);"
                        class="btn-seller btn-outline"
@@ -596,12 +548,11 @@ html, body {
                         🔁 판매완료 해제
                     </a>
                 </c:when>
-                <%-- 판매중이라면: 구매자 선택 모달 오픈 --%>
                 <c:otherwise>
                     <a href="javascript:void(0);"
                        class="btn-seller btn-primary"
                        onclick="openBuyerModal(${product.productId});">
-                        ✅ 판매완료
+                        ✅ 구매자 확정
                     </a>
                 </c:otherwise>
             </c:choose>
@@ -609,11 +560,11 @@ html, body {
 
         <!-- 오른쪽 : 수정 / 삭제 -->
         <div class="seller-right">
-            <a href="${pageContext.request.contextPath}/product/edit?id=${product.productId}"
+            <a href="${ctx}/product/edit?id=${product.productId}"
                class="btn-seller btn-outline">
                 ✏️ 수정하기
             </a>
-            <a href="${pageContext.request.contextPath}/product/delete?id=${product.productId}"
+            <a href="${ctx}/product/delete?id=${product.productId}"
                class="btn-seller btn-danger"
                onclick="return confirm('정말 삭제하시겠습니까? 삭제 후에는 복구할 수 없습니다.');">
                 🗑 삭제하기
@@ -627,7 +578,7 @@ html, body {
         <div class="slides">
             <c:forEach var="img" items="${images}">
                 <div class="slide">
-                    <img src="${pageContext.request.contextPath}${img}">
+                    <img src="${ctx}${img}">
                 </div>
             </c:forEach>
         </div>
@@ -646,8 +597,8 @@ html, body {
 
     <!-- 판매자 정보 -->
     <div class="seller-box">
-        <img src="${pageContext.request.contextPath}${seller.profileImagePath}"
-             onerror="this.src='${pageContext.request.contextPath}/resources/images/default_profile.png';">
+        <img src="${ctx}${seller.profileImagePath}"
+             onerror="this.src='${ctx}/resources/images/default_profile.png';">
         <div>
             <div style="font-weight:700; font-size:16px;">${seller.name}</div>
             <div style="font-size:13px; color:#777; margin-top:3px;">
@@ -757,7 +708,7 @@ html, body {
                 </c:when>
                 <c:otherwise>
                     <button class="chat-btn"
-                            onclick="location.href='${pageContext.request.contextPath}/chat/start?productId=${product.productId}'">
+                            onclick="location.href='${ctx}/chat/start?productId=${product.productId}'">
                         채팅하기
                     </button>
                 </c:otherwise>
@@ -781,8 +732,8 @@ html, body {
     <div class="related-grid">
         <c:forEach var="r" items="${relatedProducts}">
             <div class="related-card"
-                 onclick="location.href='${pageContext.request.contextPath}/product/detail?id=${r.productId}'">
-                <img src="${pageContext.request.contextPath}${r.imagePath}">
+                 onclick="location.href='${ctx}/product/detail?id=${r.productId}'">
+                <img src="${ctx}${r.imagePath}">
                 <p>${r.title}</p>
             </div>
         </c:forEach>
@@ -790,7 +741,7 @@ html, body {
 
 </div> <!-- /detail-container -->
 
-<!-- ✅ 구매자 확정 모달 (공통 영역에 한 번만) -->
+<!-- ✅ 구매자 확정 모달 -->
 <div id="buyerModal" class="buyer-modal">
     <div class="buyer-modal-backdrop" onclick="closeBuyerModal()"></div>
     <div class="buyer-modal-content">
@@ -802,7 +753,7 @@ html, body {
 
         <div class="buyer-modal-footer">
             <button type="button" onclick="closeBuyerModal()">취소</button>
-            <button type="button" id="btnConfirmBuyer" disabled>구매자 확정하기</button>
+            <button type="button" id="btnConfirmBuyer" disabled>구매자에게 거래 요청</button>
         </div>
     </div>
 </div>
@@ -865,7 +816,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     if (btn) {
         btn.addEventListener("click", function() {
-            fetch("${pageContext.request.contextPath}/product/toggleLike", {
+            fetch("${ctx}/product/toggleLike", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ productId: ${product.productId} })
@@ -921,7 +872,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <!-- 플로팅 버튼 -->
 <div class="floating-container">
     <button id="topBtn" class="floating-top">^<br><span>Top</span></button>
-    <a href="${pageContext.request.contextPath}/product/add" class="floating-add">+</a>
+    <a href="${ctx}/product/add" class="floating-add">+</a>
 </div>
 <script>
 document.getElementById("topBtn").addEventListener("click", () => {
@@ -943,8 +894,8 @@ function toggleSoldFromDetail(productId, currentStatus) {
     }
 
     const url = isSold
-        ? '${pageContext.request.contextPath}/product/markUnsold?id=' + productId
-        : '${pageContext.request.contextPath}/product/markSold?id=' + productId;
+        ? '${ctx}/product/markUnsold?id=' + productId
+        : '${ctx}/product/markSold?id=' + productId;
 
     fetch(url, {
         method: 'GET',
@@ -964,157 +915,179 @@ function toggleSoldFromDetail(productId, currentStatus) {
 }
 </script>
 
-<!-- 구매자 선택 모달 JS (1단계: 팝업 + 리스트만) -->
+<!-- 구매자 선택 모달 JS (판매완료 = 거래요청) -->
+<!-- ✅ 구매자 선택 모달 JS (판매자 → 구매자에게 거래요청 보내기) -->
 <script>
-const ctx = '${pageContext.request.contextPath}';
-let selectedRoomId = null;
-let currentProductIdForModal = null;
+    // 컨텍스트 경로
+    const ctx = '${pageContext.request.contextPath}';
 
-function openBuyerModal(productId) {
-    const modal = document.getElementById('buyerModal');
-    const buyerList = document.getElementById('buyerList');
-    const btnConfirm = document.getElementById('btnConfirmBuyer');
+    // 모달 상태
+    let selectedRoomId = null;
+    let currentProductIdForModal = null;
 
-    currentProductIdForModal = productId;
-    selectedRoomId = null;
-    btnConfirm.disabled = true;
-    buyerList.innerHTML = '로딩 중...';
+    // 🔹 모달 열기 (판매자가 "판매완료" 버튼 클릭)
+    function openBuyerModal(productId) {
+        console.log('[DETAIL] openBuyerModal, productId =', productId);
 
-    modal.style.display = 'block';
+        const modal     = document.getElementById('buyerModal');
+        const buyerList = document.getElementById('buyerList');
+        const btnConfirm = document.getElementById('btnConfirmBuyer');
 
-    // 채팅방 목록 불러오기
-    fetch(ctx + '/chat/rooms/by-product?productId=' + productId)
-        .then(function(res) { return res.json(); })
-        .then(function(data) {
+        if (!modal || !buyerList || !btnConfirm) {
+            alert('구매자 선택 모달 요소를 찾을 수 없습니다.');
+            return;
+        }
 
-            if (data.status === 'login_required') {
-                alert('로그인이 필요합니다.');
-                location.href = ctx + '/login';
-                return;
-            }
-            if (data.status !== 'success') {
-                buyerList.innerHTML =
-                    '<p style="font-size:13px; color:#777;">채팅 목록을 불러오지 못했습니다.</p>';
-                return;
-            }
+        currentProductIdForModal = productId;
+        selectedRoomId = null;
+        btnConfirm.disabled = true;
+        buyerList.innerHTML = '로딩 중...';
 
-            const rooms = data.rooms;
-            if (!rooms || rooms.length === 0) {
-                buyerList.innerHTML =
-                    '<p style="font-size:13px; color:#777;">이 상품으로 진행된 채팅이 없습니다.</p>';
-                return;
-            }
+        // 모달 표시
+        modal.style.display = 'block';
 
-            buyerList.innerHTML = '';
-            rooms.forEach(function(room) {
-                const item = document.createElement('div');
-                item.className = 'buyer-item';
-                item.dataset.roomId = room.roomId;
+        // 🔸 이 상품에 대해 생성된 채팅방 목록 조회
+        fetch(ctx + '/chat/rooms/by-product?productId=' + productId)
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
 
-                // 🔹 lastMessageAt → MM/DD HH:mm
-                let timeText = '';
-                if (room.lastMessageAt) {
-                    const d = new Date(room.lastMessageAt);
-                    const month = String(d.getMonth() + 1).padStart(2, '0');
-                    const day   = String(d.getDate()).padStart(2, '0');
-                    const hour  = String(d.getHours()).padStart(2, '0');
-                    const min   = String(d.getMinutes()).padStart(2, '0');
-                    timeText = month + '/' + day + ' ' + hour + ':' + min;
+                if (data.status === 'login_required') {
+                    alert('로그인이 필요합니다.');
+                    location.href = ctx + '/login';
+                    return;
+                }
+                if (data.status !== 'success') {
+                    buyerList.innerHTML =
+                        '<p style="font-size:13px; color:#777;">채팅 목록을 불러오지 못했습니다.</p>';
+                    return;
                 }
 
-                // 🔹 프로필 이미지
-                const profileSrc = room.opponentProfileImagePath
-                    ? (ctx + room.opponentProfileImagePath)
-                    : (ctx + '/resources/images/default_profile.png');
+                const rooms = data.rooms;
+                if (!rooms || rooms.length === 0) {
+                    buyerList.innerHTML =
+                        '<p style="font-size:13px; color:#777;">이 상품으로 진행된 채팅이 없습니다.</p>';
+                    return;
+                }
 
-                item.innerHTML =
-                    '<input type="radio" name="roomRadio" class="buyer-radio">' +
-                    '<img src="' + profileSrc + '" ' +
-                    '     class="buyer-avatar" ' +
-                    '     onerror="this.src=\'' + ctx + '/resources/images/default_profile.png\';">' +
-                    '<div class="buyer-info-main">' +
-                    '  <div class="buyer-name">' +
-                          (room.opponentName ? room.opponentName : '닉네임') +
-                    '  </div>' +
-                    '  <div class="buyer-last-message">' +
-                          (room.lastMessage ? room.lastMessage : '마지막 채팅 내용...') +
-                    '  </div>' +
-                    '</div>' +
-                    '<div class="buyer-time">' + timeText + '</div>';
+                buyerList.innerHTML = '';
 
-                item.addEventListener('click', function() {
-                    selectedRoomId = room.roomId;
-                    btnConfirm.disabled = false;
-                    document
-                        .querySelectorAll('input[name="roomRadio"]')
-                        .forEach(function(radio) { radio.checked = false; });
-                    item.querySelector('input[name="roomRadio"]').checked = true;
+                rooms.forEach(function(room) {
+                    const item = document.createElement('div');
+                    item.className = 'buyer-item';
+                    item.dataset.roomId = room.roomId;
+
+                    // 마지막 메시지 시각 포맷 (MM/DD HH:mm)
+                    let timeText = '';
+                    if (room.lastMessageAt) {
+                        const d = new Date(room.lastMessageAt);
+                        const month = String(d.getMonth() + 1).padStart(2, '0');
+                        const day   = String(d.getDate()).padStart(2, '0');
+                        const hour  = String(d.getHours()).padStart(2, '0');
+                        const min   = String(d.getMinutes()).padStart(2, '0');
+                        timeText = month + '/' + day + ' ' + hour + ':' + min;
+                    }
+
+                    // 프로필 이미지
+                    const profileSrc = room.opponentProfileImagePath
+                        ? (ctx + room.opponentProfileImagePath)
+                        : (ctx + '/resources/images/default_profile.png');
+
+                    item.innerHTML =
+                        '<input type="radio" name="roomRadio" class="buyer-radio">' +
+                        '<img src="' + profileSrc + '" ' +
+                        '     class="buyer-avatar" ' +
+                        '     onerror="this.src=\'' + ctx + '/resources/images/default_profile.png\';">' +
+                        '<div class="buyer-info-main">' +
+                        '  <div class="buyer-name">' +
+                              (room.opponentName ? room.opponentName : '닉네임') +
+                        '  </div>' +
+                        '  <div class="buyer-last-message">' +
+                              (room.lastMessage ? room.lastMessage : '마지막 채팅 내용...') +
+                        '  </div>' +
+                        '</div>' +
+                        '<div class="buyer-time">' + timeText + '</div>';
+
+                    // 클릭 시 선택 처리
+                    item.addEventListener('click', function() {
+                        selectedRoomId = room.roomId;
+                        btnConfirm.disabled = false;
+
+                        document
+                            .querySelectorAll('input[name="roomRadio"]')
+                            .forEach(function(radio) { radio.checked = false; });
+
+                        item.querySelector('input[name="roomRadio"]').checked = true;
+                    });
+
+                    buyerList.appendChild(item);
                 });
-
-                buyerList.appendChild(item);
-            });
-        })
-        .catch(function(err) {
-            console.error(err);
-            buyerList.innerHTML =
-                '<p style="font-size:13px; color:#777;">네트워크 오류로 목록을 불러오지 못했습니다.</p>';
-        });
-
-    // ✅ 구매자 확정 버튼 동작
-    btnConfirm.onclick = function() {
-        if (!selectedRoomId) {
-            alert('구매자를 선택해 주세요.');
-            return;
-        }
-
-        if (!confirm('선택한 채팅 상대를 최종 구매자로 확정하고, 상품을 판매완료로 처리하시겠습니까?')) {
-            return;
-        }
-
-        fetch(ctx + '/chat/confirmBuyer', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-                // (Spring Security CSRF 사용 시 여기 X-CSRF-TOKEN 헤더 추가)
-            },
-            body: JSON.stringify({
-                roomId: selectedRoomId,
-                productId: currentProductIdForModal
             })
-        })
-        .then(function(res) { return res.json(); })
-        .then(function(data) {
-            if (data.status === 'login_required') {
-                alert('로그인이 필요합니다.');
-                location.href = ctx + '/login';
+            .catch(function(err) {
+                console.error(err);
+                buyerList.innerHTML =
+                    '<p style="font-size:13px; color:#777;">네트워크 오류로 목록을 불러오지 못했습니다.</p>';
+            });
+
+        // ✅ 확인 버튼 동작 등록
+        btnConfirm.onclick = function() {
+            if (!selectedRoomId) {
+                alert('구매자를 선택해 주세요.');
                 return;
             }
-            if (data.status !== 'success') {
-                alert(data.message || '구매자 확정 처리 중 오류가 발생했습니다.');
+
+            if (!confirm('선택한 채팅 상대에게 거래 확정을 요청하시겠습니까?')) {
                 return;
             }
 
-            alert('구매자가 확정되었으며, 상품이 판매완료로 변경되었습니다.');
-            closeBuyerModal();
+            // 🔸 여기서는 "요청"만 보냄 (TRADE_STATUS = REQUESTED)
+            fetch(ctx + '/chat/confirmBuyer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    roomId: selectedRoomId,
+                    productId: currentProductIdForModal
+                })
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                if (data.status === 'login_required') {
+                    alert('로그인이 필요합니다.');
+                    location.href = ctx + '/login';
+                    return;
+                }
+                if (data.status !== 'success') {
+                    alert(data.message || '구매자 확정 요청 처리 중 오류가 발생했습니다.');
+                    return;
+                }
 
-            // 🔁 현재 상품 상세 페이지로 이동(새로고침 효과)
-            location.href = ctx + '/product/detail?id=' + currentProductIdForModal;
-        })
-        .catch(function(err) {
-            console.error(err);
-            alert('서버 통신 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
-        });
-    };
-}
+                // ✅ 여기서는 “판매완료”가 아니라 “구매자에게 거래확정 요청만 보낸 상태”입니다.
+                alert('선택한 구매자에게 거래 확정을 요청했습니다.\n채팅방에서 안내 메시지를 남겨 주세요.');
 
-function closeBuyerModal() {
-    const modal = document.getElementById('buyerModal');
-    modal.style.display = 'none';
-}
+                closeBuyerModal();
+
+                // 필요하시면 새로고침 (tradeStatus를 화면에 쓰실 계획이라면)
+                // location.reload();
+            })
+            .catch(function(err) {
+                console.error(err);
+                alert('서버 통신 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+            });
+        };
+    }
+
+    // 🔹 모달 닫기
+    function closeBuyerModal() {
+        const modal = document.getElementById('buyerModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+        selectedRoomId = null;
+        currentProductIdForModal = null;
+    }
 </script>
-
-
 
 
 </body>

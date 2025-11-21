@@ -28,4 +28,6 @@ public class ChatRoomVO {
 
     private String opponentProfileImagePath;   // 구매자 프로필 이미지 경로
 
+    private String tradeStatus;
+
 }

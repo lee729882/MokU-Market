@@ -1,10 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="c"   uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"  %>
 
-<%
-    // JSP 상단에서 contextPath 한 번만 꺼내서 쓰기
-%>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 
 <!DOCTYPE html>
@@ -14,27 +11,24 @@
     <title>채팅 | 목유마켓</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- ✅ 머티리얼 아이콘 (chat_bubble, notifications 아이콘용) -->
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" />
 
     <style>
-    html, body {
-    height: 100%;
-}
+        html, body {
+            height: 100%;
+        }
         body {
             margin: 0;
             font-family: 'Nanum Gothic', sans-serif;
             background-color: #f5f5f5;
-            
-                display: flex;          /* 추가 */
-    flex-direction: column; /* 추가 */
+            display: flex;
+            flex-direction: column;
         }
 
         .page-wrapper {
-            margin-top: 80px; /* 기존 공통 헤더 높이만큼 */
-            flex: 1;                /* 추가: 본문이 남은 높이를 차지하도록 */
-            
+            margin-top: 80px; /* 헤더 높이만큼 */
+            flex: 1;
         }
 
         .chat-container {
@@ -45,7 +39,7 @@
             gap: 24px;
         }
 
-        /* ------------ 왼쪽: 채팅방 리스트 ------------ */
+        /* ================== 왼쪽: 채팅방 리스트 ================== */
         .chat-list {
             width: 32%;
             background-color: #ffffff;
@@ -137,7 +131,7 @@
             font-weight: 700;
         }
 
-        /* ------------ 오른쪽: 채팅 상세 ------------ */
+        /* ================== 오른쪽: 채팅 상세 ================== */
         .chat-detail {
             flex: 1;
             background-color: #ffffff;
@@ -148,7 +142,7 @@
             overflow: hidden;
         }
 
-        /* 상단 상품/방 정보 영역 */
+        /* 상단 상품/방 정보 */
         .chat-detail-header {
             padding: 12px 20px;
             border-bottom: 1px solid #eee;
@@ -241,15 +235,10 @@
             background-color: #eee;
         }
 
-        .date-divider::before {
-            left: 8px;
-        }
+        .date-divider::before { left: 8px; }
+        .date-divider::after  { right: 8px; }
 
-        .date-divider::after {
-            right: 8px;
-        }
-
-        /* 메시지 리스트 영역 */
+        /* 메시지 리스트 */
         .chat-messages {
             flex: 1;
             padding: 12px 20px 8px;
@@ -359,7 +348,8 @@
             color: #aaa;
             font-size: 14px;
         }
-         /* 푸터 */
+
+        /* 푸터 */
         .footer {
             background-color: #f1f1f1;
             text-align: center;
@@ -367,9 +357,9 @@
             font-size: 13px;
             color: #666;
             border-top: 1px solid #ddd;
-            margin-top: 40px;
         }
-         /* 플로팅 버튼 세트 */
+
+        /* 플로팅 버튼 */
         .floating-container {
             position: fixed;
             bottom: 35px;
@@ -381,7 +371,6 @@
             z-index: 999;
         }
 
-        /* Top 버튼 */
         .floating-top {
             background: transparent;
             border: none;
@@ -406,7 +395,6 @@
             transform: translateY(-2px);
         }
 
-        /* + 등록 버튼 */
         .floating-add {
             display: flex;
             justify-content: center;
@@ -435,7 +423,7 @@
 <div class="page-wrapper">
     <div class="chat-container">
 
-        <!-- ======================= 왼쪽: 채팅방 리스트 ======================= -->
+        <!-- ============== 왼쪽: 채팅방 리스트 ============== -->
         <div class="chat-list">
             <div class="chat-list-header">Chat</div>
 
@@ -446,10 +434,10 @@
             </c:if>
 
             <c:forEach var="room" items="${rooms}">
-                <a class="chat-room-item
-                          <c:if test='${not empty activeRoom and room.roomId == activeRoom.roomId}'>active</c:if>"
-                   href="${ctx}/chat/room?roomId=${room.roomId}">
-
+                <a
+                    href="${ctx}/chat/room?roomId=${room.roomId}"
+                    class="chat-room-item ${not empty activeRoom and room.roomId == activeRoom.roomId ? 'active' : ''}"
+                >
                     <div class="chat-room-thumb">
                         <c:if test="${not empty room.productImageUrl}">
                             <img src="${ctx}${room.productImageUrl}" alt="상품 이미지">
@@ -479,9 +467,8 @@
             </c:forEach>
         </div>
 
-        <!-- ======================= 오른쪽: 채팅 상세 ======================= -->
+        <!-- ============== 오른쪽: 채팅 상세 ============== -->
         <div class="chat-detail">
-
             <c:choose>
                 <c:when test="${empty activeRoom}">
                     <div class="empty-room">
@@ -492,11 +479,8 @@
                 <c:otherwise>
                     <!-- 상단 상품/방 정보 -->
                     <div class="chat-detail-header">
-
-                        <!-- ✅ 상품 영역 클릭 시 상세 페이지로 이동 -->
                         <a href="${ctx}/product/detail?id=${activeRoom.productId}"
                            style="display:flex; align-items:center; gap:12px; text-decoration:none; color:inherit; flex:1;">
-
                             <div class="chat-detail-thumb">
                                 <c:if test="${not empty activeRoom.productImageUrl}">
                                     <img src="${ctx}${activeRoom.productImageUrl}" alt="상품 이미지">
@@ -526,43 +510,52 @@
                         </div>
                     </div>
 
-                    <!-- 메시지 리스트 -->
-						<div class="chat-messages" id="chatMessages">
-						
-						    <%-- ✅ 현재 날짜 객체 생성 --%>
-						    <jsp:useBean id="now" class="java.util.Date" />
-						
-						    <%-- 오늘 날짜 한 줄만 표시 --%>
-						    <div class="date-divider">
-						        <fmt:formatDate value="${now}" pattern="yyyy.MM.dd (E)" />
-						    </div>
-						
-						    <%-- 기존 prevDate / msgDate 로직은 제거하고 메시지만 그리기 --%>
-						    <c:forEach var="msg" items="${messages}">
-						        <c:set var="isMe" value="${msg.senderId == loginUser.userId}" />
-						
-						        <div class="message-row ${isMe ? 'me' : 'other'}">
-						            <c:if test="${not isMe}">
-						                <div class="message-meta">
-						                    <div class="message-nickname">
-						                        <c:out value="${activeRoom.opponentName}" default="프로필" />
-						                    </div>
-						                </div>
-						            </c:if>
-						
-						            <div class="message-bubble ${isMe ? 'me' : 'other'}">
-						                <c:out value="${msg.content}" />
-						            </div>
-						
-						            <div class="message-meta">
-						                <div class="message-time">
-						                    <fmt:formatDate value="${msg.sentAt}" pattern="HH:mm" />
-						                </div>
-						            </div>
-						        </div>
-						    </c:forEach>
-						</div>
+                    <!-- ✅ 거래 상태 배너 (판매자 요청 → 구매자 확정용) -->
+                    <c:if test="${not empty activeRoom}">
+                        <div id="tradeBanner"
+                             data-room-id="${activeRoom.roomId}"
+                             data-product-id="${activeRoom.productId}"
+                             data-trade-status="${activeRoom.tradeStatus}"
+                             data-is-buyer="${loginUser.userId == activeRoom.buyerId}"
+                             style="padding:10px 16px; font-size:13px; border-bottom:1px solid #eee;
+                                    background:#fff9e6; display:none;">
+                            <!-- JS에서 내용 동적으로 채움 -->
+                        </div>
+                    </c:if>
 
+                    <!-- 메시지 목록 -->
+                    <div class="chat-messages" id="chatMessages">
+
+                        <%-- 오늘 날짜 구분선 --%>
+                        <jsp:useBean id="now" class="java.util.Date" />
+                        <div class="date-divider">
+                            <fmt:formatDate value="${now}" pattern="yyyy.MM.dd (E)" />
+                        </div>
+
+                        <c:forEach var="msg" items="${messages}">
+                            <c:set var="isMe" value="${msg.senderId == loginUser.userId}" />
+
+                            <div class="message-row ${isMe ? 'me' : 'other'}">
+                                <c:if test="${not isMe}">
+                                    <div class="message-meta">
+                                        <div class="message-nickname">
+                                            <c:out value="${activeRoom.opponentName}" default="프로필" />
+                                        </div>
+                                    </div>
+                                </c:if>
+
+                                <div class="message-bubble ${isMe ? 'me' : 'other'}">
+                                    <c:out value="${msg.content}" />
+                                </div>
+
+                                <div class="message-meta">
+                                    <div class="message-time">
+                                        <fmt:formatDate value="${msg.sentAt}" pattern="HH:mm" />
+                                    </div>
+                                </div>
+                            </div>
+                        </c:forEach>
+                    </div>
 
                     <!-- 입력 영역 -->
                     <form class="chat-input-wrapper" id="chatForm">
@@ -577,186 +570,202 @@
 
     </div>
 </div>
-    <!-- 푸터 -->
-    <div class="footer">
-        <p>© 2025 Mokpo National University | MokU Market</p>
-    </div>
-  <!-- 플로팅 버튼 -->
-        <div class="floating-container">
-            <button id="topBtn" class="floating-top">^<br><span>Top</span></button>
-            <a href="${pageContext.request.contextPath}/product/add" class="floating-add">+</a>
-        </div>
 
-    </div> <!-- /page-wrapper -->
+<!-- 푸터 -->
+<div class="footer">
+    <p>© 2025 Mokpo National University | MokU Market</p>
+</div>
 
-    <!-- Top 버튼 기능 -->
-    <script>
-        document.getElementById("topBtn").addEventListener("click", () => {
-            window.scrollTo({ top: 0, behavior: "smooth" });
-        });
+<!-- 플로팅 버튼 -->
+<div class="floating-container">
+    <button id="topBtn" class="floating-top">^<br><span>Top</span></button>
+    <a href="${ctx}/product/add" class="floating-add">+</a>
+</div>
 
-        // 슬라이더 스크립트
-        let currentSlide = 0;
-        const AUTO_DELAY = 5000;
-        let autoTimer = null;
+<script>
+    // Top 버튼
+    document.getElementById("topBtn").addEventListener("click", function() {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+</script>
 
-        function updateCarousel() {
-            const items = document.querySelectorAll(".carousel-item");
-            const dots = document.querySelectorAll(".carousel-dots .dot");
-            const totalSlides = items.length;
-            if (totalSlides === 0) return;
-
-            currentSlide = (currentSlide + totalSlides) % totalSlides;
-
-            items.forEach((item, i) => {
-                item.classList.toggle("active", i === currentSlide);
-            });
-            dots.forEach((dot, i) => {
-                dot.classList.toggle("active", i === currentSlide);
-            });
-        }
-
-        function goToSlide(index) {
-            currentSlide = index;
-            updateCarousel();
-        }
-
-        function moveSlide(delta) {
-            currentSlide += delta;
-            updateCarousel();
-        }
-
-        function startAuto() {
-            stopAuto();
-            autoTimer = setInterval(() => {
-                currentSlide += 1;
-                updateCarousel();
-            }, AUTO_DELAY);
-        }
-
-        function stopAuto() {
-            if (autoTimer) {
-                clearInterval(autoTimer);
-                autoTimer = null;
-            }
-        }
-
-        window.addEventListener("load", () => {
-            currentSlide = 0;
-            updateCarousel();
-            startAuto();
-
-            const hero = document.querySelector(".hero-carousel");
-            if (hero) {
-                hero.addEventListener("mouseenter", stopAuto);
-                hero.addEventListener("mouseleave", startAuto);
-            }
-        });
-    </script>
 <c:if test="${not empty activeRoom}">
 <script>
-    (function() {
-        const textarea = document.getElementById('messageText');
-        const btnSend  = document.getElementById('btnSend');
-        const form     = document.getElementById('chatForm');
-        const msgBox   = document.getElementById('chatMessages');
+(function() {
+    const textarea = document.getElementById('messageText');
+    const btnSend  = document.getElementById('btnSend');
+    const form     = document.getElementById('chatForm');
+    const msgBox   = document.getElementById('chatMessages');
 
-        const ctx    = '${ctx}';
-        const roomId = '${activeRoom.roomId}';
+    const ctx       = '${ctx}';
+    const roomId    = '${activeRoom.roomId}';
+    const productId = '${activeRoom.productId}';
 
-        if (msgBox) {
-            msgBox.scrollTop = msgBox.scrollHeight;
-        }
+    // 거래 상태 / 역할 정보
+    const bannerEl = document.getElementById('tradeBanner');
+    let tradeStatus = 'NONE';
+    let isBuyer     = false;
 
-        if (!textarea || !btnSend || !form) return;
+    if (bannerEl) {
+        tradeStatus = bannerEl.dataset.tradeStatus || 'NONE';
+        isBuyer     = (bannerEl.dataset.isBuyer === 'true');
+    }
 
-        function updateButton() {
-            const v = textarea.value.trim();
-            btnSend.disabled = v.length === 0;
-        }
+    if (msgBox) {
+        msgBox.scrollTop = msgBox.scrollHeight;
+    }
 
-        textarea.addEventListener('input', updateButton);
+    if (!textarea || !btnSend || !form) return;
 
-        // Ctrl+Enter 전송, Enter는 줄바꿈
-        textarea.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && e.ctrlKey) {
-                e.preventDefault();
-                if (!btnSend.disabled) {
-                    sendMessage();
-                }
+    // ✅ 거래 상태별 UI 제어
+    if (tradeStatus === 'CONFIRMED') {
+        // 거래 완료: 채팅 차단
+        textarea.disabled   = true;
+        btnSend.disabled    = true;
+        textarea.placeholder = '거래가 완료된 채팅방입니다. 추가 메세지는 보낼 수 없습니다.';
+    } else if (tradeStatus === 'REQUESTED' && isBuyer && bannerEl) {
+        // 판매자가 거래 확정을 요청했고, 내가 그 구매자일 때
+        bannerEl.style.display        = 'flex';
+        bannerEl.style.justifyContent = 'space-between';
+        bannerEl.style.alignItems     = 'center';
+
+        bannerEl.innerHTML =
+            '<span>판매자가 거래 확정을 요청했습니다. 실제로 거래를 완료하셨다면 확정 버튼을 눌러 주세요.</span>' +
+            '<button type="button" id="btnConfirmTrade" ' +
+            ' style="margin-left:8px; padding:5px 10px; border-radius:999px; border:none;' +
+            ' background:#ff8a00; color:#fff; font-size:12px; cursor:pointer;">' +
+            '거래 확정하기</button>';
+
+        const btnConfirmTrade = document.getElementById('btnConfirmTrade');
+        btnConfirmTrade.addEventListener('click', function() {
+            if (!confirm('이 채팅 상대와의 거래를 최종 확정하시겠습니까?\n' +
+                         '확정 후에는 게시글이 판매완료로 변경됩니다.')) {
+                return;
             }
-        });
 
-        form.addEventListener('submit', function(e) {
+            fetch(ctx + '/chat/confirmTradeByBuyer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8'
+                },
+                body: JSON.stringify({
+                    roomId: parseInt(roomId, 10),
+                    productId: parseInt(productId, 10)
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'login_required') {
+                    alert('로그인이 필요합니다.');
+                    location.href = ctx + '/login';
+                    return;
+                }
+                if (data.status !== 'success') {
+                    alert(data.message || '거래 확정 처리 중 오류가 발생했습니다.');
+                    return;
+                }
+
+                alert('거래가 확정되었으며, 상품이 판매완료로 변경되었습니다.');
+                location.reload();
+            })
+            .catch(err => {
+                console.error(err);
+                alert('서버 통신 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+            });
+        });
+    }
+
+    function updateButton() {
+        if (textarea.disabled) {
+            btnSend.disabled = true;
+            return;
+        }
+        const v = textarea.value.trim();
+        btnSend.disabled = v.length === 0;
+    }
+
+    textarea.addEventListener('input', updateButton);
+
+    // Ctrl+Enter 전송, Enter는 줄바꿈
+    textarea.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && e.ctrlKey) {
             e.preventDefault();
             if (!btnSend.disabled) {
                 sendMessage();
             }
+        }
+    });
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (!btnSend.disabled) {
+            sendMessage();
+        }
+    });
+
+    function appendMessage(me, content) {
+        if (!msgBox) return;
+
+        const row = document.createElement('div');
+        row.className = 'message-row ' + (me ? 'me' : 'other');
+
+        const bubble = document.createElement('div');
+        bubble.className = 'message-bubble ' + (me ? 'me' : 'other');
+        bubble.textContent = content;
+
+        const meta = document.createElement('div');
+        meta.className = 'message-meta';
+        const timeSpan = document.createElement('div');
+        timeSpan.className = 'message-time';
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, '0');
+        const mm = String(now.getMinutes()).padStart(2, '0');
+        timeSpan.textContent = hh + ':' + mm;
+        meta.appendChild(timeSpan);
+
+        row.appendChild(bubble);
+        row.appendChild(meta);
+
+        msgBox.appendChild(row);
+        msgBox.scrollTop = msgBox.scrollHeight;
+    }
+
+    function sendMessage() {
+        const text = textarea.value.trim();
+        if (!text) return;
+
+        const params = new URLSearchParams();
+        params.append('roomId', roomId);
+        params.append('content', text);
+
+        fetch(ctx + '/chat/room/send', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            },
+            body: params.toString()
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                appendMessage(true, text);
+                textarea.value = '';
+                updateButton();
+            } else if (data.status === 'login_required') {
+                alert('로그인이 필요합니다.');
+                location.href = ctx + '/login';
+            } else {
+                alert(data.message || '메시지 전송 중 오류가 발생했습니다.');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('네트워크 오류가 발생했습니다.');
         });
+    }
 
-        function appendMessage(me, content) {
-            if (!msgBox) return;
-
-            const row = document.createElement('div');
-            row.className = 'message-row ' + (me ? 'me' : 'other');
-
-            const bubble = document.createElement('div');
-            bubble.className = 'message-bubble ' + (me ? 'me' : 'other');
-            bubble.textContent = content;
-
-            const meta = document.createElement('div');
-            meta.className = 'message-meta';
-            const timeSpan = document.createElement('div');
-            timeSpan.className = 'message-time';
-            const now = new Date();
-            const hh = String(now.getHours()).padStart(2, '0');
-            const mm = String(now.getMinutes()).padStart(2, '0');
-            timeSpan.textContent = hh + ':' + mm;
-            meta.appendChild(timeSpan);
-
-            row.appendChild(bubble);
-            row.appendChild(meta);
-
-            msgBox.appendChild(row);
-            msgBox.scrollTop = msgBox.scrollHeight;
-        }
-
-        function sendMessage() {
-            const text = textarea.value.trim();
-            if (!text) return;
-
-            const params = new URLSearchParams();
-            params.append('roomId', roomId);
-            params.append('content', text);
-
-            fetch(ctx + '/chat/room/send', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-                },
-                body: params.toString()
-            })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        appendMessage(true, text);
-                        textarea.value = '';
-                        updateButton();
-                    } else if (data.status === 'login_required') {
-                        alert('로그인이 필요합니다.');
-                        location.href = ctx + '/login';
-                    } else {
-                        alert(data.message || '메시지 전송 중 오류가 발생했습니다.');
-                    }
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert('네트워크 오류가 발생했습니다.');
-                });
-        }
-
-        updateButton();
-    })();
+    updateButton();
+})();
 </script>
 </c:if>
 

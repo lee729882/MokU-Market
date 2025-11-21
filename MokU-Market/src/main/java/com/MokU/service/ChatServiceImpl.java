@@ -94,10 +94,12 @@ public class ChatServiceImpl implements ChatService {
 
         return msg;
     }
+
     @Override
     public int countTotalUnread(int userId) {
         return chatDAO.countTotalUnread(userId);
     }
+
     @Override
     public int getTotalUnreadCount(int userId) {
         return chatDAO.countUnreadByUser(userId);
@@ -106,5 +108,12 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public List<ChatRoomVO> getRoomsByProduct(int productId) {
         return chatDAO.findRoomsByProduct(productId);
+    }
+
+    /* 🔹 trade_status 한 번에 변경 (최소 수정 버전) */
+    @Override
+    @Transactional
+    public void updateTradeStatus(int roomId, String tradeStatus) {
+        chatDAO.updateTradeStatus(roomId, tradeStatus);
     }
 }

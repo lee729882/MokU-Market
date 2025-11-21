@@ -10,14 +10,22 @@ import com.MokU.vo.ChatMessageVO;
 
 public interface ChatDAO {
 
+    // ===== 채팅방 관련 =====
     int createRoom(ChatRoomVO vo);
 
     ChatRoomVO findRoomById(int roomId);
 
     ChatRoomVO findRoomByParticipants(Map<String, Object> params);
 
-    List<ChatRoomVO> findRoomsByUser(int userId);
+    List<ChatRoomVO> findRoomsByUser(@Param("userId") int userId);
 
+    List<ChatRoomVO> findRoomsByProduct(@Param("productId") int productId);
+
+    // 🔸 거래 상태 변경 (NONE / REQUESTED / CONFIRMED 등)
+    void updateTradeStatus(@Param("roomId") int roomId,
+                           @Param("tradeStatus") String tradeStatus);
+
+    // ===== 메시지 관련 =====
     int insertMessage(ChatMessageVO vo);
 
     List<ChatMessageVO> getMessagesByRoom(int roomId);
@@ -27,12 +35,9 @@ public interface ChatDAO {
     int markMessagesAsRead(Map<String, Object> params);
 
     int updateRoomLastMessage(Map<String, Object> params);
-    
-    int countTotalUnread(int userId);
-    
-    int countUnreadByUser(int userId);
-    
-    List<ChatRoomVO> findRoomsByProduct(@Param("productId") int productId);
 
+    // ===== 미읽음 카운트 =====
+    int countTotalUnread(@Param("userId") int userId);
 
+    int countUnreadByUser(@Param("userId") int userId);
 }
