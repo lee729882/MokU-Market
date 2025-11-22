@@ -447,9 +447,9 @@ html, body {
     margin-top: 2px;
 }
 .buyer-time {
-    font-size: 11px;
-    color: #999;
+    display: none;
 }
+
 .buyer-modal-footer {
     margin-top: 16px;
     display: flex;
@@ -474,6 +474,114 @@ html, body {
     border-color: #ccc;
     cursor: default;
 }
+/* ================= 후기 리스트 ================= */
+.review-section {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto 40px;
+}
+
+.review-subtitle {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 18px 0 10px;
+    color: #333;
+}
+
+.review-card {
+    display: flex;
+    gap: 14px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    font-size: 13px;
+}
+
+.review-thumb {
+    width: 70px;
+    height: 70px;
+    border-radius: 10px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: #eee;
+    cursor: pointer;
+}
+.review-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.review-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+.review-counterpart {
+    font-weight: 700;
+    color: #333;
+}
+.review-role {
+    font-size: 11px;
+    color: #777;
+    margin-left: 6px;
+}
+.review-date {
+    font-size: 11px;
+    color: #999;
+}
+
+.review-score-row {
+    margin: 4px 0 6px;
+}
+.score-badge {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+}
+.score-badge.good {
+    background: #e0f7ec;
+    color: #007a5c;
+}
+.score-badge.normal {
+    background: #f5f5f5;
+    color: #555;
+}
+.score-badge.bad {
+    background: #ffe7e7;
+    color: #f44336;
+}
+
+.review-text {
+    white-space: pre-line;
+    line-height: 1.4;
+    color: #444;
+    margin-bottom: 4px;
+}
+
+.review-product-link {
+    margin-top: 2px;
+    font-size: 12px;
+}
+.review-product-link a {
+    color: #007a5c;
+    text-decoration: none;
+}
+.review-product-link a:hover {
+    text-decoration: underline;
+}
+
 </style>
 </head>
 
@@ -677,13 +785,141 @@ html, body {
         </c:choose>
     </div>
 
-    <!-- ============== 내 후기 탭 (임시) ============== -->
-    <div class="tab-content ${activeTab eq 'reviews' ? 'active' : ''}" id="tab-reviews">
-        <h3 class="section-title">내 후기</h3>
-        <p style="text-align:center; color:#777; margin-top:30px;">
-            아직 작성된 후기가 없습니다.
-        </p>
+<!-- ============== 내 후기 탭 ============== -->
+<div class="tab-content ${activeTab eq 'reviews' ? 'active' : ''}" id="tab-reviews">
+    <h3 class="section-title">내 후기</h3>
+
+    <!-- 내가 받은 후기 -->
+    <div class="review-section">
+        <h4 class="review-subtitle">내가 받은 후기</h4>
+
+        <c:choose>
+            <c:when test="${empty receivedReviews}">
+                <p style="text-align:center; color:#777; margin-top:10px;">
+                    아직 받은 후기가 없습니다.
+                </p>
+            </c:when>
+            <c:otherwise>
+                <c:forEach var="rv" items="${receivedReviews}">
+                    <div class="review-card">
+                        <!-- 거래 상품 썸네일 -->
+                        <div class="review-thumb"
+                             onclick="location.href='${pageContext.request.contextPath}/product/detail?id=${rv.productId}'">
+                            <img src="${pageContext.request.contextPath}${rv.productImagePath}"
+                                 alt="${rv.productTitle}"
+                                 onerror="this.src='${pageContext.request.contextPath}/resources/images/no_image.png';" />
+                        </div>
+
+                        <div class="review-main">
+                            <div class="review-header">
+                                <div>
+                                    <span class="review-counterpart">${rv.writerName} 님</span>
+                                    <span class="review-role">
+                                        <c:choose>
+                                            <c:when test="${rv.writerRole eq 'BUYER'}">(구매자)</c:when>
+                                            <c:when test="${rv.writerRole eq 'SELLER'}">(판매자)</c:when>
+                                            <c:otherwise></c:otherwise>
+                                        </c:choose>
+                                    </span>
+                                </div>
+                                <span class="review-date">
+                                    <fmt:formatDate value="${rv.createdAt}" pattern="yyyy.MM.dd HH:mm" />
+                                </span>
+                            </div>
+
+<div class="review-score-row">
+    <c:set var="scoreClass" value="normal" />
+    <!-- 평점(1~5점) 기준으로 색 나누기 예시 -->
+    <c:if test="${rv.rating ge 4}"><c:set var="scoreClass" value="good" /></c:if>
+    <c:if test="${rv.rating le 2}"><c:set var="scoreClass" value="bad" /></c:if>
+
+    <span class="score-badge ${scoreClass}">
+        거래 만족도 ${rv.rating}점
+    </span>
+</div>
+
+<div class="review-text">
+    <c:out value="${rv.content}" />
+</div>
+
+                            <div class="review-product-link">
+                                <a href="${pageContext.request.contextPath}/product/detail?id=${rv.productId}">
+                                    거래 상품: <c:out value="${rv.productTitle}" />
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </c:forEach>
+            </c:otherwise>
+        </c:choose>
     </div>
+
+  <!-- 내가 작성한 후기 -->
+<div class="review-section">
+    <h4 class="review-subtitle">내가 남긴 후기</h4>
+
+    <c:choose>
+        <c:when test="${empty writtenReviews}">
+            <p style="text-align:center; color:#777; margin-top:10px;">
+                아직 작성한 후기가 없습니다.
+            </p>
+        </c:when>
+        <c:otherwise>
+            <c:forEach var="rv" items="${writtenReviews}">
+                <div class="review-card">
+                    <div class="review-thumb"
+                         onclick="location.href='${pageContext.request.contextPath}/product/detail?id=${rv.productId}'">
+                        <img src="${pageContext.request.contextPath}${rv.productImagePath}"
+                             alt="${rv.productTitle}"
+                             onerror="this.src='${pageContext.request.contextPath}/resources/images/no_image.png';" />
+                    </div>
+
+                    <div class="review-main">
+                        <div class="review-header">
+                            <div>
+                                <span class="review-counterpart">${rv.targetName} 님</span>
+                                <span class="review-role">
+                                    <c:choose>
+                                        <c:when test="${rv.writerRole eq 'BUYER'}">(내가 구매자)</c:when>
+                                        <c:when test="${rv.writerRole eq 'SELLER'}">(내가 판매자)</c:when>
+                                        <c:otherwise></c:otherwise>
+                                    </c:choose>
+                                </span>
+                            </div>
+                            <span class="review-date">
+                                <fmt:formatDate value="${rv.createdAt}" pattern="yyyy.MM.dd HH:mm" />
+                            </span>
+                        </div>
+
+                        <!-- ✅ 평점 필드 수정 -->
+                        <div class="review-score-row">
+                            <c:set var="scoreClass" value="normal" />
+                            <c:if test="${rv.rating ge 4}"><c:set var="scoreClass" value="good" /></c:if>
+                            <c:if test="${rv.rating le 2}"><c:set var="scoreClass" value="bad" /></c:if>
+
+                            <span class="score-badge ${scoreClass}">
+                                거래 만족도 ${rv.rating}점
+                            </span>
+                        </div>
+
+                        <!-- ✅ 후기 내용 필드 수정 -->
+                        <div class="review-text">
+                            <c:out value="${rv.content}" />
+                        </div>
+
+                        <div class="review-product-link">
+                            <a href="${pageContext.request.contextPath}/product/detail?id=${rv.productId}">
+                                거래 상품: <c:out value="${rv.productTitle}" />
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </c:forEach>
+        </c:otherwise>
+    </c:choose>
+</div>
+
+
 
 </div> <!-- /mypage-wrapper -->
 

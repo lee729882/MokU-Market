@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.MokU.dao.ReviewDAO">
+
+    <!-- 1. 리뷰 등록 -->
+    <insert id="insertReview" parameterType="com.MokU.vo.ReviewVO">
+        <selectKey keyProperty="reviewId" resultType="int" order="BEFORE">
+            SELECT SEQ_REVIEW.NEXTVAL FROM DUAL
+        </selectKey>
+
+        INSERT INTO REVIEW (
+            REVIEW_ID,
+            DEAL_ID,
+            WRITER_ID,
+            TARGET_ID,
+            RATING,
+            CONTENT,
+            CREATED_AT
+        ) VALUES (
+            #{reviewId},
+            #{dealId},
+            #{writerId},
+            #{targetId},
+            #{rating},
+            #{content},
+            SYSDATE
+        )
+    </insert>
+
+    <!-- 2. 리뷰 수정 -->
+    <update id="updateReview" parameterType="com.MokU.vo.ReviewVO">
+        UPDATE REVIEW
+           SET RATING  = #{rating},
+               CONTENT = #{content}
+         WHERE REVIEW_ID = #{reviewId}
+    </update>
+
+    <!-- 3. 특정 거래 + 작성자 기준 리뷰 조회 -->
+    <select id="findByDealAndWriter"
+            resultType="com.MokU.vo.ReviewVO">
+
+        SELECT
+            REVIEW_ID  AS reviewId,
+            DEAL_ID    AS dealId,
+            WRITER_ID  AS writerId,
+            TARGET_ID  AS targetId,
+            RATING     AS rating,
+            CONTENT    AS content,
+            CREATED_AT AS createdAt
+        FROM REVIEW
+        WHERE DEAL_ID   = #{dealId}
+          AND WRITER_ID = #{writerId}
+    </select>
+
+    <!-- 4. 내가 받은 리뷰 목록 (TARGET_ID = 나) -->
+    <select id="findReceivedReviews"
+            parameterType="int"
+            resultType="com.MokU.vo.ReviewVO">
+
+        SELECT
+            r.REVIEW_ID   AS reviewId,
+            r.DEAL_ID     AS dealId,
+            r.WRITER_ID   AS writerId,
+            r.TARGET_ID   AS targetId,
+            r.RATING      AS rating,
+            r.CONTENT     AS content,
+            r.CREATED_AT  AS createdAt,
+            u.NAME        AS writerName,
+            p.PRODUCT_ID  AS productId,
+            p.TITLE       AS productTitle,
+            p.IMAGE_PATH  AS productImagePath,
+            CASE
+                WHEN d.BUYER_ID  = r.WRITER_ID THEN 'BUYER'
+                WHEN d.SELLER_ID = r.WRITER_ID THEN 'SELLER'
+                ELSE NULL
+            END           AS writerRole
+        FROM REVIEW r
+        LEFT JOIN DEAL      d ON r.DEAL_ID    = d.DEAL_ID
+        LEFT JOIN PRODUCT   p ON d.PRODUCT_ID = p.PRODUCT_ID
+        LEFT JOIN MOKU_USER u ON r.WRITER_ID  = u.USER_ID
+        WHERE r.TARGET_ID = #{userId}
+        ORDER BY r.CREATED_AT DESC
+    </select>
+
+    <!-- 5. 내가 쓴 리뷰 목록 (WRITER_ID = 나) -->
+    <select id="findWrittenReviews"
+            parameterType="int"
+            resultType="com.MokU.vo.ReviewVO">
+
+        SELECT
+            r.REVIEW_ID   AS reviewId,
+            r.DEAL_ID     AS dealId,
+            r.WRITER_ID   AS writerId,
+            r.TARGET_ID   AS targetId,
+            r.RATING      AS rating,
+            r.CONTENT     AS content,
+            r.CREATED_AT  AS createdAt,
+            t.NAME        AS targetName,
+            p.PRODUCT_ID  AS productId,
+            p.TITLE       AS productTitle,
+            p.IMAGE_PATH  AS productImagePath,
+            CASE
+                WHEN d.BUYER_ID  = r.WRITER_ID THEN 'BUYER'
+                WHEN d.SELLER_ID = r.WRITER_ID THEN 'SELLER'
+                ELSE NULL
+            END           AS writerRole
+        FROM REVIEW r
+        LEFT JOIN DEAL      d ON r.DEAL_ID    = d.DEAL_ID
+        LEFT JOIN PRODUCT   p ON d.PRODUCT_ID = p.PRODUCT_ID
+        LEFT JOIN MOKU_USER t ON r.TARGET_ID  = t.USER_ID
+        WHERE r.WRITER_ID = #{userId}
+        ORDER BY r.CREATED_AT DESC
+    </select>
+
+</mapper>

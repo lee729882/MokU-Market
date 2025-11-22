@@ -499,9 +499,9 @@ html, body {
     margin-top: 2px;
 }
 .buyer-time {
-    font-size: 11px;
-    color: #999;
+    display: none;
 }
+
 .buyer-modal-footer {
     margin-top: 16px;
     display: flex;

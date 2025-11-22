@@ -202,12 +202,17 @@
     <!-- ========================================================= -->
     <!--  마지막 메시지 갱신 -->
     <!-- ========================================================= -->
-    <update id="updateRoomLastMessage" parameterType="map">
-        UPDATE CHAT_ROOM
-        SET LAST_MESSAGE    = #{lastMessage},
-            LAST_MESSAGE_AT = SYSDATE
-        WHERE ROOM_ID = #{roomId}
-    </update>
+<update id="updateRoomLastMessage" parameterType="map">
+    UPDATE CHAT_ROOM
+    SET LAST_MESSAGE    = #{lastMessage},
+        LAST_MESSAGE_AT = (
+            SELECT SENT_AT
+            FROM CHAT_MESSAGE
+            WHERE MESSAGE_ID = #{messageId}
+        )
+    WHERE ROOM_ID = #{roomId}
+</update>
+
 
     <!-- ========================================================= -->
     <!--  전체 미읽은 메시지 수 -->

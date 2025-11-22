@@ -416,151 +416,153 @@
             transform: scale(1.07);
         }
 
-/* ================== 후기 모달 ================== */
-.review-modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.55);
-    display: none;          /* JS에서 block으로 변경 */
-    z-index: 3000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+        /* ================== 후기 모달 ================== */
+        .review-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            display: none;          /* JS에서 show 클래스 추가 시 flex로 변경 */
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+        }
+        .review-modal.show {
+            display: flex;
+        }
 
-.review-modal-inner {
-    width: 420px;
-    max-width: 95%;
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-    padding: 24px 26px 20px;
-    position: relative;
-    font-size: 13px;
-}
+        .review-modal-inner {
+            width: 420px;
+            max-width: 95%;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            padding: 24px 26px 20px;
+            position: relative;
+            font-size: 13px;
+        }
 
-.review-modal-close {
-    position: absolute;
-    top: 10px;
-    right: 12px;
-    border: none;
-    background: transparent;
-    font-size: 18px;
-    cursor: pointer;
-    color: #aaa;
-}
+        .review-modal-close {
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            border: none;
+            background: transparent;
+            font-size: 18px;
+            cursor: pointer;
+            color: #aaa;
+        }
 
-.review-item-box {
-    display: flex;
-    gap: 12px;
-    padding: 10px;
-    border-radius: 10px;
-    background: #fafafa;
-    margin-bottom: 18px;
-}
+        .review-item-box {
+            display: flex;
+            gap: 12px;
+            padding: 10px;
+            border-radius: 10px;
+            background: #fafafa;
+            margin-bottom: 18px;
+        }
 
-.review-item-thumb {
-    width: 60px;
-    height: 60px;
-    border-radius: 8px;
-    overflow: hidden;
-    background: #ddd;
-    flex-shrink: 0;
-}
-.review-item-thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
+        .review-item-thumb {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #ddd;
+            flex-shrink: 0;
+        }
+        .review-item-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
-.review-item-info-title {
-    font-weight: 700;
-    margin-bottom: 4px;
-}
-.review-item-info-price {
-    font-size: 12px;
-    color: #777;
-}
+        .review-item-info-title {
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .review-item-info-price {
+            font-size: 12px;
+            color: #777;
+        }
 
-.review-question {
-    margin: 10px 0 6px;
-    font-weight: 600;
-    font-size: 13px;
-}
+        .review-question {
+            margin: 10px 0 6px;
+            font-weight: 600;
+            font-size: 13px;
+        }
 
-.review-score-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
-}
+        .review-score-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
 
-.review-score-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: 1px solid #ddd;
-    background: #fff;
-    font-size: 18px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.review-score-btn.active {
-    border-color: #ff6b6b;
-    background: #ffebef;
-}
+        .review-score-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid #ddd;
+            background: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .review-score-btn.active {
+            border-color: #ff6b6b;
+            background: #ffebef;
+        }
 
-.review-textarea {
-    width: 100%;
-    resize: vertical;
-    min-height: 80px;
-    max-height: 200px;
-    border-radius: 10px;
-    border: 1px solid #ddd;
-    padding: 10px;
-    font-family: inherit;
-    font-size: 13px;
-    box-sizing: border-box;
-}
+        .review-textarea {
+            width: 100%;
+            resize: vertical;
+            min-height: 80px;
+            max-height: 200px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            font-family: inherit;
+            font-size: 13px;
+            box-sizing: border-box;
+        }
 
-.review-modal-footer {
-    margin-top: 14px;
-    display: flex;
-    justify-content: flex-end;
-}
+        .review-modal-footer {
+            margin-top: 14px;
+            display: flex;
+            justify-content: flex-end;
+        }
 
-.btn-review-submit {
-    border: none;
-    border-radius: 999px;
-    padding: 8px 18px;
-    font-size: 13px;
-    cursor: pointer;
-    background: #ff6b6b;
-    color: #fff;
-    font-weight: 600;
-}
-.btn-review-submit:disabled {
-    background: #ddd;
-    cursor: default;
-}
-  .chat-room-delete-btn {
-    margin-top: 4px;
-    padding: 2px 8px;
-    font-size: 11px;
-    border-radius: 999px;
-    border: 1px solid #ddd;
-    background-color: #fff;
-    color: #999;
-    cursor: pointer;
-}
+        .btn-review-submit {
+            border: none;
+            border-radius: 999px;
+            padding: 8px 18px;
+            font-size: 13px;
+            cursor: pointer;
+            background: #ff6b6b;
+            color: #fff;
+            font-weight: 600;
+        }
+        .btn-review-submit:disabled {
+            background: #ddd;
+            cursor: default;
+        }
 
-.chat-room-delete-btn:hover {
-    border-color: #ff4b5b;
-    color: #ff4b5b;
-}
-        
+        .chat-room-delete-btn {
+            margin-top: 4px;
+            padding: 2px 8px;
+            font-size: 11px;
+            border-radius: 999px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            color: #999;
+            cursor: pointer;
+        }
+
+        .chat-room-delete-btn:hover {
+            border-color: #ff4b5b;
+            color: #ff4b5b;
+        }
     </style>
 </head>
 <body>
@@ -581,44 +583,44 @@
             </c:if>
 
             <c:forEach var="room" items="${rooms}">
-    <a
-        href="${ctx}/chat/room?roomId=${room.roomId}"
-        class="chat-room-item ${not empty activeRoom and room.roomId == activeRoom.roomId ? 'active' : ''}"
-    >
-        <div class="chat-room-thumb">
-            <c:if test="${not empty room.productImageUrl}">
-                <img src="${ctx}${room.productImageUrl}" alt="상품 이미지">
-            </c:if>
-        </div>
+                <a
+                    href="${ctx}/chat/room?roomId=${room.roomId}"
+                    class="chat-room-item ${not empty activeRoom and room.roomId == activeRoom.roomId ? 'active' : ''}"
+                >
+                    <div class="chat-room-thumb">
+                        <c:if test="${not empty room.productImageUrl}">
+                            <img src="${ctx}${room.productImageUrl}" alt="상품 이미지">
+                        </c:if>
+                    </div>
 
-        <div class="chat-room-text">
-            <div class="chat-room-nickname">
-                <c:out value="${room.opponentName}" default="닉네임" />
-            </div>
-            <div class="chat-room-last-message">
-                <c:out value="${room.lastMessage}" default="마지막 채팅 내용이 여기에 표시됩니다." />
-            </div>
-        </div>
+                    <div class="chat-room-text">
+                        <div class="chat-room-nickname">
+                            <c:out value="${room.opponentName}" default="닉네임" />
+                        </div>
+                        <div class="chat-room-last-message">
+                            <c:out value="${room.lastMessage}" default="마지막 채팅 내용이 여기에 표시됩니다." />
+                        </div>
+                    </div>
 
-        <div class="chat-room-meta">
-            <c:if test="${not empty room.lastMessageAt}">
-                <span>
-                    <fmt:formatDate value="${room.lastMessageAt}" pattern="HH:mm" timeZone="Asia/Seoul" />
-                </span>
-            </c:if>
-            <c:if test="${room.unreadCount gt 0}">
-                <span class="unread-badge">${room.unreadCount}</span>
-            </c:if>
+                    <div class="chat-room-meta">
+                        <c:if test="${not empty room.lastMessageAt}">
+                            <span>
+                                <fmt:formatDate value="${room.lastMessageAt}" pattern="HH:mm" timeZone="Asia/Seoul" />
+                            </span>
+                        </c:if>
+                        <c:if test="${room.unreadCount gt 0}">
+                            <span class="unread-badge">${room.unreadCount}</span>
+                        </c:if>
 
-            <!-- ✅ 채팅방 삭제 버튼 -->
-            <button type="button"
-                    class="chat-room-delete-btn"
-                    data-room-id="${room.roomId}">
-                삭제
-            </button>
-        </div>
-    </a>
-</c:forEach>
+                        <!-- 채팅방 삭제 버튼 -->
+                        <button type="button"
+                                class="chat-room-delete-btn"
+                                data-room-id="${room.roomId}">
+                            삭제
+                        </button>
+                    </div>
+                </a>
+            </c:forEach>
 
         </div>
 
@@ -660,12 +662,21 @@
                         </a>
 
                         <div class="chat-detail-buttons">
-                            <button type="button" class="btn-small btn-review">후기 남기기</button>
-                            <button type="button" class="btn-small btn-review-edit">후기 수정하기</button>
+                            <!-- SOLD + CONFIRMED 인 경우에만 후기 버튼 노출 -->
+                            <c:if test="${activeRoom.tradeStatus eq 'CONFIRMED' and product.status eq 'SOLD'}">
+                                <c:choose>
+                                    <c:when test="${hasReview}">
+                                        <button type="button" class="btn-small btn-review-edit">후기 수정하기</button>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <button type="button" class="btn-small btn-review">후기 남기기</button>
+                                    </c:otherwise>
+                                </c:choose>
+                            </c:if>
                         </div>
                     </div>
 
-                    <!-- ✅ 거래 상태 배너 (판매자 요청 → 구매자 확정용) -->
+                    <!-- 거래 상태 배너 (판매자 요청 → 구매자 확정용) -->
                     <c:if test="${not empty activeRoom}">
                         <div id="tradeBanner"
                              data-room-id="${activeRoom.roomId}"
@@ -687,31 +698,29 @@
                             <fmt:formatDate value="${now}" pattern="yyyy.MM.dd (E)" />
                         </div>
 
-<c:forEach var="msg" items="${messages}">
-    <c:set var="isMe" value="${msg.senderId == loginUser.userId}" />
+                        <c:forEach var="msg" items="${messages}">
+                            <c:set var="isMe" value="${msg.senderId == loginUser.userId}" />
 
-    <div class="message-row ${isMe ? 'me' : 'other'}">
-        <c:if test="${not isMe}">
-            <div class="message-meta">
-                <div class="message-nickname">
-                    <c:out value="${activeRoom.opponentName}" default="프로필" />
-                </div>
-            </div>
-        </c:if>
+                            <div class="message-row ${isMe ? 'me' : 'other'}">
+                                <c:if test="${not isMe}">
+                                    <div class="message-meta">
+                                        <div class="message-nickname">
+                                            <c:out value="${activeRoom.opponentName}" default="프로필" />
+                                        </div>
+                                    </div>
+                                </c:if>
 
-        <div class="message-bubble ${isMe ? 'me' : 'other'}">
-            <c:out value="${msg.content}" />
-        </div>
+                                <div class="message-bubble ${isMe ? 'me' : 'other'}">
+                                    <c:out value="${msg.content}" />
+                                </div>
 
-        <div class="message-meta">
-            <div class="message-time">
-                <fmt:formatDate value="${msg.sentAt}" pattern="HH:mm" timeZone="Asia/Seoul" />
-            </div>
-
-        </div>
-    </div>
-</c:forEach>
-
+                                <div class="message-meta">
+                                    <div class="message-time">
+                                        <fmt:formatDate value="${msg.sentAt}" pattern="HH:mm" timeZone="Asia/Seoul" />
+                                    </div>
+                                </div>
+                            </div>
+                        </c:forEach>
 
                     </div>
 
@@ -729,6 +738,64 @@
     </div>
 </div>
 
+<!-- ================== 후기 모달 마크업 ================== -->
+<c:if test="${not empty activeRoom}">
+    <div id="reviewModal" class="review-modal">
+        <div class="review-modal-inner">
+            <button type="button" class="review-modal-close">&times;</button>
+
+            <h3 style="margin:0 0 14px; font-size:15px;">
+                <c:choose>
+                    <c:when test="${hasReview}">후기 수정하기</c:when>
+                    <c:otherwise>후기 남기기</c:otherwise>
+                </c:choose>
+            </h3>
+
+            <div class="review-item-box">
+                <div class="review-item-thumb">
+                    <c:if test="${not empty activeRoom.productImageUrl}">
+                        <img src="${ctx}${activeRoom.productImageUrl}" alt="상품 이미지">
+                    </c:if>
+                </div>
+                <div>
+                    <div class="review-item-info-title">
+                        <c:out value="${activeRoom.productTitle}" />
+                    </div>
+                    <div class="review-item-info-price">
+                        <fmt:formatNumber value="${activeRoom.price}" pattern="#,###" />원 ·
+                        <c:out value="${activeRoom.opponentName}" default="거래상대" />님과의 거래
+                    </div>
+                </div>
+            </div>
+
+            <div class="review-question">거래는 전반적으로 만족스러우셨나요? (선택)</div>
+            <div class="review-score-row">
+                <button type="button" class="review-score-btn <c:if test='${myReview.rating == 1}'>active</c:if>" data-score="1">1</button>
+                <button type="button" class="review-score-btn <c:if test='${myReview.rating == 2}'>active</c:if>" data-score="2">2</button>
+                <button type="button" class="review-score-btn <c:if test='${myReview.rating == 3}'>active</c:if>" data-score="3">3</button>
+                <button type="button" class="review-score-btn <c:if test='${myReview.rating == 4}'>active</c:if>" data-score="4">4</button>
+                <button type="button" class="review-score-btn <c:if test='${myReview.rating == 5}'>active</c:if>" data-score="5">5</button>
+            </div>
+            <input type="hidden" id="reviewRating"
+                   value="<c:out value='${myReview.rating}' default=''/>" />
+
+            <div class="review-question">상대방과의 거래 후기를 남겨 주세요.</div>
+            <textarea id="reviewContent"
+                      class="review-textarea"
+                      placeholder="예) 시간 약속을 잘 지켜 주셔서 편하게 거래할 수 있었습니다."><c:out value='${myReview.content}' /></textarea>
+
+            <div class="review-modal-footer">
+                <button type="button" id="btnReviewSubmit" class="btn-review-submit" disabled>
+                    <c:choose>
+                        <c:when test="${hasReview}">수정 완료</c:when>
+                        <c:otherwise>등록하기</c:otherwise>
+                    </c:choose>
+                </button>
+            </div>
+        </div>
+    </div>
+</c:if>
+
 <!-- 푸터 -->
 <div class="footer">
     <p>© 2025 Mokpo National University | MokU Market</p>
@@ -745,6 +812,7 @@
     document.getElementById("topBtn").addEventListener("click", function() {
         window.scrollTo({ top: 0, behavior: "smooth" });
     });
+
     // ================== 채팅방 삭제 ==================
     (function() {
         const ctx = '${ctx}';
@@ -770,22 +838,20 @@
                     body: 'roomId=' + encodeURIComponent(roomId)
                 })
                 .then(res => res.json())
-.then(data => {
-    if (data.status === 'login_required') {
-        alert('로그인이 필요합니다.');
-        location.href = ctx + '/login';
-        return;
-    }
-    if (data.status !== 'success') {
-        alert(data.message || '채팅방 삭제 중 오류가 발생했습니다.');
-        return;
-    }
+                .then(data => {
+                    if (data.status === 'login_required') {
+                        alert('로그인이 필요합니다.');
+                        location.href = ctx + '/login';
+                        return;
+                    }
+                    if (data.status !== 'success') {
+                        alert(data.message || '채팅방 삭제 중 오류가 발생했습니다.');
+                        return;
+                    }
 
-    // ✅ 삭제 성공 시: 채팅 리스트 화면으로 이동
-    alert('채팅방이 삭제되었습니다.');
-    location.href = ctx + '/chat';
-})
-
+                    alert('채팅방이 삭제되었습니다.');
+                    location.href = ctx + '/chat';
+                })
                 .catch(err => {
                     console.error(err);
                     alert('네트워크 오류가 발생했습니다.');
@@ -806,7 +872,7 @@
     const ctx       = '${ctx}';
     const roomId    = '${activeRoom.roomId}';
     const productId = '${activeRoom.productId}';
-    const productStatus = '${activeRoom.status}';   // 🔹 추가
+    const productStatus = '${activeRoom.status}';
 
     // 거래 상태 / 역할 정보
     const bannerEl = document.getElementById('tradeBanner');
@@ -824,8 +890,8 @@
 
     if (!textarea || !btnSend || !form) return;
 
-    // ✅ 거래 상태별 UI 제어
-if (tradeStatus === 'CONFIRMED' && productStatus === 'SOLD') {
+    // 거래 상태별 UI 제어
+    if (tradeStatus === 'CONFIRMED' && productStatus === 'SOLD') {
         // 거래 완료: 채팅 차단
         textarea.disabled   = true;
         btnSend.disabled    = true;
@@ -910,33 +976,6 @@ if (tradeStatus === 'CONFIRMED' && productStatus === 'SOLD') {
         }
     });
 
-    function appendMessage(me, content) {
-        if (!msgBox) return;
-
-        const row = document.createElement('div');
-        row.className = 'message-row ' + (me ? 'me' : 'other');
-
-        const bubble = document.createElement('div');
-        bubble.className = 'message-bubble ' + (me ? 'me' : 'other');
-        bubble.textContent = content;
-
-        const meta = document.createElement('div');
-        meta.className = 'message-meta';
-        const timeSpan = document.createElement('div');
-        timeSpan.className = 'message-time';
-        const now = new Date();
-        const hh = String(now.getHours()).padStart(2, '0');
-        const mm = String(now.getMinutes()).padStart(2, '0');
-        timeSpan.textContent = hh + ':' + mm;
-        meta.appendChild(timeSpan);
-
-        row.appendChild(bubble);
-        row.appendChild(meta);
-
-        msgBox.appendChild(row);
-        msgBox.scrollTop = msgBox.scrollHeight;
-    }
-
     function sendMessage() {
         const text = textarea.value.trim();
         if (!text) return;
@@ -955,7 +994,6 @@ if (tradeStatus === 'CONFIRMED' && productStatus === 'SOLD') {
         .then(res => res.json())
         .then(data => {
             if (data.status === 'success') {
-                // ✅ 로컬 new Date()로 append 하지 말고 그냥 새로 그리게
                 location.reload();
             } else if (data.status === 'login_required') {
                 alert('로그인이 필요합니다.');
@@ -970,7 +1008,130 @@ if (tradeStatus === 'CONFIRMED' && productStatus === 'SOLD') {
         });
     }
 
+    // ================== 후기 모달 JS ==================
+    const hasReview = <c:out value="${hasReview}" default="false" />;
 
+    const reviewModal        = document.getElementById('reviewModal');
+    const btnOpenReview      = document.querySelector('.btn-review');
+    const btnOpenReviewEdit  = document.querySelector('.btn-review-edit');
+    const reviewCloseBtn     = reviewModal ? reviewModal.querySelector('.review-modal-close') : null;
+    const reviewRatingInput  = reviewModal ? document.getElementById('reviewRating') : null;
+    const reviewContentArea  = reviewModal ? document.getElementById('reviewContent') : null;
+    const reviewScoreButtons = reviewModal ? reviewModal.querySelectorAll('.review-score-btn') : [];
+    const btnReviewSubmit    = reviewModal ? document.getElementById('btnReviewSubmit') : null;
+
+    function openReviewModal() {
+        if (!reviewModal) return;
+        reviewModal.classList.add('show');
+    }
+    function closeReviewModal() {
+        if (!reviewModal) return;
+        reviewModal.classList.remove('show');
+    }
+
+    if (btnOpenReview) {
+        btnOpenReview.addEventListener('click', function() {
+            // 새 작성: 값 초기화
+            if (reviewRatingInput) reviewRatingInput.value = '';
+            if (reviewContentArea) reviewContentArea.value = '';
+            reviewScoreButtons.forEach(function(b){ b.classList.remove('active'); });
+            openReviewModal();
+            updateReviewSubmitButton();
+        });
+    }
+
+    if (btnOpenReviewEdit) {
+        btnOpenReviewEdit.addEventListener('click', function() {
+            // 서버에서 이미 값이 채워진 상태이므로 그대로 오픈
+            openReviewModal();
+            updateReviewSubmitButton();
+        });
+    }
+
+    if (reviewCloseBtn) {
+        reviewCloseBtn.addEventListener('click', closeReviewModal);
+    }
+    if (reviewModal) {
+        reviewModal.addEventListener('click', function(e) {
+            if (e.target === reviewModal) {
+                closeReviewModal();
+            }
+        });
+    }
+
+    reviewScoreButtons.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const score = this.dataset.score;
+            if (reviewRatingInput) {
+                reviewRatingInput.value = score;
+            }
+            reviewScoreButtons.forEach(function(b){ b.classList.remove('active'); });
+            this.classList.add('active');
+            updateReviewSubmitButton();
+        });
+    });
+
+    if (reviewContentArea) {
+        reviewContentArea.addEventListener('input', updateReviewSubmitButton);
+    }
+
+    function updateReviewSubmitButton() {
+        if (!btnReviewSubmit) return;
+        const ratingVal  = reviewRatingInput ? reviewRatingInput.value.trim() : '';
+        const contentVal = reviewContentArea ? reviewContentArea.value.trim() : '';
+
+        // 별점은 선택 사항, 내용은 필수
+        btnReviewSubmit.disabled = !(contentVal.length > 0);
+    }
+
+    if (btnReviewSubmit) {
+        btnReviewSubmit.addEventListener('click', function() {
+            if (!reviewContentArea) return;
+
+            const content = reviewContentArea.value.trim();
+            if (!content) {
+                alert('후기 내용을 입력해 주세요.');
+                return;
+            }
+            const ratingVal = reviewRatingInput ? reviewRatingInput.value.trim() : '';
+
+            const payload = {
+                dealId: parseInt(roomId, 10),
+                content: content
+            };
+            if (ratingVal) {
+                payload.rating = parseInt(ratingVal, 10);
+            }
+
+            fetch(ctx + '/chat/review/save', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'login_required') {
+                    alert('로그인이 필요합니다.');
+                    location.href = ctx + '/login';
+                    return;
+                }
+                if (data.status !== 'success') {
+                    alert(data.message || '후기 저장 중 오류가 발생했습니다.');
+                    return;
+                }
+
+                alert('후기가 저장되었습니다.');
+                closeReviewModal();
+                location.reload();
+            })
+            .catch(err => {
+                console.error(err);
+                alert('서버 통신 중 오류가 발생했습니다.');
+            });
+        });
+    }
 
     updateButton();
 })();

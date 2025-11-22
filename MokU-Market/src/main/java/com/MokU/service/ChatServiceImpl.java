@@ -90,6 +90,8 @@ public class ChatServiceImpl implements ChatService {
         Map<String, Object> params = new HashMap<>();
         params.put("roomId", roomId);
         params.put("lastMessage", content);
+        params.put("messageId", msg.getMessageId());   // ✅ 여기서만 추가
+
         chatDAO.updateRoomLastMessage(params);
 
         return msg;

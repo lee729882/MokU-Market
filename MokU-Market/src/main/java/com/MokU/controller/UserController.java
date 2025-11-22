@@ -18,6 +18,10 @@ import com.MokU.service.ProductService;   // ✅ 추가
 import com.MokU.vo.MemberVO;
 import com.MokU.vo.ProductVO;           // ✅ 필요 시 추가
 
+import lombok.var;
+
+import com.MokU.service.ReviewService;   // ✅ 추가
+
 @Controller
 @RequestMapping("/controller")
 public class UserController {
@@ -28,24 +32,40 @@ public class UserController {
     @Autowired
     private ProductService productService;   // ✅ 내 등록템 / 찜템 조회용 서비스
 
-    // ✅ 마이페이지 (한 화면에서 탭 전환)
+    @Autowired
+    private ReviewService reviewService;
+    
+ // ✅ 마이페이지 (한 화면에서 탭 전환)
     @GetMapping("/mypage")
     public String myPage(HttpSession session, Model model) {
         MemberVO user = (MemberVO) session.getAttribute("loginUser");
         if (user == null) return "redirect:/login";
 
+        int userId = user.getUserId();
+        System.out.println("✅ [mypage] login userId = " + userId);
+
         model.addAttribute("user", user);
 
-        // 내 등록템 (판매자 기준)
         model.addAttribute("myProducts",
-                productService.getMyProducts(user.getUserId()));
-
-        // 내 관심템 (좋아요 한 상품)
+                productService.getMyProducts(userId));
         model.addAttribute("favoriteProducts",
-                productService.getMyFavoriteProducts(user.getUserId()));
+                productService.getMyFavoriteProducts(userId));
+
+        // 후기 조회
+        var received = reviewService.getReceivedReviews(userId);
+        var written  = reviewService.getWrittenReviews(userId);
+
+        System.out.println("✅ [mypage] receivedReviews size = " + received.size());
+        System.out.println("✅ [mypage] writtenReviews size = " + written.size());
+
+        model.addAttribute("receivedReviews", received);
+        model.addAttribute("writtenReviews", written);
 
         return "mypage";
     }
+
+
+
 
     // ✅ (예전처럼 별도 페이지로 쓰지 않을 거라면 사실 아래 3개는 없어도 됩니다)
     @GetMapping("/myProducts")
