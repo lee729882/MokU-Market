@@ -202,17 +202,6 @@ h2 {
 .zone-list a { color:#333; text-decoration:none; display:block; padding:3px 0; }
 .zone-list a:hover { color:#007A5C; font-weight:600; }
 
-/* 푸터 */
-.footer {
-  background-color: #f1f1f1;
-  text-align: center;
-  padding: 10px;
-  font-size: 13px;
-  color: #666;
-  border-top: 1px solid #ddd;
-  margin-top: 50px;
-}
-
 /* 가격 입력 */
 .price-wrap {
   position: relative;
@@ -448,10 +437,6 @@ h2 {
   </form>
 </div>
 
-<div class="footer">
-  <p>© 2025 Mokpo National University | MokU Market</p>
-</div>
-
 <!-- Kakao Map Script -->
 <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=85969b990129ae28ec3aa8ad0beeca55&libraries=services"></script>
 <script>
@@ -674,6 +659,8 @@ document.getElementById("topBtn").addEventListener("click", () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
 });
 </script>
+    <jsp:include page="/WEB-INF/views/common/recentProducts.jsp" />
+    <jsp:include page="/WEB-INF/views/common/footer.jsp" />
 
 </body>
 </html>

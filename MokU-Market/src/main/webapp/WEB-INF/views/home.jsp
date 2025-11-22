@@ -100,16 +100,6 @@
         .product p { margin: 10px; font-size: 14px; color: #333; }
         .product .price { font-weight: bold; color: #007A5C; }
 
-        /* 푸터 */
-        .footer {
-            background-color: #f1f1f1;
-            text-align: center;
-            padding: 10px;
-            font-size: 13px;
-            color: #666;
-            border-top: 1px solid #ddd;
-            margin-top: 40px;
-        }
 
         /* 플로팅 버튼 세트 */
         .floating-container {
@@ -470,11 +460,8 @@
             alert("${requestScope.msg}");
         </script>
     </c:if>
-
-    <!-- 푸터 -->
-    <div class="footer">
-        <p>© 2025 Mokpo National University | MokU Market</p>
-    </div>
+    <jsp:include page="/WEB-INF/views/common/recentProducts.jsp" />
+    <jsp:include page="/WEB-INF/views/common/footer.jsp" />
 
 </body>
 </html>

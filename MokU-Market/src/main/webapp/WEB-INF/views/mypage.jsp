@@ -17,21 +17,36 @@
 
 <style>
 html, body {
-    height: 100%;
+    height: 100%;              /* ⬅️ 추가 */
     margin: 0;
     padding: 0;
     font-family: 'Nanum Gothic', sans-serif;
     background-color: #fafafa;
+}
+
+/* body를 세로 flex 컨테이너로 */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* 페이지 내용 전체를 감싸는 래퍼 (footer 위쪽) */
+.page-root {
+    flex: 1;                   /* ⬅️ 이 부분이 footer를 아래로 미는 역할 */
     display: flex;
     flex-direction: column;
 }
+
+
 
 /* 공통 래퍼 */
 .mypage-wrapper {
     width: 100%;
     max-width: 1150px;
-    margin: 0 auto 80px;
+    margin: 0 auto;              /* 아래 여백 X */
     padding: 0 20px 60px;
+    flex: 1;                      /* 남은 높이를 채우는 영역 */
 }
 
 /* ============== 마이페이지 NAV ============== */
@@ -305,17 +320,6 @@ html, body {
 .btn-delete { border-color:#9e9e9e; color:#555;   }
 .btn-sold   { border-color:#f44336; color:#f44336; }
 
-/* ================= FOOTER ================= */
-.footer {
-    background-color: #f1f1f1;
-    text-align: center;
-    padding: 10px;
-    font-size: 13px;
-    color: #666;
-    border-top: 1px solid #ddd;
-    margin-top: auto;
-}
-
 /* ================= 플로팅 버튼 ================= */
 .floating-container {
     position: fixed;
@@ -581,12 +585,20 @@ html, body {
 .review-product-link a:hover {
     text-decoration: underline;
 }
+/* ✅ 페이지 전체 래퍼 – footer를 하단으로 밀어주는 역할 */
+.page-root {
+    min-height: 100vh;        /* 화면 높이 최소 채우기 */
+    display: flex;
+    flex-direction: column;   /* 위에서 아래로 쌓기 */
+}
 
 </style>
 </head>
 
 <body>
 
+  <!-- ✅ 페이지 전체(footer 위쪽)를 감싸는 래퍼 -->
+  <div class="page-root">
 <jsp:include page="/WEB-INF/views/common/header.jsp" />
 <c:set var="activeTab" value="${empty param.tab ? 'info' : param.tab}" />
 
@@ -940,10 +952,6 @@ html, body {
     </div>
 </div>
 
-<!-- ================= FOOTER ================= -->
-<div class="footer">
-    <p>© 2025 Mokpo National University | MokU Market</p>
-</div>
 
 <!-- ================= JS ================= -->
 <script>
@@ -1236,12 +1244,17 @@ document.getElementById("topBtn")?.addEventListener("click", () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
 });
 </script>
+  </div> <!-- ✅ /page-root 끝 -->
 
 <!-- 플로팅 버튼 -->
 <div class="floating-container">
     <button id="topBtn" class="floating-top">^<br><span>Top</span></button>
     <a href="${pageContext.request.contextPath}/product/add" class="floating-add">+</a>
 </div>
+
+    <jsp:include page="/WEB-INF/views/common/recentProducts.jsp" />
+<!-- ================= FOOTER ================= -->
+    <jsp:include page="/WEB-INF/views/common/footer.jsp" />
 
 </body>
 </html>

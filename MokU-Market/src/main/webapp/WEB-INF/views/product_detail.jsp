@@ -134,16 +134,6 @@ html, body {
   margin-top:15px;
 }
 
-/* footer */
-.footer {
-  background-color: #f1f1f1;
-  text-align: center;
-  padding: 10px;
-  font-size: 13px;
-  color: #666;
-  border-top: 1px solid #ddd;
-  margin-top: 50px;
-}
 .chat-btn {
   background-color: #007A5C;
   color: white;
@@ -727,17 +717,17 @@ html, body {
     </c:otherwise>
 </c:choose>
 
-    <!-- 연관 상품 -->
-    <h3 style="margin-top:40px;">연관상품</h3>
-    <div class="related-grid">
-        <c:forEach var="r" items="${relatedProducts}">
-            <div class="related-card"
-                 onclick="location.href='${ctx}/product/detail?id=${r.productId}'">
-                <img src="${ctx}${r.imagePath}">
-                <p>${r.title}</p>
-            </div>
-        </c:forEach>
-    </div>
+<!-- 연관 상품 -->
+<h3 style="margin-top:40px;">연관상품</h3>
+<div class="related-grid">
+    <c:forEach var="r" items="${relatedProducts}">
+        <div class="related-card"
+             onclick="location.href='${ctx}/product/detail?productId=${r.productId}'">
+            <img src="${ctx}${r.imagePath}">
+            <p>${r.title}</p>
+        </div>
+    </c:forEach>
+</div>
 
 </div> <!-- /detail-container -->
 
@@ -756,11 +746,6 @@ html, body {
             <button type="button" id="btnConfirmBuyer" disabled>구매자에게 확정 요청</button>
         </div>
     </div>
-</div>
-
-<!-- FOOTER -->
-<div class="footer">
-  <p>© 2025 Mokpo National University | MokU Market</p>
 </div>
 
 <!-- 슬라이더 -->
@@ -1089,6 +1074,8 @@ function toggleSoldFromDetail(productId, currentStatus) {
     }
 </script>
 
+    <jsp:include page="/WEB-INF/views/common/recentProducts.jsp" />
+    <jsp:include page="/WEB-INF/views/common/footer.jsp" />
 
 </body>
 </html>

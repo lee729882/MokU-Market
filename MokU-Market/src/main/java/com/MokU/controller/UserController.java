@@ -42,7 +42,6 @@ public class UserController {
         if (user == null) return "redirect:/login";
 
         int userId = user.getUserId();
-        System.out.println("✅ [mypage] login userId = " + userId);
 
         model.addAttribute("user", user);
 

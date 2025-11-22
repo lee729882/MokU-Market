@@ -143,17 +143,6 @@ html, body {
 .badge.음식 { background-color: #795548; }
 .badge.default { background-color: #607D8B; }
 
-/* ✅ 푸터 */
-.footer {
-  background-color: #f1f1f1;
-  text-align: center;
-  padding: 10px;
-  font-size: 13px;
-  color: #666;
-  border-top: 1px solid #ddd;
-  margin-top: auto;
-}
-
 /* ✅ 플로팅 버튼 */
 .floating-container {
   position: fixed;
@@ -275,11 +264,6 @@ html, body {
   </c:choose>
 </div>
 
-<!-- ✅ 푸터 -->
-<div class="footer">
-  <p>© 2025 Mokpo National University | MokU Market</p>
-</div>
-
 <!-- ✅ 플로팅 버튼 -->
 <div class="floating-container">
   <button id="topBtn" class="floating-top">^<br><span>Top</span></button>
@@ -291,6 +275,8 @@ document.getElementById("topBtn").addEventListener("click", () => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
 </script>
+    <jsp:include page="/WEB-INF/views/common/recentProducts.jsp" />
+    <jsp:include page="/WEB-INF/views/common/footer.jsp" />
 
 </body>
 </html>

@@ -6,6 +6,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -13,21 +14,24 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import com.MokU.service.ProductService;
+import com.MokU.service.ChatService;
 import com.MokU.service.MemberService;
+import com.MokU.service.ProductService;
 import com.MokU.vo.MemberVO;
 import com.MokU.vo.ProductVO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import java.nio.charset.StandardCharsets;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import com.MokU.service.ChatService;   // 패키지는 프로젝트에 맞게
 
 @Controller
 @RequestMapping("/product")
@@ -39,11 +43,9 @@ public class ProductController {
     @Autowired
     private MemberService memberService;
 
-    // ✅ 추가
     @Autowired
     private ChatService chatService;
-    
-    
+
     /* ============================================
      *  상품 등록 폼 이동
      * ============================================ */
@@ -92,7 +94,6 @@ public class ProductController {
             }
         }
 
-
         // 대표 이미지 설정
         if (!imagePaths.isEmpty()) {
             vo.setImagePath(imagePaths.get(0));
@@ -119,11 +120,11 @@ public class ProductController {
      * ============================================ */
     @GetMapping("/list")
     public String list(
-            @RequestParam(value="category", required = false) String category,
+            @RequestParam(value = "category", required = false) String category,
             HttpSession session,
             Model model) {
 
-        // 🔹 로그인 사용자 가져오기
+        // 로그인 사용자
         MemberVO user = (MemberVO) session.getAttribute("loginUser");
         if (user != null) {
             model.addAttribute("user", user);
@@ -131,8 +132,8 @@ public class ProductController {
 
         List<ProductVO> products;
 
-        // 🔹 중고거래 = 전체보기
-        if (category == null || category.trim().isEmpty() || category.equals("중고거래")) {
+        // 중고거래 = 전체보기
+        if (category == null || category.trim().isEmpty() || "중고거래".equals(category)) {
             products = productService.getAllProducts();
             category = "전체보기";
         } else {
@@ -145,23 +146,37 @@ public class ProductController {
         return "product_list";
     }
 
-
     /* ============================================
      *  상품 상세
+     *  - 조회수 증가
+     *  - 최근 본 상품 세션 저장
+     * ============================================ */
+    /* ============================================
+     *  상품 상세
+     *  - ?productId= 또는 ?id= 둘 다 허용
      * ============================================ */
     @GetMapping("/detail")
-    public String detail(@RequestParam("id") int id,
-                         HttpSession session,
-                         Model model) {
+    public String detail(
+            @RequestParam(value = "productId", required = false) Integer productId,
+            @RequestParam(value = "id",        required = false) Integer id,
+            HttpSession session,
+            Model model) {
 
-        // 조회수 중복 방지
-        String viewedKey = "viewed_" + id;
+        // 1) id / productId 중 실제 값 결정
+        Integer pid = (productId != null) ? productId : id;
+        if (pid == null) {
+            // 둘 다 없으면 홈으로 돌려보냄 (400 대신 사용자 친화적으로 처리)
+            return "redirect:/home";
+        }
+
+        // ✅ 조회수 중복 방지
+        String viewedKey = "viewed_" + pid;
         if (session.getAttribute(viewedKey) == null) {
-            productService.increaseViewCount(id);
+            productService.increaseViewCount(pid);
             session.setAttribute(viewedKey, true);
         }
 
-        ProductVO product = productService.getProductById(id);
+        ProductVO product = productService.getProductById(pid);
         if (product == null) {
             return "redirect:/home";
         }
@@ -170,10 +185,8 @@ public class ProductController {
         MemberVO seller = memberService.getMemberById(product.getSellerId());
         model.addAttribute("seller", seller);
 
-     // 🔹 여러 이미지 불러오기 (대표/서브 모두 PRODUCT_IMAGES 기준)
-        List<String> imageList = productService.getImagesByProductId(id);
-
-        // PRODUCT_IMAGES에 아무 것도 없을 때만, 예외적으로 PRODUCT.IMAGE_PATH 사용
+        // 여러 이미지
+        List<String> imageList = productService.getImagesByProductId(pid);
         if (imageList == null || imageList.isEmpty()) {
             imageList = new ArrayList<>();
             String mainImage = product.getImagePath();
@@ -181,32 +194,49 @@ public class ProductController {
                 imageList.add(mainImage);
             }
         }
-
-        // ✅ 최종 리스트를 모델에 전달 (JSP에서는 images만 사용)
         model.addAttribute("images", imageList);
 
-        
-        // 로그인 사용자
+        // 로그인 / 찜 여부
         MemberVO user = (MemberVO) session.getAttribute("loginUser");
         boolean liked = false;
-
         if (user != null) {
-            liked = productService.isLiked(user.getUserId(), id);
+            liked = productService.isLiked(user.getUserId(), pid);
             model.addAttribute("user", user);
         }
-
         model.addAttribute("liked", liked);
 
         // 판매자 전체 찜 수
         int sellerTotalLikes = productService.getTotalLikesBySeller(product.getSellerId());
         model.addAttribute("likeCount", sellerTotalLikes);
 
-        // 현재 접속자가 이 상품의 판매자인지 여부
+        // 현재 접속자가 판매자인지 여부
         boolean isSeller = (user != null && user.getUserId() == product.getSellerId());
         model.addAttribute("isSeller", isSeller);
 
+        // ✅ 최근 본 상품 세션에 추가 (List로 단순 처리)
+        @SuppressWarnings("unchecked")
+        List<ProductVO> recentList =
+                (List<ProductVO>) session.getAttribute("recentProducts");
+        if (recentList == null) {
+            recentList = new ArrayList<>();
+        }
+
+        // 중복 제거
+        recentList.removeIf(p -> p.getProductId() == pid);
+
+        // 맨 앞에 추가
+        recentList.add(0, product);
+
+        // 최대 5개만 유지
+        if (recentList.size() > 5) {
+            recentList = recentList.subList(0, 5);
+        }
+
+        session.setAttribute("recentProducts", recentList);
+
         return "product_detail";
     }
+
 
     /* ============================================
      *  상품 수정 폼 이동 (판매자만)
@@ -226,20 +256,17 @@ public class ProductController {
             return "redirect:/home";
         }
 
-        // 🔹 판매자 본인만 수정 가능
+        // 판매자 본인만 수정 가능
         if (product.getSellerId() != user.getUserId()) {
-            return "redirect:/product/detail?id=" + productId;
+            return "redirect:/product/detail?productId=" + productId;
         }
 
-        // 🔹 기본 상품 정보
         model.addAttribute("user", user);
         model.addAttribute("product", product);
         model.addAttribute("mode", "edit");
 
-        // 🔹 여러 장 이미지 리스트
+        // 여러 장 이미지 리스트
         List<String> imageList = productService.getImagesByProductId(productId);
-        // 만약 테이블에는 여러 장 있고, product.imagePath에는 대표만 있어요
-        // imageList 비어 있으면 대표 한 장이라도 보여 주도록 보정
         if (imageList == null || imageList.isEmpty()) {
             imageList = new ArrayList<>();
             if (product.getImagePath() != null) {
@@ -250,7 +277,6 @@ public class ProductController {
 
         return "product_form";
     }
-
 
     /* ============================================
      *  상품 수정 처리
@@ -272,23 +298,21 @@ public class ProductController {
 
         int productId = product.getProductId();
 
-        // 🔹 기존 상품 조회 (권한/대표이미지 확인)
+        // 기존 상품 조회 (권한/대표이미지 확인)
         ProductVO original = productService.getProductById(productId);
         if (original == null || original.getSellerId() != sellerId) {
-            return "redirect:/product/detail?id=" + productId;
+            return "redirect:/product/detail?productId=" + productId;
         }
 
-        // 🔹 새 이미지 업로드 여부 체크
+        // 새 이미지 업로드 여부 체크
         boolean hasNewImage =
                 (files != null
                         && !files.isEmpty()
                         && files.stream().anyMatch(f -> f != null && !f.isEmpty()));
 
-        // 새로 업로드된 이미지 경로를 담을 리스트
         List<String> imagePaths = new ArrayList<>();
 
         if (hasNewImage) {
-            // ✅ 새 이미지가 있으면, 전부 다시 업로드해서 리스트 구성
             String uploadDir = request.getServletContext().getRealPath("/upload/product/");
             File dir = new File(uploadDir);
             if (!dir.exists()) dir.mkdirs();
@@ -307,34 +331,30 @@ public class ProductController {
                 imagePaths.add(webPath);
             }
 
-            // ✅ 새로 업로드한 이미지 중 첫 번째를 대표 이미지로 사용
             if (!imagePaths.isEmpty()) {
-                product.setImagePath(imagePaths.get(0));
+                product.setImagePath(imagePaths.get(0));   // 새 대표 이미지
             } else {
-                // 이론상 거의 없겠지만, 안전 장치로 기존 대표 유지
                 product.setImagePath(original.getImagePath());
             }
 
         } else {
-            // ✅ 새 이미지가 없다면, 기존 대표 이미지 그대로 사용
+            // 새 이미지가 없다면 기존 대표 이미지 유지
             product.setImagePath(original.getImagePath());
         }
 
-        // 🔹 기본 상품 정보 수정 (제목/가격/설명/장소 등 + 대표이미지 경로)
+        // 기본 상품 정보 수정
         boolean updated = productService.updateProduct(product, sellerId);
         if (!updated) {
-            return "redirect:/product/detail?id=" + productId;
+            return "redirect:/product/detail?productId=" + productId;
         }
 
-        // 🔹 새 이미지가 있을 때만 PRODUCT_IMAGES 전체 교체
+        // 새 이미지가 있을 때만 PRODUCT_IMAGES 전체 교체
         if (hasNewImage && !imagePaths.isEmpty()) {
             productService.replaceProductImages(productId, imagePaths);
         }
 
-        return "redirect:/product/detail?id=" + productId;
+        return "redirect:/product/detail?productId=" + productId;
     }
-
-
 
     /* ============================================
      *  찜 토글 (AJAX)
@@ -376,7 +396,7 @@ public class ProductController {
      *  판매완료 / 판매완료 해제 / 삭제
      * ============================================ */
 
-    /** ✅ 판매완료로 상태 변경 (STATUS = 'SOLD') */
+    /** 판매완료로 상태 변경 (STATUS = 'SOLD') */
     @GetMapping(value = "/markSold", produces = "text/plain; charset=UTF-8")
     @ResponseBody
     public String markSold(@RequestParam("id") int productId,
@@ -394,7 +414,7 @@ public class ProductController {
         return "판매완료 상태로 변경되었습니다.";
     }
 
-    /** ✅ 판매완료 해제 → 다시 판매중 (STATUS = 'ONSALE') */
+    /** 판매완료 해제 → 다시 판매중 (STATUS = 'ONSALE') */
     @GetMapping(value = "/markUnsold", produces = "text/plain; charset=UTF-8")
     @ResponseBody
     public String markUnsold(@RequestParam("id") int productId,
@@ -410,15 +430,13 @@ public class ProductController {
             return "판매완료 해제 권한이 없거나 실패했습니다.";
         }
 
-        // ✅ 여기 추가: 해당 상품 관련 채팅방 거래 상태/구매자 정보 초기화
+        // 해당 상품 관련 채팅방 거래 상태/구매자 정보 초기화
         chatService.resetTradeStatusByProduct(productId);
 
         return "판매완료 상태가 해제되어 다시 판매중으로 변경되었습니다.";
     }
 
-
-
-    /** ✅ 상품 삭제 */
+    /** 상품 삭제 */
     @GetMapping("/delete")
     public String delete(@RequestParam("id") int productId,
                          HttpSession session,
@@ -433,7 +451,7 @@ public class ProductController {
         boolean ok = productService.deleteProduct(productId, user.getUserId());
         if (!ok) {
             rttr.addFlashAttribute("msg", "삭제 권한이 없거나 삭제에 실패했습니다.");
-            return "redirect:/product/detail?id=" + productId;
+            return "redirect:/product/detail?productId=" + productId;
         }
 
         rttr.addFlashAttribute("msg", "상품이 삭제되었습니다.");

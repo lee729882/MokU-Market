@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.MokU.service.MemberService;
 import com.MokU.vo.MemberVO;
+import com.MokU.vo.ProductVO;
 import com.MokU.service.ProductService;   // ✅ 추가
 
 @Controller
@@ -163,7 +164,7 @@ public class MemberController {
  }
  
 //✅ 홈 화면 (로그인 여부와 무관하게 진입 가능)
-@GetMapping({"/", "/home"})
+@GetMapping({"/home"})
 public String homePage(HttpSession session, Model model) {
 
   // 1) 로그인 유저가 있으면 화면에서 쓸 수 있게 전달
@@ -173,22 +174,23 @@ public String homePage(HttpSession session, Model model) {
   }
 
   // 2) 조회수 TOP N / 찜 TOP N 상품 조회
-  //    (limit 값은 원하시는 만큼 조정 가능: 8, 12 등)
-  List<com.MokU.vo.ProductVO> topViewProducts =
+  List<ProductVO> topViewProducts =
           productService.getTopProductsByViewCount(8);
 
-  List<com.MokU.vo.ProductVO> topFavoriteProducts =
+  List<ProductVO> topFavoriteProducts =
           productService.getTopProductsByFavoriteCount(8);
 
   model.addAttribute("topViewProducts", topViewProducts);
   model.addAttribute("topFavoriteProducts", topFavoriteProducts);
 
-  // 3) home.jsp로 이동
+  // 3) 세션에 저장된 최근 본 상품 목록 전달 (로그인 여부와 무관)
+  @SuppressWarnings("unchecked")
+  List<ProductVO> recentProducts =
+          (List<ProductVO>) session.getAttribute("recentProducts");
+  model.addAttribute("recentProducts", recentProducts);
+
+  // 4) home.jsp로 이동
   return "home";
 }
-
-
-
-
 
 }
