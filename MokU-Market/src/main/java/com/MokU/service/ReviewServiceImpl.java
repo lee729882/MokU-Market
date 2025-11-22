@@ -21,28 +21,26 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    @Transactional
     public void writeReview(ReviewVO vo) {
         reviewDAO.insertReview(vo);
     }
 
     @Override
-    @Transactional
     public void editReview(ReviewVO vo) {
         reviewDAO.updateReview(vo);
     }
 
-    // ✅ 내가 받은 후기 목록 (상대가 나를 평가한 것)
     @Override
-    @Transactional(readOnly = true)
     public List<ReviewVO> getReceivedReviews(int userId) {
-        return reviewDAO.findReceivedReviews(userId);
+        List<ReviewVO> list = reviewDAO.findReceivedReviews(userId);
+        System.out.println("✅ [ReviewService] received size = " + (list == null ? 0 : list.size()));
+        return list;
     }
 
-    // ✅ 내가 작성한 후기 목록
     @Override
-    @Transactional(readOnly = true)
     public List<ReviewVO> getWrittenReviews(int userId) {
-        return reviewDAO.findWrittenReviews(userId);
+        List<ReviewVO> list = reviewDAO.findWrittenReviews(userId);
+        System.out.println("✅ [ReviewService] written size = " + (list == null ? 0 : list.size()));
+        return list;
     }
 }

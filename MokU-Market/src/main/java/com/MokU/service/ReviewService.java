@@ -7,12 +7,14 @@ import com.MokU.vo.ReviewVO;
 
 public interface ReviewService {
 
+    // 채팅방 기준 내 후기 1건 조회
     ReviewVO getMyReview(int dealId, int writerId);
 
-    void writeReview(ReviewVO vo);   // 신규 작성
+    // 저장/수정
+    void writeReview(ReviewVO vo);
+    void editReview(ReviewVO vo);
 
-    void editReview(ReviewVO vo);    // 수정
-    
-    List<ReviewVO> getReceivedReviews(int userId); // 상대가 나에 대해 쓴 것
-    List<ReviewVO> getWrittenReviews(int userId);  // 내가 남긴 것
+    // 마이페이지용 목록
+    List<ReviewVO> getReceivedReviews(int userId);
+    List<ReviewVO> getWrittenReviews(int userId);
 }

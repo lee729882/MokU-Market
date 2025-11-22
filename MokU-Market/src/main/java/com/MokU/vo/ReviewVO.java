@@ -2,29 +2,25 @@ package com.MokU.vo;
 
 import java.util.Date;
 
-import lombok.Data;
-
-@Data
 public class ReviewVO {
 
-    private int reviewId;   // REVIEW_ID
-    private int dealId;     // DEAL_ID  (예: CHAT_ROOM.ROOM_ID 를 사용한다고 가정)
-    private int writerId;   // WRITER_ID
-    private int targetId;   // TARGET_ID
-    private Integer rating; // RATING (1~5 등, nullable)
-    private String content; // CONTENT
-    private Date createdAt; // CREATED_AT
-    // 1) 거래 상품 정보
-    private int productId;           // 상품 상세로 이동할 때 사용
-    private String productTitle;     // 상품 제목
-    private String productImagePath; // 썸네일 이미지 경로
+    private int reviewId;
+    private int dealId;      // = roomId
+    private int writerId;
+    private int targetId;
+    private Integer rating;  // 별점 null 허용이면 Integer
+    private String content;
+    private Date createdAt;
 
-    // 2) 역할/이름 표시
-    private String writerName;   // 리뷰 작성자 이름 (받은 후기 영역에서 "OOO 님")
-    private String targetName;   // 리뷰 대상자 이름 (쓴 후기 영역에서 "OOO 님")
-    private String writerRole;   // 'BUYER' 또는 'SELLER' (내가 구매자인지/판매자인지)
-    
-    // getter / setter
+    // ★ 마이페이지용 추가 필드
+    private String writerName;       // 내가 받은 후기에서 작성자 이름
+    private String targetName;       // 내가 남긴 후기에서 상대 이름
+    private int productId;
+    private String productTitle;
+    private String productImagePath;
+    private String writerRole;       // BUYER / SELLER
+
+    // ===== 기본 필드 getter/setter =====
     public int getReviewId() { return reviewId; }
     public void setReviewId(int reviewId) { this.reviewId = reviewId; }
 
@@ -45,4 +41,23 @@ public class ReviewVO {
 
     public Date getCreatedAt() { return createdAt; }
     public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
+
+    // ===== 추가 필드 getter/setter =====
+    public String getWriterName() { return writerName; }
+    public void setWriterName(String writerName) { this.writerName = writerName; }
+
+    public String getTargetName() { return targetName; }
+    public void setTargetName(String targetName) { this.targetName = targetName; }
+
+    public int getProductId() { return productId; }
+    public void setProductId(int productId) { this.productId = productId; }
+
+    public String getProductTitle() { return productTitle; }
+    public void setProductTitle(String productTitle) { this.productTitle = productTitle; }
+
+    public String getProductImagePath() { return productImagePath; }
+    public void setProductImagePath(String productImagePath) { this.productImagePath = productImagePath; }
+
+    public String getWriterRole() { return writerRole; }
+    public void setWriterRole(String writerRole) { this.writerRole = writerRole; }
 }

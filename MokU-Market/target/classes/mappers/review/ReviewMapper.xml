@@ -21,7 +21,7 @@
             CREATED_AT
         ) VALUES (
             #{reviewId},
-            #{dealId},
+            #{dealId},      -- = roomId
             #{writerId},
             #{targetId},
             #{rating},
@@ -30,7 +30,6 @@
         )
     </insert>
 
-    <!-- 2. 리뷰 수정 -->
     <update id="updateReview" parameterType="com.MokU.vo.ReviewVO">
         UPDATE REVIEW
            SET RATING  = #{rating},
@@ -38,10 +37,10 @@
          WHERE REVIEW_ID = #{reviewId}
     </update>
 
-    <!-- 3. 특정 거래 + 작성자 기준 리뷰 조회 -->
+    <!-- 3. 특정 거래 + 작성자 기준 리뷰 조회 (채팅방 기준) -->
     <select id="findByDealAndWriter"
+            parameterType="map"
             resultType="com.MokU.vo.ReviewVO">
-
         SELECT
             REVIEW_ID  AS reviewId,
             DEAL_ID    AS dealId,
@@ -57,7 +56,6 @@
 
     <!-- 4. 내가 받은 리뷰 목록 (TARGET_ID = 나) -->
     <select id="findReceivedReviews"
-            parameterType="int"
             resultType="com.MokU.vo.ReviewVO">
 
         SELECT
@@ -68,26 +66,28 @@
             r.RATING      AS rating,
             r.CONTENT     AS content,
             r.CREATED_AT  AS createdAt,
-            u.NAME        AS writerName,
-            p.PRODUCT_ID  AS productId,
-            p.TITLE       AS productTitle,
-            p.IMAGE_PATH  AS productImagePath,
+
+            u.NAME        AS writerName,        -- 작성자 이름
+            p.PRODUCT_ID  AS productId,         -- 상품 ID
+            p.TITLE       AS productTitle,      -- 상품명
+            p.IMAGE_PATH  AS productImagePath,  -- 상품 이미지 경로
+
             CASE
-                WHEN d.BUYER_ID  = r.WRITER_ID THEN 'BUYER'
-                WHEN d.SELLER_ID = r.WRITER_ID THEN 'SELLER'
+                WHEN c.BUYER_ID  = r.WRITER_ID THEN 'BUYER'
+                WHEN c.SELLER_ID = r.WRITER_ID THEN 'SELLER'
                 ELSE NULL
             END           AS writerRole
+
         FROM REVIEW r
-        LEFT JOIN DEAL      d ON r.DEAL_ID    = d.DEAL_ID
-        LEFT JOIN PRODUCT   p ON d.PRODUCT_ID = p.PRODUCT_ID
-        LEFT JOIN MOKU_USER u ON r.WRITER_ID  = u.USER_ID
+        JOIN CHAT_ROOM c ON r.DEAL_ID    = c.ROOM_ID     -- ★ roomId 기준 조인
+        JOIN PRODUCT   p ON c.PRODUCT_ID = p.PRODUCT_ID
+        JOIN MOKU_USER u ON r.WRITER_ID  = u.USER_ID
         WHERE r.TARGET_ID = #{userId}
         ORDER BY r.CREATED_AT DESC
     </select>
 
     <!-- 5. 내가 쓴 리뷰 목록 (WRITER_ID = 나) -->
     <select id="findWrittenReviews"
-            parameterType="int"
             resultType="com.MokU.vo.ReviewVO">
 
         SELECT
@@ -98,19 +98,22 @@
             r.RATING      AS rating,
             r.CONTENT     AS content,
             r.CREATED_AT  AS createdAt,
-            t.NAME        AS targetName,
+
+            t.NAME        AS targetName,        -- 상대방 이름
             p.PRODUCT_ID  AS productId,
             p.TITLE       AS productTitle,
             p.IMAGE_PATH  AS productImagePath,
+
             CASE
-                WHEN d.BUYER_ID  = r.WRITER_ID THEN 'BUYER'
-                WHEN d.SELLER_ID = r.WRITER_ID THEN 'SELLER'
+                WHEN c.BUYER_ID  = r.WRITER_ID THEN 'BUYER'
+                WHEN c.SELLER_ID = r.WRITER_ID THEN 'SELLER'
                 ELSE NULL
             END           AS writerRole
+
         FROM REVIEW r
-        LEFT JOIN DEAL      d ON r.DEAL_ID    = d.DEAL_ID
-        LEFT JOIN PRODUCT   p ON d.PRODUCT_ID = p.PRODUCT_ID
-        LEFT JOIN MOKU_USER t ON r.TARGET_ID  = t.USER_ID
+        JOIN CHAT_ROOM c ON r.DEAL_ID    = c.ROOM_ID
+        JOIN PRODUCT   p ON c.PRODUCT_ID = p.PRODUCT_ID
+        JOIN MOKU_USER t ON r.TARGET_ID  = t.USER_ID
         WHERE r.WRITER_ID = #{userId}
         ORDER BY r.CREATED_AT DESC
     </select>

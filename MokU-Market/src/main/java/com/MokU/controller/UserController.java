@@ -55,9 +55,6 @@ public class UserController {
         var received = reviewService.getReceivedReviews(userId);
         var written  = reviewService.getWrittenReviews(userId);
 
-        System.out.println("✅ [mypage] receivedReviews size = " + received.size());
-        System.out.println("✅ [mypage] writtenReviews size = " + written.size());
-
         model.addAttribute("receivedReviews", received);
         model.addAttribute("writtenReviews", written);
 
