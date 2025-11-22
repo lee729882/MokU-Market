@@ -202,9 +202,56 @@
     WHERE   l.USER_ID = #{userId}
     ORDER BY l.LIKE_ID DESC
 </select>
+<!-- ✅ 찜 많은 순 인기 상품 TOP N -->
+<!-- ✅ 찜 많은 순 인기 상품 TOP N -->
+<select id="findTopByFavoriteCount"
+        parameterType="int"
+        resultType="com.MokU.vo.ProductVO">
+
+    SELECT *
+    FROM (
+        SELECT
+            p.PRODUCT_ID    AS productId,
+            p.SELLER_ID     AS sellerId,
+            p.TITLE         AS title,
+            p.PRICE         AS price,
+            p.CATEGORY      AS category,
+            p.IMAGE_PATH    AS imagePath,
+            p.STATUS        AS status,
+            p.VIEW_COUNT    AS viewCount,
+            p.LIKE_COUNT    AS likeCount,   <!-- ✅ DB 컬럼 LIKE_COUNT, VO 필드 likeCount -->
+            p.CREATED_AT    AS createdAt,
+            ROW_NUMBER() OVER (
+                ORDER BY p.LIKE_COUNT DESC, p.PRODUCT_ID DESC  <!-- ✅ 여기도 LIKE_COUNT -->
+            ) AS rn
+        FROM PRODUCT p
+    )
+    WHERE rn &lt;= #{limit}
+</select>
 
 
+<!-- ✅ 조회수 많은 순 상품 TOP N -->
+<select id="findTopByViewCount" resultType="com.MokU.vo.ProductVO">
+    SELECT *
+    FROM (
+        SELECT
+            p.PRODUCT_ID     AS productId,
+            p.SELLER_ID      AS sellerId,
+            p.TITLE          AS title,
+            p.PRICE          AS price,
+            p.CATEGORY       AS category,
+            p.IMAGE_PATH     AS imagePath,
+            p.STATUS         AS status,
+            p.VIEW_COUNT     AS viewCount,
+            p.LIKE_COUNT     AS likeCount,   <!-- ✅ 여기 likeCount 로 통일 -->
+            p.CREATED_AT     AS createdAt,
+            ROW_NUMBER() OVER (
+                ORDER BY p.VIEW_COUNT DESC, p.PRODUCT_ID DESC
+            ) AS rn
+        FROM PRODUCT p
+    )
+    WHERE rn &lt;= #{limit}   <!-- XML에서는 이렇게 &lt;= 로 쓰는 게 안전합니다 -->
+</select>
 
 
-    
 </mapper>

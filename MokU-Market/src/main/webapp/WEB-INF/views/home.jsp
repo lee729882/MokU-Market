@@ -1,5 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>   <!-- ✅ 추가 -->
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -320,49 +322,74 @@
             </div>
         </div>
 
-        <!-- 인기상품 -->
-        <div class="section">
-            <h3>🔥 인기 상품</h3>
-            <div class="product-grid">
-                <div class="product">
-                    <img src="${pageContext.request.contextPath}/resources/images/sample1.jpg">
-                    <p>간호학개론 교재</p>
-                    <p class="price">10,000원</p>
-                </div>
-                <div class="product">
-                    <img src="${pageContext.request.contextPath}/resources/images/sample2.jpg">
-                    <p>자취용 전자레인지</p>
-                    <p class="price">30,000원</p>
-                </div>
-                <div class="product">
-                    <img src="${pageContext.request.contextPath}/resources/images/sample3.jpg">
-                    <p>노트북 거치대</p>
-                    <p class="price">7,000원</p>
-                </div>
-            </div>
-        </div>
+<!-- 인기상품: 찜 많은 순 -->
+<div class="section">
+    <h3>🔥 인기 상품 (찜 많은 순)</h3>
 
-        <!-- 최신상품 -->
-        <div class="section">
-            <h3>🆕 최신 등록 상품</h3>
+    <c:choose>
+        <c:when test="${empty topFavoriteProducts}">
+            <p style="color:#777; font-size:14px;">
+                아직 인기 상품이 없습니다.
+            </p>
+        </c:when>
+        <c:otherwise>
             <div class="product-grid">
-                <div class="product">
-                    <img src="${pageContext.request.contextPath}/resources/images/sample4.jpg">
-                    <p>공학용 계산기</p>
-                    <p class="price">5,000원</p>
-                </div>
-                <div class="product">
-                    <img src="${pageContext.request.contextPath}/resources/images/sample5.jpg">
-                    <p>전기포트</p>
-                    <p class="price">8,000원</p>
-                </div>
-                <div class="product">
-                    <img src="${pageContext.request.contextPath}/resources/images/sample6.jpg">
-                    <p>심리학 교재</p>
-                    <p class="price">12,000원</p>
-                </div>
+                <c:forEach var="p" items="${topFavoriteProducts}">
+                    <div class="product"
+                         onclick="location.href='${pageContext.request.contextPath}/product/detail?id=${p.productId}'">
+                        <img src="${pageContext.request.contextPath}${p.imagePath}"
+                             alt="${p.title}"
+                             onerror="this.src='${pageContext.request.contextPath}/resources/images/no_image.png';" />
+                        <p>${p.title}</p>
+                        <p class="price">
+                            <c:choose>
+                                <c:when test="${p.price == 0}">무료나눔</c:when>
+                                <c:otherwise>
+                                    <fmt:formatNumber value="${p.price}" type="number" pattern="#,###" /> 원
+                                </c:otherwise>
+                            </c:choose>
+                        </p>
+                    </div>
+                </c:forEach>
             </div>
-        </div>
+        </c:otherwise>
+    </c:choose>
+</div>
+
+<!-- 많이 본 상품: 조회수 많은 순 -->
+<div class="section">
+    <h3>👀 많이 본 상품 (조회수 순)</h3>
+
+    <c:choose>
+        <c:when test="${empty topViewProducts}">
+            <p style="color:#777; font-size:14px;">
+                아직 조회수가 많은 상품이 없습니다.
+            </p>
+        </c:when>
+        <c:otherwise>
+            <div class="product-grid">
+                <c:forEach var="p" items="${topViewProducts}">
+                    <div class="product"
+                         onclick="location.href='${pageContext.request.contextPath}/product/detail?id=${p.productId}'">
+                        <img src="${pageContext.request.contextPath}${p.imagePath}"
+                             alt="${p.title}"
+                             onerror="this.src='${pageContext.request.contextPath}/resources/images/no_image.png';" />
+                        <p>${p.title}</p>
+                        <p class="price">
+                            <c:choose>
+                                <c:when test="${p.price == 0}">무료나눔</c:when>
+                                <c:otherwise>
+                                    <fmt:formatNumber value="${p.price}" type="number" pattern="#,###" /> 원
+                                </c:otherwise>
+                            </c:choose>
+                        </p>
+                    </div>
+                </c:forEach>
+            </div>
+        </c:otherwise>
+    </c:choose>
+</div>
+
 
         <!-- 플로팅 버튼 -->
         <div class="floating-container">

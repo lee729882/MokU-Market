@@ -62,4 +62,10 @@ public interface ProductService {
 
     // 내가 찜한 상품(좋아요 기준)
     List<ProductVO> getMyFavoriteProducts(int userId);
+    
+ // 인기 상품(찜 많은 순)
+    List<ProductVO> getTopProductsByFavoriteCount(int limit);
+
+    // 많이 본 상품(조회수 많은 순)
+    List<ProductVO> getTopProductsByViewCount(int limit);
 }

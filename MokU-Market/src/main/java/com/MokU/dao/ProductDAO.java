@@ -65,4 +65,11 @@ public interface ProductDAO {
 
     /** ✅ 해당 상품을 판매완료 해제(판매중) 상태로 변경 */
     void markProductUnsold(@Param("productId") int productId);
+    
+ // 찜 많은 순 TOP N
+    List<ProductVO> findTopByFavoriteCount(@Param("limit") int limit);
+
+    // 조회수 많은 순 TOP N
+    List<ProductVO> findTopByViewCount(@Param("limit") int limit);
+
 }

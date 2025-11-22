@@ -215,4 +215,14 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductVO> getMyFavoriteProducts(int userId) {
         return productDAO.getFavoriteProductsByUser(userId);
     }
+
+@Override
+public List<ProductVO> getTopProductsByFavoriteCount(int limit) {
+    return productDAO.findTopByFavoriteCount(limit);
+}
+
+@Override
+public List<ProductVO> getTopProductsByViewCount(int limit) {
+    return productDAO.findTopByViewCount(limit);
+}
 }

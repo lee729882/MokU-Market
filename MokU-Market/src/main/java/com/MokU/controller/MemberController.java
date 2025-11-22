@@ -1,6 +1,7 @@
 package com.MokU.controller;
 
 import java.io.File;
+import java.util.List;   // ✅ 추가
 
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.MokU.service.MemberService;
 import com.MokU.vo.MemberVO;
+import com.MokU.service.ProductService;   // ✅ 추가
 
 @Controller
 public class MemberController {
@@ -20,6 +22,9 @@ public class MemberController {
     
     @Autowired
     private com.MokU.service.EmailService emailService;
+    
+    @Autowired
+    private ProductService productService;   // ✅ 메인화면 상품 조회용
     
     @GetMapping("/signup")
     public String signupPage() {
@@ -157,18 +162,28 @@ public class MemberController {
      return "fail";
  }
  
-//✅ 로그인 후 홈 화면
-@GetMapping("/home")
+//✅ 홈 화면 (로그인 여부와 무관하게 진입 가능)
+@GetMapping({"/", "/home"})
 public String homePage(HttpSession session, Model model) {
-  MemberVO user = (MemberVO) session.getAttribute("loginUser");
 
-  if (user == null) {
-      return "redirect:/login"; // 로그인 안 한 상태면 로그인 페이지로 이동
+  // 1) 로그인 유저가 있으면 화면에서 쓸 수 있게 전달
+  MemberVO user = (MemberVO) session.getAttribute("loginUser");
+  if (user != null) {
+      model.addAttribute("user", user);
   }
 
-  // ✅ JSP에서 ${user.~~}로 접근 가능하도록 전체 객체 전달
-  model.addAttribute("user", user);
+  // 2) 조회수 TOP N / 찜 TOP N 상품 조회
+  //    (limit 값은 원하시는 만큼 조정 가능: 8, 12 등)
+  List<com.MokU.vo.ProductVO> topViewProducts =
+          productService.getTopProductsByViewCount(8);
 
+  List<com.MokU.vo.ProductVO> topFavoriteProducts =
+          productService.getTopProductsByFavoriteCount(8);
+
+  model.addAttribute("topViewProducts", topViewProducts);
+  model.addAttribute("topFavoriteProducts", topFavoriteProducts);
+
+  // 3) home.jsp로 이동
   return "home";
 }
 
