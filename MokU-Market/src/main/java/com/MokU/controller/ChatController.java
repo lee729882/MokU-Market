@@ -327,6 +327,40 @@ public class ChatController {
         result.put("status", "success");
         return result;
     }
+    /**
+     * 채팅방 삭제 (참여자만 가능)
+     * JS 에서: fetch(ctx + '/chat/room?roomId=6', { method: 'DELETE' })
+     */
+    @PostMapping(value = "/room/delete", produces = "application/json; charset=UTF-8")
+    @ResponseBody
+    public Map<String, Object> deleteRoom(@RequestParam("roomId") int roomId,
+                                          HttpSession session) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        MemberVO loginUser = (MemberVO) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            result.put("status", "login_required");
+            return result;
+        }
+
+        try {
+            chatService.deleteRoom(roomId, loginUser.getUserId());
+            result.put("status", "success");
+        } catch (IllegalStateException e) {
+            // 권한 없음 / 방 없음 등
+            result.put("status", "error");
+            result.put("message", e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "채팅방 삭제 중 오류가 발생했습니다.");
+        }
+
+        return result;
+    }
+
+
 
 
 }

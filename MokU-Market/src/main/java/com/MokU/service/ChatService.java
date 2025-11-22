@@ -2,6 +2,8 @@ package com.MokU.service;
 
 import java.util.List;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import com.MokU.vo.ChatMessageVO;
 import com.MokU.vo.ChatRoomVO;
 
@@ -35,5 +37,9 @@ public interface ChatService {
     void updateTradeStatus(int roomId, String tradeStatus);
     
     void resetTradeStatusByProduct(int productId);
+    
+    // ✅ 채팅방 삭제 (참여자만 가능)
+    void deleteRoom(int roomId, int loginUserId);
+
 
 }

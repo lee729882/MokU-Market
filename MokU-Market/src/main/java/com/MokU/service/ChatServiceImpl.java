@@ -122,4 +122,26 @@ public class ChatServiceImpl implements ChatService {
     public void resetTradeStatusByProduct(int productId) {
         chatDAO.resetTradeStatusByProduct(productId);
     }
+    
+    @Override
+    @Transactional
+    public void deleteRoom(int roomId, int loginUserId) {
+
+        ChatRoomVO room = chatDAO.findRoomById(roomId);
+        if (room == null) {
+            throw new IllegalStateException("채팅방을 찾을 수 없습니다.");
+        }
+
+        // 로그인한 사용자가 이 방의 seller 또는 buyer 인지 확인
+        if (room.getSellerId() != loginUserId && room.getBuyerId() != loginUserId) {
+            throw new IllegalStateException("이 채팅방을 삭제할 권한이 없습니다.");
+        }
+
+        // 1) 해당 방의 메시지 전부 삭제
+        chatDAO.deleteMessagesByRoom(roomId);
+
+        // 2) 방 삭제
+        chatDAO.deleteRoom(roomId);
+    }
+
 }

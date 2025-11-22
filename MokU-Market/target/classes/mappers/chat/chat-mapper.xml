@@ -21,7 +21,7 @@
             CREATED_AT,
             LAST_MESSAGE,
             LAST_MESSAGE_AT
-            -- TRADE_STATUS 컬럼은 DB DEFAULT 'NONE' 사용 (NOT NULL DEFAULT 'NONE')
+            -- TRADE_STATUS 는 DB DEFAULT 'NONE'
         ) VALUES (
             #{roomId},
             #{productId},
@@ -135,7 +135,7 @@
     </select>
 
     <!-- ========================================================= -->
-    <!--  메시지 저장 -->
+    <!--  메시지 저장 (SENT_AT 은 DEFAULT SYSDATE 사용) -->
     <!-- ========================================================= -->
     <insert id="insertMessage" parameterType="com.MokU.vo.ChatMessageVO">
         <selectKey keyProperty="messageId" resultType="int" order="BEFORE">
@@ -147,15 +147,14 @@
             ROOM_ID,
             SENDER_ID,
             CONTENT,
-            IS_READ,
-            SENT_AT
+            IS_READ
+            -- SENT_AT 은 컬럼 DEFAULT (SYSDATE) 사용
         ) VALUES (
             #{messageId},
             #{roomId},
             #{senderId},
             #{content},
-            'N',
-            SYSDATE
+            'N'
         )
     </insert>
 
@@ -266,22 +265,31 @@
     </select>
 
     <!-- ========================================================= -->
-    <!--  거래 상태 변경 (NONE / REQUESTED / CONFIRMED 등) -->
+    <!--  거래 상태 변경 -->
     <!-- ========================================================= -->
     <update id="updateTradeStatus" parameterType="map">
         UPDATE CHAT_ROOM
         SET TRADE_STATUS = #{tradeStatus}
         WHERE ROOM_ID    = #{roomId}
     </update>
-    
-    
-    <!-- ✅ 상품 기준으로 채팅방 거래 상태 초기화 -->
-<update id="resetTradeStatusByProduct">
-    UPDATE chat_room
-    SET trade_status = 'NONE',
-        buyer_id = NULL
-    WHERE product_id = #{productId}
-</update>
+
+    <!--  상품 기준으로 거래 상태 초기화 -->
+    <update id="resetTradeStatusByProduct">
+        UPDATE CHAT_ROOM
+        SET TRADE_STATUS = 'NONE',
+            BUYER_ID     = NULL
+        WHERE PRODUCT_ID = #{productId}
+    </update>
+<!-- ChatDAO.xml -->
+<delete id="deleteMessagesByRoom" parameterType="int">
+    DELETE FROM CHAT_MESSAGE
+    WHERE ROOM_ID = #{roomId}
+</delete>
+
+<delete id="deleteRoom" parameterType="int">
+    DELETE FROM CHAT_ROOM
+    WHERE ROOM_ID = #{roomId}
+</delete>
 
 
 </mapper>

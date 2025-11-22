@@ -415,6 +415,152 @@
             background-color: #E03B3B;
             transform: scale(1.07);
         }
+
+/* ================== 후기 모달 ================== */
+.review-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: none;          /* JS에서 block으로 변경 */
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.review-modal-inner {
+    width: 420px;
+    max-width: 95%;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    padding: 24px 26px 20px;
+    position: relative;
+    font-size: 13px;
+}
+
+.review-modal-close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    border: none;
+    background: transparent;
+    font-size: 18px;
+    cursor: pointer;
+    color: #aaa;
+}
+
+.review-item-box {
+    display: flex;
+    gap: 12px;
+    padding: 10px;
+    border-radius: 10px;
+    background: #fafafa;
+    margin-bottom: 18px;
+}
+
+.review-item-thumb {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #ddd;
+    flex-shrink: 0;
+}
+.review-item-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.review-item-info-title {
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+.review-item-info-price {
+    font-size: 12px;
+    color: #777;
+}
+
+.review-question {
+    margin: 10px 0 6px;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.review-score-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.review-score-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+    background: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.review-score-btn.active {
+    border-color: #ff6b6b;
+    background: #ffebef;
+}
+
+.review-textarea {
+    width: 100%;
+    resize: vertical;
+    min-height: 80px;
+    max-height: 200px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    font-family: inherit;
+    font-size: 13px;
+    box-sizing: border-box;
+}
+
+.review-modal-footer {
+    margin-top: 14px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-review-submit {
+    border: none;
+    border-radius: 999px;
+    padding: 8px 18px;
+    font-size: 13px;
+    cursor: pointer;
+    background: #ff6b6b;
+    color: #fff;
+    font-weight: 600;
+}
+.btn-review-submit:disabled {
+    background: #ddd;
+    cursor: default;
+}
+  .chat-room-delete-btn {
+    margin-top: 4px;
+    padding: 2px 8px;
+    font-size: 11px;
+    border-radius: 999px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    color: #999;
+    cursor: pointer;
+}
+
+.chat-room-delete-btn:hover {
+    border-color: #ff4b5b;
+    color: #ff4b5b;
+}
+        
     </style>
 </head>
 <body>
@@ -435,37 +581,45 @@
             </c:if>
 
             <c:forEach var="room" items="${rooms}">
-                <a
-                    href="${ctx}/chat/room?roomId=${room.roomId}"
-                    class="chat-room-item ${not empty activeRoom and room.roomId == activeRoom.roomId ? 'active' : ''}"
-                >
-                    <div class="chat-room-thumb">
-                        <c:if test="${not empty room.productImageUrl}">
-                            <img src="${ctx}${room.productImageUrl}" alt="상품 이미지">
-                        </c:if>
-                    </div>
+    <a
+        href="${ctx}/chat/room?roomId=${room.roomId}"
+        class="chat-room-item ${not empty activeRoom and room.roomId == activeRoom.roomId ? 'active' : ''}"
+    >
+        <div class="chat-room-thumb">
+            <c:if test="${not empty room.productImageUrl}">
+                <img src="${ctx}${room.productImageUrl}" alt="상품 이미지">
+            </c:if>
+        </div>
 
-                    <div class="chat-room-text">
-                        <div class="chat-room-nickname">
-                            <c:out value="${room.opponentName}" default="닉네임" />
-                        </div>
-                        <div class="chat-room-last-message">
-                            <c:out value="${room.lastMessage}" default="마지막 채팅 내용이 여기에 표시됩니다." />
-                        </div>
-                    </div>
+        <div class="chat-room-text">
+            <div class="chat-room-nickname">
+                <c:out value="${room.opponentName}" default="닉네임" />
+            </div>
+            <div class="chat-room-last-message">
+                <c:out value="${room.lastMessage}" default="마지막 채팅 내용이 여기에 표시됩니다." />
+            </div>
+        </div>
 
-                    <div class="chat-room-meta">
-                        <c:if test="${not empty room.lastMessageAt}">
-                            <span>
-<fmt:formatDate value="${room.lastMessageAt}" pattern="HH:mm" timeZone="Asia/Seoul" />
-                            </span>
-                        </c:if>
-                        <c:if test="${room.unreadCount gt 0}">
-                            <span class="unread-badge">${room.unreadCount}</span>
-                        </c:if>
-                    </div>
-                </a>
-            </c:forEach>
+        <div class="chat-room-meta">
+            <c:if test="${not empty room.lastMessageAt}">
+                <span>
+                    <fmt:formatDate value="${room.lastMessageAt}" pattern="HH:mm" timeZone="Asia/Seoul" />
+                </span>
+            </c:if>
+            <c:if test="${room.unreadCount gt 0}">
+                <span class="unread-badge">${room.unreadCount}</span>
+            </c:if>
+
+            <!-- ✅ 채팅방 삭제 버튼 -->
+            <button type="button"
+                    class="chat-room-delete-btn"
+                    data-room-id="${room.roomId}">
+                삭제
+            </button>
+        </div>
+    </a>
+</c:forEach>
+
         </div>
 
         <!-- ============== 오른쪽: 채팅 상세 ============== -->
@@ -533,29 +687,32 @@
                             <fmt:formatDate value="${now}" pattern="yyyy.MM.dd (E)" />
                         </div>
 
-                        <c:forEach var="msg" items="${messages}">
-                            <c:set var="isMe" value="${msg.senderId == loginUser.userId}" />
+<c:forEach var="msg" items="${messages}">
+    <c:set var="isMe" value="${msg.senderId == loginUser.userId}" />
 
-                            <div class="message-row ${isMe ? 'me' : 'other'}">
-                                <c:if test="${not isMe}">
-                                    <div class="message-meta">
-                                        <div class="message-nickname">
-                                            <c:out value="${activeRoom.opponentName}" default="프로필" />
-                                        </div>
-                                    </div>
-                                </c:if>
+    <div class="message-row ${isMe ? 'me' : 'other'}">
+        <c:if test="${not isMe}">
+            <div class="message-meta">
+                <div class="message-nickname">
+                    <c:out value="${activeRoom.opponentName}" default="프로필" />
+                </div>
+            </div>
+        </c:if>
 
-                                <div class="message-bubble ${isMe ? 'me' : 'other'}">
-                                    <c:out value="${msg.content}" />
-                                </div>
+        <div class="message-bubble ${isMe ? 'me' : 'other'}">
+            <c:out value="${msg.content}" />
+        </div>
 
-                                <div class="message-meta">
-                                    <div class="message-time">
-<fmt:formatDate value="${msg.sentAt}" pattern="HH:mm" timeZone="Asia/Seoul" />
-                                    </div>
-                                </div>
-                            </div>
-                        </c:forEach>
+        <div class="message-meta">
+            <div class="message-time">
+                <fmt:formatDate value="${msg.sentAt}" pattern="HH:mm" timeZone="Asia/Seoul" />
+            </div>
+
+        </div>
+    </div>
+</c:forEach>
+
+
                     </div>
 
                     <!-- 입력 영역 -->
@@ -588,6 +745,54 @@
     document.getElementById("topBtn").addEventListener("click", function() {
         window.scrollTo({ top: 0, behavior: "smooth" });
     });
+    // ================== 채팅방 삭제 ==================
+    (function() {
+        const ctx = '${ctx}';
+        const deleteButtons = document.querySelectorAll('.chat-room-delete-btn');
+
+        deleteButtons.forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();   // a 태그 이동 방지
+                e.stopPropagation();  // 클릭 버블링 차단
+
+                const roomId = this.dataset.roomId;
+                if (!roomId) return;
+
+                if (!confirm('이 채팅방을 삭제하시겠습니까?\n(대화 내용도 함께 삭제됩니다.)')) {
+                    return;
+                }
+
+                fetch(ctx + '/chat/room/delete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                    },
+                    body: 'roomId=' + encodeURIComponent(roomId)
+                })
+                .then(res => res.json())
+.then(data => {
+    if (data.status === 'login_required') {
+        alert('로그인이 필요합니다.');
+        location.href = ctx + '/login';
+        return;
+    }
+    if (data.status !== 'success') {
+        alert(data.message || '채팅방 삭제 중 오류가 발생했습니다.');
+        return;
+    }
+
+    // ✅ 삭제 성공 시: 채팅 리스트 화면으로 이동
+    alert('채팅방이 삭제되었습니다.');
+    location.href = ctx + '/chat';
+})
+
+                .catch(err => {
+                    console.error(err);
+                    alert('네트워크 오류가 발생했습니다.');
+                });
+            });
+        });
+    })();
 </script>
 
 <c:if test="${not empty activeRoom}">
@@ -750,9 +955,8 @@ if (tradeStatus === 'CONFIRMED' && productStatus === 'SOLD') {
         .then(res => res.json())
         .then(data => {
             if (data.status === 'success') {
-                appendMessage(true, text);
-                textarea.value = '';
-                updateButton();
+                // ✅ 로컬 new Date()로 append 하지 말고 그냥 새로 그리게
+                location.reload();
             } else if (data.status === 'login_required') {
                 alert('로그인이 필요합니다.');
                 location.href = ctx + '/login';
@@ -765,6 +969,8 @@ if (tradeStatus === 'CONFIRMED' && productStatus === 'SOLD') {
             alert('네트워크 오류가 발생했습니다.');
         });
     }
+
+
 
     updateButton();
 })();

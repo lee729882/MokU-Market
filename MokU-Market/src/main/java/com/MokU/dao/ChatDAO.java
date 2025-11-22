@@ -43,4 +43,8 @@ public interface ChatDAO {
     
     void resetTradeStatusByProduct(@Param("productId") int productId);
 
+    void deleteMessagesByRoom(int roomId);
+
+    void deleteRoom(int roomId);
+
 }
