@@ -41,5 +41,6 @@ public interface ChatService {
     // ✅ 채팅방 삭제 (참여자만 가능)
     void deleteRoom(int roomId, int loginUserId);
 
+    void deleteAllByProductId(int productId);
 
 }

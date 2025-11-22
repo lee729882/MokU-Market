@@ -17,7 +17,7 @@ public class ChatServiceImpl implements ChatService {
 
     @Autowired
     private ChatDAO chatDAO;
-
+    
     @Override
     @Transactional
     public ChatRoomVO createOrGetRoom(int productId, int sellerId, int buyerId) {
@@ -143,5 +143,22 @@ public class ChatServiceImpl implements ChatService {
         // 2) 방 삭제
         chatDAO.deleteRoom(roomId);
     }
+    @Override
+    @Transactional
+    public void deleteAllByProductId(int productId) {
 
+        // 1) 이 상품과 연결된 모든 채팅방 조회
+        List<ChatRoomVO> rooms = chatDAO.findRoomsByProduct(productId);
+
+        // 2) 방마다 메시지 → 방 순서로 삭제
+        for (ChatRoomVO room : rooms) {
+            int roomId = room.getRoomId();   // 필드명은 실제 VO 에 맞게 수정
+
+            // (1) 메시지 먼저 삭제
+            chatDAO.deleteMessagesByRoom(roomId);
+
+            // (2) 채팅방 삭제
+            chatDAO.deleteRoom(roomId);
+        }
+    }
 }

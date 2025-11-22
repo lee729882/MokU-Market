@@ -15,6 +15,9 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductDAO productDAO;   // ✅ DAO만 사용
 
+    @Autowired
+    private ChatService chatService;   // ✅ 추가
+    
     // ================== 기본 기능 ==================
     @Override
     public void insertProduct(ProductVO vo) {
@@ -189,9 +192,13 @@ public class ProductServiceImpl implements ProductService {
         if (origin == null) return false;
         if (origin.getSellerId() != sellerId) return false;
 
-        // 2) 자식 먼저 삭제 (좋아요 + 이미지)
+        // 2-1) ✅ 이 상품과 관련된 모든 채팅(메시지 + 채팅방) 삭제
+        //      -> FK_CHATROOM_PRODUCT, FK_MESSAGE_CHATROOM 등을 먼저 정리
+        chatService.deleteAllByProductId(productId);
+
+        // 2-2) ✅ 나머지 자식 먼저 삭제 (좋아요 + 이미지)
         productDAO.deleteLikesByProductId(productId);   // FK_LIKES_PRODUCT 해결
-        productDAO.deleteImagesByProductId(productId);  // 이미지 테이블도 정리
+        productDAO.deleteImagesByProductId(productId);  // 이미지 테이블 정리
 
         // 3) 마지막에 상품 삭제
         int rows = productDAO.deleteById(productId);
