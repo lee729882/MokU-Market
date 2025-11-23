@@ -6,11 +6,9 @@
   /* ================= 최근 본 상품 패널 ================= */
 .recent-products-panel {
   position: fixed;
-  /* top: 80px;  ← 이 줄 삭제 */
-  top: 50%;                /* 화면 세로 중앙 기준 */
-  right: 20px;             /* 오른쪽에서 20px 떨어지게 */
-  transform: translateY(-50%); /* 자기 높이의 50%만 위로 올려서 정확히 가운데 정렬 */
-
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
   width: 170px;
   background-color: #ffffff;
   border-radius: 8px;
@@ -19,7 +17,6 @@
   font-family: 'Nanum Gothic', sans-serif;
   z-index: 1000;
 }
-
 
   .recent-products-title {
     text-align: center;
@@ -36,7 +33,7 @@
   }
 
   .recent-products-list {
-    max-height: 260px;          /* 필요 시 높이 조정 */
+    max-height: 260px;
     overflow-y: auto;
     margin: 8px 0;
   }
@@ -45,6 +42,7 @@
     display: block;
     margin-bottom: 8px;
     text-decoration: none;
+    position: relative;     /* 🔥 오버레이 기준점 */
   }
 
   .recent-product-item img {
@@ -61,7 +59,37 @@
     text-align: center;
     padding: 16px 4px;
   }
+
+  /* ✅ 판매완료 비주얼 */
+  .recent-product-item.sold img {
+    filter: grayscale(0.5) brightness(0.7);
+  }
+
+  .recent-product-item.sold::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    border-radius: 4px;
+    pointer-events: none;
+  }
+
+  .recent-sold-badge {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.75);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    letter-spacing: 1px;
+    z-index: 2;
+  }
 </style>
+
 
 <div class="recent-products-panel">
     <div class="recent-products-title">최근 본 상품</div>
@@ -72,19 +100,26 @@
     <div class="recent-products-list">
 <c:choose>
     <c:when test="${not empty sessionScope.recentProducts}">
-        <c:forEach var="p" items="${sessionScope.recentProducts}">
-            <a class="recent-product-item"
-               href="${pageContext.request.contextPath}/product/detail?productId=${p.productId}">
-                <c:choose>
-                    <c:when test="${not empty p.imagePath}">
-                        <img src="${pageContext.request.contextPath}${p.imagePath}" alt="${p.title}">
-                    </c:when>
-                    <c:otherwise>
-                        <img src="${pageContext.request.contextPath}/resources/img/no-image.png" alt="${p.title}">
-                    </c:otherwise>
-                </c:choose>
-            </a>
-        </c:forEach>
+<c:forEach var="p" items="${sessionScope.recentProducts}">
+    <a class="recent-product-item<c:if test='${p.status eq "SOLD"}'> sold</c:if>"
+       href="${pageContext.request.contextPath}/product/detail?productId=${p.productId}">
+
+        <!-- 🔥 판매완료 뱃지 -->
+        <c:if test="${p.status eq 'SOLD'}">
+            <div class="recent-sold-badge">판매 완료</div>
+        </c:if>
+
+        <c:choose>
+            <c:when test="${not empty p.imagePath}">
+                <img src="${pageContext.request.contextPath}${p.imagePath}" alt="${p.title}">
+            </c:when>
+            <c:otherwise>
+                <img src="${pageContext.request.contextPath}/resources/img/no-image.png" alt="${p.title}">
+            </c:otherwise>
+        </c:choose>
+    </a>
+</c:forEach>
+
     </c:when>
     <c:otherwise>
         <div class="recent-product-empty">

@@ -231,6 +231,41 @@
             background: #007A5C;
             transform: scale(1.2);
         }
+        /* ✅ 판매완료 비주얼 */
+.product {
+    position: relative;  /* 오버레이 기준점 */
+}
+
+/* 이미지 톤 다운 */
+.product.sold img {
+    filter: grayscale(0.5) brightness(0.7);
+}
+
+/* 어두운 오버레이 */
+.product.sold::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    pointer-events: none;
+}
+
+/* 중앙 "판매 완료" 뱃지 */
+.sold-badge {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.7);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 999px;
+    letter-spacing: 1px;
+    z-index: 2;
+}
+        
     </style>
 </head>
 
@@ -324,23 +359,31 @@
         </c:when>
         <c:otherwise>
             <div class="product-grid">
-                <c:forEach var="p" items="${topFavoriteProducts}">
-                    <div class="product"
-                         onclick="location.href='${pageContext.request.contextPath}/product/detail?id=${p.productId}'">
-                        <img src="${pageContext.request.contextPath}${p.imagePath}"
-                             alt="${p.title}"
-                             onerror="this.src='${pageContext.request.contextPath}/resources/images/no_image.png';" />
-                        <p>${p.title}</p>
-                        <p class="price">
-                            <c:choose>
-                                <c:when test="${p.price == 0}">무료나눔</c:when>
-                                <c:otherwise>
-                                    <fmt:formatNumber value="${p.price}" type="number" pattern="#,###" /> 원
-                                </c:otherwise>
-                            </c:choose>
-                        </p>
-                    </div>
-                </c:forEach>
+<c:forEach var="p" items="${topFavoriteProducts}">
+    <div class="product<c:if test='${p.status eq "SOLD"}'> sold</c:if>"
+         onclick="location.href='${pageContext.request.contextPath}/product/detail?id=${p.productId}'">
+
+        <!-- 🔥 판매완료 뱃지 -->
+        <c:if test="${p.status == 'SOLD'}">
+            <div class="sold-badge">판매 완료</div>
+        </c:if>
+
+        <img src="${pageContext.request.contextPath}${p.imagePath}"
+             alt="${p.title}"
+             onerror="this.src='${pageContext.request.contextPath}/resources/images/no_image.png';" />
+
+        <p>${p.title}</p>
+        <p class="price">
+            <c:choose>
+                <c:when test="${p.price == 0}">무료나눔</c:when>
+                <c:otherwise>
+                    <fmt:formatNumber value="${p.price}" type="number" pattern="#,###" /> 원
+                </c:otherwise>
+            </c:choose>
+        </p>
+    </div>
+</c:forEach>
+
             </div>
         </c:otherwise>
     </c:choose>
@@ -358,23 +401,31 @@
         </c:when>
         <c:otherwise>
             <div class="product-grid">
-                <c:forEach var="p" items="${topViewProducts}">
-                    <div class="product"
-                         onclick="location.href='${pageContext.request.contextPath}/product/detail?id=${p.productId}'">
-                        <img src="${pageContext.request.contextPath}${p.imagePath}"
-                             alt="${p.title}"
-                             onerror="this.src='${pageContext.request.contextPath}/resources/images/no_image.png';" />
-                        <p>${p.title}</p>
-                        <p class="price">
-                            <c:choose>
-                                <c:when test="${p.price == 0}">무료나눔</c:when>
-                                <c:otherwise>
-                                    <fmt:formatNumber value="${p.price}" type="number" pattern="#,###" /> 원
-                                </c:otherwise>
-                            </c:choose>
-                        </p>
-                    </div>
-                </c:forEach>
+              <c:forEach var="p" items="${topViewProducts}">
+    <div class="product<c:if test='${p.status eq "SOLD"}'> sold</c:if>"
+         onclick="location.href='${pageContext.request.contextPath}/product/detail?id=${p.productId}'">
+
+        <!-- 🔥 판매완료 뱃지 -->
+        <c:if test="${p.status == 'SOLD'}">
+            <div class="sold-badge">판매 완료</div>
+        </c:if>
+
+        <img src="${pageContext.request.contextPath}${p.imagePath}"
+             alt="${p.title}"
+             onerror="this.src='${pageContext.request.contextPath}/resources/images/no_image.png';" />
+
+        <p>${p.title}</p>
+        <p class="price">
+            <c:choose>
+                <c:when test="${p.price == 0}">무료나눔</c:when>
+                <c:otherwise>
+                    <fmt:formatNumber value="${p.price}" type="number" pattern="#,###" /> 원
+                </c:otherwise>
+            </c:choose>
+        </p>
+    </div>
+</c:forEach>
+
             </div>
         </c:otherwise>
     </c:choose>

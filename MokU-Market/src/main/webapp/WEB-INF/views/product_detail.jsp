@@ -516,6 +516,21 @@ html, body {
     border-color: #ccc;
     cursor: default;
 }
+/* 판매자 캠퍼스 인증 뱃지 */
+.seller-verified-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #007A5C;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+}
+.like-count-text {
+  font-size: 14px;
+  color: #555;
+}
 
 </style>
 </head>
@@ -586,16 +601,25 @@ html, body {
     </div>
 
     <!-- 판매자 정보 -->
-    <div class="seller-box">
-        <img src="${ctx}${seller.profileImagePath}"
-             onerror="this.src='${ctx}/resources/images/default_profile.png';">
-        <div>
-            <div style="font-weight:700; font-size:16px;">${seller.name}</div>
-            <div style="font-size:13px; color:#777; margin-top:3px;">
-                매너온도 ${seller.mannerTemp}°C · 찜 <span id="likeCount">${likeCount}</span> · 채팅 ${seller.chatCount}
-            </div>
+<div class="seller-box">
+    <img src="${ctx}${seller.profileImagePath}"
+         onerror="this.src='${ctx}/resources/images/default_profile.png';">
+    <div>
+        <!-- 이름 + 캠퍼스 인증 여부 -->
+        <div style="display:flex; align-items:center; gap:6px; font-weight:700; font-size:16px;">
+            <span>${seller.name}</span>
+
+            <c:if test="${seller.isLocationVerified == 'Y'}">
+                <span class="seller-verified-badge">📡 캠퍼스 인증</span>
+            </c:if>
+        </div>
+
+        <!-- 매너온도만 표시 -->
+        <div style="font-size:13px; color:#777; margin-top:3px;">
+            매너온도 ${seller.mannerTemp}°C
         </div>
     </div>
+</div>
 
     <!-- ================= 탭 구조 ================= -->
 <c:choose>
@@ -624,15 +648,21 @@ html, body {
 
             <div class="description">${product.description}</div>
 
-            <div class="btn-row"
-                 style="display:flex; align-items:center; gap:15px; margin-top:20px;">
-                <div id="likeBtn" class="like-btn ${liked ? 'liked' : ''}">
-                    <svg class="heart-icon" viewBox="0 0 24 24">
-                        <path d="M12.1 8.64l-.1.1-.11-.1C9.14 5.92 5.6 6.28 4.07 8.36c-1.52 2.09-1 5.33 1.11 7.11L12 21l6.82-5.53c2.12-1.78 2.63-5.02 1.11-7.11-1.53-2.08-5.07-2.44-7.83.28z"
-                              fill="none" stroke="#000" stroke-width="2"/>
-                    </svg>
-                </div>
-            </div>
+<div class="btn-row"
+     style="display:flex; align-items:center; gap:10px; margin-top:20px;">
+    <div id="likeBtn" class="like-btn ${liked ? 'liked' : ''}">
+        <svg class="heart-icon" viewBox="0 0 24 24">
+            <path d="M12.1 8.64l-.1.1-.11-.1C9.14 5.92 5.6 6.28 4.07 8.36c-1.52 2.09-1 5.33 1.11 7.11L12 21l6.82-5.53c2.12-1.78 2.63-5.02 1.11-7.11-1.53-2.08-5.07-2.44-7.83.28z"
+                  fill="none" stroke="#000" stroke-width="2"/>
+        </svg>
+    </div>
+
+    <!-- 🔥 이 게시물 찜 개수 -->
+    <span class="like-count-text">
+        찜 <span id="likeCount">${likeCount}</span>
+    </span>
+</div>
+
 
             <h3 style="margin-top:45px; margin-bottom:10px;">거래 장소</h3>
             <div id="map"></div>
@@ -685,32 +715,38 @@ html, body {
 
         <div class="description">${product.description}</div>
 
-        <div class="btn-row"
-             style="display:flex; align-items:center; gap:15px; margin-top:20px;">
+<div class="btn-row"
+     style="display:flex; align-items:center; gap:10px; margin-top:20px;">
 
-            <c:choose>
-                <c:when test="${product.status eq 'SOLD'}">
-                    <button class="chat-btn"
-                            disabled
-                            style="background-color:#cccccc; cursor:not-allowed;">
-                        거래 완료된 상품입니다
-                    </button>
-                </c:when>
-                <c:otherwise>
-                    <button class="chat-btn"
-                            onclick="location.href='${ctx}/chat/start?productId=${product.productId}'">
-                        채팅하기
-                    </button>
-                </c:otherwise>
-            </c:choose>
+    <c:choose>
+        <c:when test="${product.status eq 'SOLD'}">
+            <button class="chat-btn"
+                    disabled
+                    style="background-color:#cccccc; cursor:not-allowed;">
+                거래 완료된 상품입니다
+            </button>
+        </c:when>
+        <c:otherwise>
+            <button class="chat-btn"
+                    onclick="location.href='${ctx}/chat/start?productId=${product.productId}'">
+                채팅하기
+            </button>
+        </c:otherwise>
+    </c:choose>
 
-            <div id="likeBtn" class="like-btn ${liked ? 'liked' : ''}">
-                <svg class="heart-icon" viewBox="0 0 24 24">
-                    <path d="M12.1 8.64l-.1.1-.11-.1C9.14 5.92 5.6 6.28 4.07 8.36c-1.52 2.09-1 5.33 1.11 7.11L12 21l6.82-5.53c2.12-1.78 2.63-5.02 1.11-7.11-1.53-2.08-5.07-2.44-7.83.28z"
-                          fill="none" stroke="#000" stroke-width="2"/>
-                </svg>
-            </div>
-        </div>
+    <div id="likeBtn" class="like-btn ${liked ? 'liked' : ''}">
+        <svg class="heart-icon" viewBox="0 0 24 24">
+            <path d="M12.1 8.64l-.1.1-.11-.1C9.14 5.92 5.6 6.28 4.07 8.36c-1.52 2.09-1 5.33 1.11 7.11L12 21l6.82-5.53c2.12-1.78 2.63-5.02 1.11-7.11-1.53-2.08-5.07-2.44-7.83.28z"
+                  fill="none" stroke="#000" stroke-width="2"/>
+        </svg>
+    </div>
+
+    <!-- 🔥 이 게시물 찜 개수 -->
+    <span class="like-count-text">
+        찜 <span id="likeCount">${likeCount}</span>
+    </span>
+</div>
+
 
         <h3 style="margin-top:45px; margin-bottom:10px;">거래 장소</h3>
         <div id="map"></div>
