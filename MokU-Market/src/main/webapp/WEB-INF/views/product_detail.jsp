@@ -741,10 +741,11 @@ html, body {
         </svg>
     </div>
 
-    <!-- 🔥 이 게시물 찜 개수 -->
-    <span class="like-count-text">
-        찜 <span id="likeCount">${likeCount}</span>
-    </span>
+<!-- 🔥 이 게시물 찜 개수 -->
+<span class="like-count-text">
+    찜 <span id="likeCount">${likeCount}</span>
+</span>
+
 </div>
 
 
@@ -830,8 +831,6 @@ new kakao.maps.Marker({
 <!-- LIKE, 탭 -->
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-
-    /* 찜 버튼 */
     const btn = document.getElementById("likeBtn");
     const countArea = document.getElementById("likeCount");
 
@@ -842,27 +841,27 @@ document.addEventListener("DOMContentLoaded", function() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ productId: ${product.productId} })
             })
-            .then(function(res){ return res.json(); })
-            .then(function(data){
-
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
                 if (data.status === "login_required") {
                     alert("로그인이 필요합니다.");
                     return;
                 }
 
+                // 찜 상태 갱신
                 if (data.liked) btn.classList.add("liked");
                 else btn.classList.remove("liked");
 
+                // 찜 개수 갱신
                 if (countArea) {
-                    countArea.innerText = data.likeCount;
+                    countArea.innerText = data.likeCount;  // 현재 상품에 대한 찜 개수만 갱신
                 }
             })
-            .catch(function(err){
+            .catch(function(err) {
                 console.error("LIKE ERROR:", err);
             });
         });
     }
-
     /* 탭 전환 (판매자 전용) */
     var tabDetail = document.getElementById("tab-detail");
     var tabChat   = document.getElementById("tab-chat");

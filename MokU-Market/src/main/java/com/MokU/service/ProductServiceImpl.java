@@ -225,4 +225,10 @@ public List<ProductVO> getTopProductsByFavoriteCount(int limit) {
 public List<ProductVO> getTopProductsByViewCount(int limit) {
     return productDAO.findTopByViewCount(limit);
 }
+// 찜 개수 조회 메소드 구현
+@Override
+public int getTotalLikesByProduct(int productId) {
+    return productDAO.getLikeCountForProduct(productId);  // 상품별 찜 개수를 조회하는 DAO 호출
+}
+
 }

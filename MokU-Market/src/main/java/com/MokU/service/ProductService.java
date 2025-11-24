@@ -68,4 +68,7 @@ public interface ProductService {
 
     // 많이 본 상품(조회수 많은 순)
     List<ProductVO> getTopProductsByViewCount(int limit);
+    
+    int getTotalLikesByProduct(int productId);
+
 }

@@ -234,6 +234,10 @@ public class ProductController {
 
         session.setAttribute("recentProducts", recentList);
 
+        // 상품에 대한 찜 개수 조회
+        int likeCount = productService.getTotalLikesByProduct(pid);
+        model.addAttribute("likeCount", likeCount);  // 찜 개수 모델에 추가
+        
         return "product_detail";
     }
 
@@ -375,19 +379,22 @@ public class ProductController {
         int userId = user.getUserId();
         int productId = req.get("productId");
 
+        // 좋아요 토글
         boolean liked = productService.toggleLike(userId, productId);
 
+        // 상품 조회
         ProductVO product = productService.getProductById(productId);
         if (product == null) {
             result.put("status", "error");
             return result;
         }
 
-        int sellerTotalLikes = productService.getTotalLikesBySeller(product.getSellerId());
+        // 해당 상품에 대한 찜 개수 조회
+        int likeCount = productService.getTotalLikesByProduct(productId);
 
         result.put("status", "success");
         result.put("liked", liked);
-        result.put("likeCount", sellerTotalLikes);
+        result.put("likeCount", likeCount);  // 현재 상품에 대한 찜 개수만 갱신
 
         return result;
     }
@@ -457,4 +464,27 @@ public class ProductController {
         rttr.addFlashAttribute("msg", "상품이 삭제되었습니다.");
         return "redirect:/home";
     }
+ // 상품에 대한 찜 개수 반환
+    @GetMapping("/likeCount")
+    @ResponseBody
+    public Map<String, Object> getLikeCount(@RequestParam("productId") int productId) {
+        Map<String, Object> result = new HashMap<>();
+
+        // 상품 조회
+        ProductVO product = productService.getProductById(productId);
+        if (product == null) {
+            result.put("status", "error");
+            return result;
+        }
+
+        // 해당 상품에 대한 찜 개수 조회
+        int likeCount = productService.getTotalLikesByProduct(productId);
+        result.put("status", "success");
+        result.put("likeCount", likeCount);
+
+        return result;
+    }
+
+
+
 }

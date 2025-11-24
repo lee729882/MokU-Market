@@ -252,6 +252,13 @@
     )
     WHERE rn &lt;= #{limit}   <!-- XML에서는 이렇게 &lt;= 로 쓰는 게 안전합니다 -->
 </select>
+<!-- 상품에 대한 찜 개수 조회 -->
+<select id="getLikeCountForProduct" resultType="int">
+    SELECT COUNT(*)
+    FROM likes
+    WHERE product_id = #{productId}
+</select>
+
 
 
 </mapper>

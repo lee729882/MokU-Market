@@ -72,4 +72,7 @@ public interface ProductDAO {
     // 조회수 많은 순 TOP N
     List<ProductVO> findTopByViewCount(@Param("limit") int limit);
 
+    // 상품별 찜 개수 조회
+    int getLikeCountForProduct(@Param("productId") int productId);
+
 }
