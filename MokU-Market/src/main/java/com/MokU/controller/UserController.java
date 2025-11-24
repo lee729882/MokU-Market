@@ -35,7 +35,7 @@ public class UserController {
     @Autowired
     private ReviewService reviewService;
     
- // ✅ 마이페이지 (한 화면에서 탭 전환)
+    // 마이페이지 (한 화면에서 탭 전환)
     @GetMapping("/mypage")
     public String myPage(HttpSession session, Model model) {
         MemberVO user = (MemberVO) session.getAttribute("loginUser");
@@ -43,12 +43,22 @@ public class UserController {
 
         int userId = user.getUserId();
 
-        model.addAttribute("user", user);
+        // 내 등록템, 내 관심템 개수 계산
+        int myProductCount = productService.getMyProducts(userId).size();
+        int myFavoriteCount = productService.getMyFavoriteProducts(userId).size();
 
-        model.addAttribute("myProducts",
-                productService.getMyProducts(userId));
-        model.addAttribute("favoriteProducts",
-                productService.getMyFavoriteProducts(userId));
+        // 후기 개수 계산
+        int receivedReviewCount = reviewService.getReceivedReviews(userId).size();  // 받은 후기 개수
+        int writtenReviewCount = reviewService.getWrittenReviews(userId).size();    // 작성한 후기 개수
+
+        model.addAttribute("user", user);
+        model.addAttribute("myProductCount", myProductCount);
+        model.addAttribute("myFavoriteCount", myFavoriteCount);
+        model.addAttribute("receivedReviewCount", receivedReviewCount);
+        model.addAttribute("writtenReviewCount", writtenReviewCount);
+
+        model.addAttribute("myProducts", productService.getMyProducts(userId));
+        model.addAttribute("favoriteProducts", productService.getMyFavoriteProducts(userId));
 
         // 후기 조회
         var received = reviewService.getReceivedReviews(userId);
@@ -59,7 +69,6 @@ public class UserController {
 
         return "mypage";
     }
-
 
 
 

@@ -71,4 +71,9 @@ public interface ProductService {
     
     int getTotalLikesByProduct(int productId);
 
+    // 내가 등록한 상품 개수
+    int getMyProductsCount(int userId);
+
+    // 내가 찜한 상품 개수
+    int getMyFavoriteProductsCount(int userId);
 }

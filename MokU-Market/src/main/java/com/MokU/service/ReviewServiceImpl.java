@@ -33,14 +33,12 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public List<ReviewVO> getReceivedReviews(int userId) {
         List<ReviewVO> list = reviewDAO.findReceivedReviews(userId);
-        System.out.println("✅ [ReviewService] received size = " + (list == null ? 0 : list.size()));
         return list;
     }
 
     @Override
     public List<ReviewVO> getWrittenReviews(int userId) {
         List<ReviewVO> list = reviewDAO.findWrittenReviews(userId);
-        System.out.println("✅ [ReviewService] written size = " + (list == null ? 0 : list.size()));
         return list;
     }
 }

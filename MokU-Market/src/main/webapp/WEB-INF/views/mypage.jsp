@@ -649,10 +649,10 @@ body {
             <div class="stats"><span>매너온도: ${user.mannerTemp}℃ 🔥</span></div>
 
             <div class="stats">
-                <span>내 등록템 ${user.productCount}개</span>
-                <span>내 관심템 ${user.favoriteCount}개</span>
-                <span>채팅 ${user.chatCount}건</span>
-            </div>
+                    <span>내 등록템 ${myProductCount}개</span>
+                    <span>내 관심템 ${myFavoriteCount}개</span>
+			        <span>받은 후기 ${receivedReviewCount}개</span>
+                    </div>
 
             <c:if test="${user.isLocationVerified != 'Y'}">
                 <button onclick="verifyWifi()"

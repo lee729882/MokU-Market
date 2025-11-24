@@ -258,6 +258,17 @@
     FROM likes
     WHERE product_id = #{productId}
 </select>
+<select id="getMyProductsCount" parameterType="int" resultType="int">
+    SELECT COUNT(*)
+    FROM PRODUCT
+    WHERE SELLER_ID = #{userId}
+</select>
+
+<select id="getMyFavoriteProductsCount" parameterType="int" resultType="int">
+    SELECT COUNT(*)
+    FROM LIKES
+    WHERE USER_ID = #{userId}
+</select>
 
 
 

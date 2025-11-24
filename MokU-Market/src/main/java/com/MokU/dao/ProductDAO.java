@@ -75,4 +75,9 @@ public interface ProductDAO {
     // 상품별 찜 개수 조회
     int getLikeCountForProduct(@Param("productId") int productId);
 
+    // 내가 등록한 상품 개수
+    int getMyProductsCount(@Param("userId") int userId);
+
+    // 내가 찜한 상품 개수
+    int getMyFavoriteProductsCount(@Param("userId") int userId);
 }

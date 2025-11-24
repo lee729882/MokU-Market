@@ -230,5 +230,13 @@ public List<ProductVO> getTopProductsByViewCount(int limit) {
 public int getTotalLikesByProduct(int productId) {
     return productDAO.getLikeCountForProduct(productId);  // 상품별 찜 개수를 조회하는 DAO 호출
 }
+@Override
+public int getMyProductsCount(int userId) {
+    return productDAO.getMyProductsCount(userId);  // 해당 판매자가 등록한 상품의 개수를 반환
+}
 
+@Override
+public int getMyFavoriteProductsCount(int userId) {
+    return productDAO.getMyFavoriteProductsCount(userId);  // 해당 사용자가 찜한 상품의 개수를 반환
+}
 }
