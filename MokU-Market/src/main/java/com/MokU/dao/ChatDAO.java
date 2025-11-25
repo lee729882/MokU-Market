@@ -47,4 +47,6 @@ public interface ChatDAO {
 
     void deleteRoom(int roomId);
 
+    ChatRoomVO findRoomWithOpponent(Map<String, Object> param);  // ← 추가
+
 }

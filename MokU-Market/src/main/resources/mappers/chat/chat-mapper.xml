@@ -96,43 +96,73 @@
     <!-- ========================================================= -->
     <!--  사용자 기준 채팅방 목록 (JOIN + 미읽음 개수 포함) -->
     <!-- ========================================================= -->
-    <select id="findRoomsByUser" parameterType="int"
-            resultType="com.MokU.vo.ChatRoomVO">
-        SELECT
-            r.ROOM_ID         AS roomId,
-            r.PRODUCT_ID      AS productId,
-            r.SELLER_ID       AS sellerId,
-            r.BUYER_ID        AS buyerId,
-            r.CREATED_AT      AS createdAt,
-            r.LAST_MESSAGE_AT AS lastMessageAt,
-            r.LAST_MESSAGE    AS lastMessage,
-            r.TRADE_STATUS    AS tradeStatus,
+<select id="findRoomsByUser" parameterType="int"
+        resultType="com.MokU.vo.ChatRoomVO">
+    SELECT
+        r.ROOM_ID         AS roomId,
+        r.PRODUCT_ID      AS productId,
+        r.SELLER_ID       AS sellerId,
+        r.BUYER_ID        AS buyerId,
+        r.CREATED_AT      AS createdAt,
+        r.LAST_MESSAGE_AT AS lastMessageAt,
+        r.LAST_MESSAGE    AS lastMessage,
+        r.TRADE_STATUS    AS tradeStatus,
 
-            -- 상품 정보
-            p.TITLE           AS productTitle,
-            p.PRICE           AS price,
-            p.STATUS          AS status,
+        -- 상품 정보
+        p.TITLE           AS productTitle,
+        p.PRICE           AS price,
+        p.STATUS          AS status,
 
-            -- 대표 이미지 (1번 이미지)
-            (SELECT IMAGE_PATH
-               FROM PRODUCT_IMAGES
-              WHERE PRODUCT_ID = r.PRODUCT_ID
-                AND ORDERS = 1
-            ) AS productImageUrl,
+        -- 대표 이미지 (1번 이미지)
+        (SELECT IMAGE_PATH
+           FROM PRODUCT_IMAGES
+          WHERE PRODUCT_ID = r.PRODUCT_ID
+            AND ORDERS = 1
+        ) AS productImageUrl,
 
-            -- 각 방별 미읽은 메시지 수
-            (SELECT COUNT(*)
-               FROM CHAT_MESSAGE m
-              WHERE m.ROOM_ID   = r.ROOM_ID
-                AND m.SENDER_ID != #{userId}
-                AND m.IS_READ   = 'N'
-            ) AS unreadCount
-        FROM CHAT_ROOM r
-        JOIN PRODUCT p ON r.PRODUCT_ID = p.PRODUCT_ID
-        WHERE r.SELLER_ID = #{userId}
-           OR r.BUYER_ID  = #{userId}
-        ORDER BY r.LAST_MESSAGE_AT DESC NULLS LAST
-    </select>
+        -- ✅ 판매자 유저
+        su.USER_ID            AS sellerUserId,
+        su.NAME               AS sellerName,
+        su.PROFILE_IMAGE_PATH AS sellerProfileImagePath,
+
+        -- ✅ 구매자 유저
+        bu.USER_ID            AS buyerUserId,
+        bu.NAME               AS buyerName,
+        bu.PROFILE_IMAGE_PATH AS buyerProfileImagePath,
+
+        -- ✅ 로그인 사용자 기준으로 '상대방' 계산
+        CASE
+            WHEN r.SELLER_ID = #{userId} THEN bu.USER_ID
+            ELSE su.USER_ID
+        END AS opponentId,
+
+        CASE
+            WHEN r.SELLER_ID = #{userId} THEN bu.NAME
+            ELSE su.NAME
+        END AS opponentName,
+
+        CASE
+            WHEN r.SELLER_ID = #{userId} THEN bu.PROFILE_IMAGE_PATH
+            ELSE su.PROFILE_IMAGE_PATH
+        END AS opponentProfileImagePath,
+
+        -- 각 방별 미읽은 메시지 수
+        (SELECT COUNT(*)
+           FROM CHAT_MESSAGE m
+          WHERE m.ROOM_ID   = r.ROOM_ID
+            AND m.SENDER_ID != #{userId}
+            AND m.IS_READ   = 'N'
+        ) AS unreadCount
+    FROM CHAT_ROOM r
+    JOIN PRODUCT   p  ON r.PRODUCT_ID = p.PRODUCT_ID
+    JOIN MOKU_USER su ON r.SELLER_ID  = su.USER_ID
+    JOIN MOKU_USER bu ON r.BUYER_ID   = bu.USER_ID
+    WHERE r.SELLER_ID = #{userId}
+       OR r.BUYER_ID  = #{userId}
+    ORDER BY r.LAST_MESSAGE_AT DESC NULLS LAST
+</select>
+
+
 
     <!-- ========================================================= -->
     <!--  메시지 저장 (SENT_AT 은 DEFAULT SYSDATE 사용) -->
@@ -243,31 +273,36 @@
     <!-- ========================================================= -->
     <!--  상품별 채팅방 목록 (구매 후보 리스트) -->
     <!-- ========================================================= -->
-    <select id="findRoomsByProduct" parameterType="int"
-            resultType="com.MokU.vo.ChatRoomVO">
-        SELECT
-            r.ROOM_ID         AS roomId,
-            r.PRODUCT_ID      AS productId,
-            r.SELLER_ID       AS sellerId,
-            r.BUYER_ID        AS buyerId,
-            r.CREATED_AT      AS createdAt,
-            r.LAST_MESSAGE_AT AS lastMessageAt,
-            r.LAST_MESSAGE    AS lastMessage,
-            r.TRADE_STATUS    AS tradeStatus,
+<select id="findRoomsByProduct" parameterType="int"
+        resultType="com.MokU.vo.ChatRoomVO">
+    SELECT
+        r.ROOM_ID         AS roomId,
+        r.PRODUCT_ID      AS productId,
+        r.SELLER_ID       AS sellerId,
+        r.BUYER_ID        AS buyerId,
+        r.CREATED_AT      AS createdAt,
+        r.LAST_MESSAGE_AT AS lastMessageAt,
+        r.LAST_MESSAGE    AS lastMessage,
+        r.TRADE_STATUS    AS tradeStatus,
 
-            m.NAME               AS opponentName,
-            m.PROFILE_IMAGE_PATH AS opponentProfileImagePath,
+        -- ✅ 이 상품 화면에서 보는 사람은 '판매자'이므로, 항상 구매자를 상대방으로 간주
+        r.BUYER_ID        AS opponentId,
 
-            ( SELECT IMAGE_PATH
-                FROM PRODUCT_IMAGES
-               WHERE PRODUCT_ID = r.PRODUCT_ID
-                 AND ORDERS = 1
-            ) AS productImageUrl
-        FROM CHAT_ROOM r
-             JOIN MOKU_USER m ON r.BUYER_ID = m.USER_ID
-        WHERE r.PRODUCT_ID = #{productId}
-        ORDER BY r.LAST_MESSAGE_AT DESC NULLS LAST
-    </select>
+        m.NAME               AS opponentName,
+        m.PROFILE_IMAGE_PATH AS opponentProfileImagePath,
+
+        ( SELECT IMAGE_PATH
+            FROM PRODUCT_IMAGES
+           WHERE PRODUCT_ID = r.PRODUCT_ID
+             AND ORDERS = 1
+        ) AS productImageUrl
+    FROM CHAT_ROOM r
+         JOIN MOKU_USER m ON r.BUYER_ID = m.USER_ID
+    WHERE r.PRODUCT_ID = #{productId}
+    ORDER BY r.LAST_MESSAGE_AT DESC NULLS LAST
+</select>
+
+
 
     <!-- ========================================================= -->
     <!--  거래 상태 변경 -->
@@ -295,6 +330,64 @@
     DELETE FROM CHAT_ROOM
     WHERE ROOM_ID = #{roomId}
 </delete>
+<!-- 로그인 사용자 기준으로 단일 방 + 상대방 정보 조회 -->
+<!-- ✅ 단일 채팅방 + 상대 정보까지 조회 -->
+<select id="findRoomWithOpponent"
+        parameterType="map"
+        resultType="com.MokU.vo.ChatRoomVO">
+    SELECT
+        r.ROOM_ID         AS roomId,
+        r.PRODUCT_ID      AS productId,
+        r.SELLER_ID       AS sellerId,
+        r.BUYER_ID        AS buyerId,
+        r.CREATED_AT      AS createdAt,
+        r.LAST_MESSAGE_AT AS lastMessageAt,
+        r.LAST_MESSAGE    AS lastMessage,
+        r.TRADE_STATUS    AS tradeStatus,
+
+        p.TITLE           AS productTitle,
+        p.PRICE           AS price,
+        p.STATUS          AS status,
+
+        (SELECT IMAGE_PATH
+           FROM PRODUCT_IMAGES
+          WHERE PRODUCT_ID = r.PRODUCT_ID
+            AND ORDERS = 1
+        ) AS productImageUrl,
+
+        -- 판매자
+        su.USER_ID            AS sellerUserId,
+        su.NAME               AS sellerName,
+        su.PROFILE_IMAGE_PATH AS sellerProfileImagePath,
+
+        -- 구매자
+        bu.USER_ID            AS buyerUserId,
+        bu.NAME               AS buyerName,
+        bu.PROFILE_IMAGE_PATH AS buyerProfileImagePath,
+
+        -- ✅ 로그인한 userId 기준으로 상대방 계산
+        CASE
+            WHEN r.SELLER_ID = #{userId} THEN bu.USER_ID
+            ELSE su.USER_ID
+        END AS opponentId,
+
+        CASE
+            WHEN r.SELLER_ID = #{userId} THEN bu.NAME
+            ELSE su.NAME
+        END AS opponentName,
+
+        CASE
+            WHEN r.SELLER_ID = #{userId} THEN bu.PROFILE_IMAGE_PATH
+            ELSE su.PROFILE_IMAGE_PATH
+        END AS opponentProfileImagePath
+
+    FROM CHAT_ROOM r
+    JOIN PRODUCT   p  ON r.PRODUCT_ID = p.PRODUCT_ID
+    JOIN MOKU_USER su ON r.SELLER_ID  = su.USER_ID
+    JOIN MOKU_USER bu ON r.BUYER_ID   = bu.USER_ID
+    WHERE r.ROOM_ID = #{roomId}
+</select>
+
 
 
 </mapper>

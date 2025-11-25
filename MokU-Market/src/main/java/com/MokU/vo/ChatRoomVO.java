@@ -26,8 +26,10 @@ public class ChatRoomVO {
     private String productImageUrl;
     private String status;   // ← JSP에서 status 뱃지를 사용하면 필요
 
-    private String opponentProfileImagePath;   // 구매자 프로필 이미지 경로
+    private String opponentProfileImagePath;   // 상대 프로필 이미지 경로
 
     private String tradeStatus;
 
+    // ✅ 상대방 회원 PK (profile 링크용)
+    private int opponentId;
 }

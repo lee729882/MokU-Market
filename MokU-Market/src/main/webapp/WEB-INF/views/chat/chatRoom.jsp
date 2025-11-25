@@ -16,9 +16,7 @@
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" />
 
     <style>
-        html, body {
-            height: 100%;
-        }
+        html, body { height: 100%; }
         body {
             margin: 0;
             font-family: 'Nanum Gothic', sans-serif;
@@ -27,10 +25,7 @@
             flex-direction: column;
         }
 
-        .page-wrapper {
-            margin-top: 80px; /* 헤더 높이만큼 */
-            flex: 1;
-        }
+        .page-wrapper { margin-top: 80px; flex: 1; }
 
         .chat-container {
             max-width: 1200px;
@@ -68,13 +63,8 @@
             color: #333;
         }
 
-        .chat-room-item:hover {
-            background-color: #f8f8f8;
-        }
-
-        .chat-room-item.active {
-            background-color: #ffe8ea;
-        }
+        .chat-room-item:hover { background-color: #f8f8f8; }
+        .chat-room-item.active { background-color: #ffe8ea; }
 
         .chat-room-thumb {
             width: 44px;
@@ -91,10 +81,7 @@
             object-fit: cover;
         }
 
-        .chat-room-text {
-            flex: 1;
-            min-width: 0;
-        }
+        .chat-room-text { flex: 1; min-width: 0; }
 
         .chat-room-nickname {
             font-size: 14px;
@@ -168,9 +155,7 @@
             object-fit: cover;
         }
 
-        .chat-detail-info {
-            flex: 1;
-        }
+        .chat-detail-info { flex: 1; }
 
         .product-title {
             font-size: 14px;
@@ -207,14 +192,56 @@
             cursor: pointer;
         }
 
-        .btn-review {
-            background-color: #ff6b6b;
-            color: #fff;
-        }
+        .btn-review { background-color: #ff6b6b; color: #fff; }
+        .btn-review-edit { background-color: #7bd88a; color: #fff; }
 
-        .btn-review-edit {
-            background-color: #7bd88a;
-            color: #fff;
+        /* ✅ 상대 프로필 (상단) */
+        .opponent-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: #333;
+            padding: 6px 10px;
+            border-radius: 14px;
+            background: #fff;
+            border: 1px solid #eee;
+            flex-shrink: 0;
+        }
+        .opponent-link:hover {
+            border-color: #ffb3bb;
+            background: #fff6f7;
+        }
+        .opponent-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #ddd;
+            flex-shrink: 0;
+        }
+        .opponent-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .opponent-name {
+            font-size: 13px;
+            font-weight: 700;
+            max-width: 140px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .opponent-sub {
+            font-size: 11px;
+            color: #888;
+            margin-top: 1px;
+        }
+        .opponent-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.15;
         }
 
         /* 날짜 구분선 */
@@ -247,18 +274,9 @@
             background-color: #fafafa;
         }
 
-        .message-row {
-            display: flex;
-            margin-bottom: 10px;
-        }
-
-        .message-row.me {
-            justify-content: flex-end;
-        }
-
-        .message-row.other {
-            justify-content: flex-start;
-        }
+        .message-row { display: flex; margin-bottom: 10px; }
+        .message-row.me { justify-content: flex-end; }
+        .message-row.other { justify-content: flex-start; }
 
         .message-bubble {
             max-width: 60%;
@@ -300,6 +318,29 @@
             font-size: 11px;
             color: #888;
             margin-bottom: 2px;
+        }
+
+        /* ✅ 메시지 영역: 상대 닉네임 클릭 -> 프로필 이동 */
+        .msg-opponent-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            color: #666;
+        }
+        .msg-opponent-link:hover { color: #ff4b5b; }
+        .msg-opponent-mini {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #ddd;
+            flex-shrink: 0;
+        }
+        .msg-opponent-mini img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         /* 입력 영역 */
@@ -350,7 +391,6 @@
             font-size: 14px;
         }
 
-
         /* 플로팅 버튼 */
         .floating-container {
             position: fixed;
@@ -382,10 +422,7 @@
             font-weight: 700;
             margin-top: -2px;
         }
-        .floating-top:hover {
-            opacity: 1;
-            transform: translateY(-2px);
-        }
+        .floating-top:hover { opacity: 1; transform: translateY(-2px); }
 
         .floating-add {
             display: flex;
@@ -402,24 +439,19 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
             transition: 0.25s;
         }
-        .floating-add:hover {
-            background-color: #E03B3B;
-            transform: scale(1.07);
-        }
+        .floating-add:hover { background-color: #E03B3B; transform: scale(1.07); }
 
         /* ================== 후기 모달 ================== */
         .review-modal {
             position: fixed;
             inset: 0;
             background: rgba(0,0,0,0.55);
-            display: none;          /* JS에서 show 클래스 추가 시 flex로 변경 */
+            display: none;
             z-index: 3000;
             align-items: center;
             justify-content: center;
         }
-        .review-modal.show {
-            display: flex;
-        }
+        .review-modal.show { display: flex; }
 
         .review-modal-inner {
             width: 420px;
@@ -466,14 +498,8 @@
             object-fit: cover;
         }
 
-        .review-item-info-title {
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-        .review-item-info-price {
-            font-size: 12px;
-            color: #777;
-        }
+        .review-item-info-title { font-weight: 700; margin-bottom: 4px; }
+        .review-item-info-price { font-size: 12px; color: #777; }
 
         .review-question {
             margin: 10px 0 6px;
@@ -534,10 +560,7 @@
             color: #fff;
             font-weight: 600;
         }
-        .btn-review-submit:disabled {
-            background: #ddd;
-            cursor: default;
-        }
+        .btn-review-submit:disabled { background: #ddd; cursor: default; }
 
         .chat-room-delete-btn {
             margin-top: 4px;
@@ -625,8 +648,12 @@
                 </c:when>
 
                 <c:otherwise>
+                <c:set var="opponentId" value="${loginUser.userId == activeRoom.sellerId ? activeRoom.buyerId : activeRoom.sellerId}" />
+                
                     <!-- 상단 상품/방 정보 -->
                     <div class="chat-detail-header">
+
+                        <!-- 상품 링크 -->
                         <a href="${ctx}/product/detail?id=${activeRoom.productId}"
                            style="display:flex; align-items:center; gap:12px; text-decoration:none; color:inherit; flex:1;">
                             <div class="chat-detail-thumb">
@@ -649,6 +676,29 @@
                                         </span>
                                     </c:if>
                                 </div>
+                            </div>
+                        </a>
+
+                        <!-- ✅ 상대 프로필: 이미지/이름 클릭하면 profile로 이동 -->
+                        <a class="opponent-link"
+                           href="${ctx}/profile?id=${opponentId}">
+>
+                            <div class="opponent-avatar">
+                                <c:choose>
+                                    <c:when test="${not empty activeRoom.opponentProfileImagePath}">
+                                        <img src="${ctx}${activeRoom.opponentProfileImagePath}" alt="상대 프로필">
+                                    </c:when>
+                                    <c:otherwise>
+                                        <!-- 기본 이미지(프로젝트에 맞게 경로 조정) -->
+                                        <img src="${ctx}/resources/img/default_profile.png" alt="기본 프로필">
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
+                            <div class="opponent-text">
+                                <span class="opponent-name">
+                                    <c:out value="${activeRoom.opponentName}" default="거래상대" />
+                                </span>
+                                <span class="opponent-sub">프로필 보기</span>
                             </div>
                         </a>
 
@@ -696,7 +746,21 @@
                                 <c:if test="${not isMe}">
                                     <div class="message-meta">
                                         <div class="message-nickname">
-                                            <c:out value="${activeRoom.opponentName}" default="프로필" />
+                                            <!-- ✅ 상대 닉네임/미니아바타 클릭 -> 프로필 이동 -->
+                                            <a class="msg-opponent-link"
+                                               href="${ctx}/profile?id=${opponentId}">
+                                                <span class="msg-opponent-mini">
+                                                    <c:choose>
+                                                        <c:when test="${not empty activeRoom.opponentProfileImagePath}">
+                                                            <img src="${ctx}${activeRoom.opponentProfileImagePath}" alt="상대">
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <img src="${ctx}/resources/img/default_profile.png" alt="기본">
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </span>
+                                                <span><c:out value="${activeRoom.opponentName}" default="프로필" /></span>
+                                            </a>
                                         </div>
                                     </div>
                                 </c:if>
@@ -761,11 +825,11 @@
 
             <div class="review-question">거래는 전반적으로 만족스러우셨나요? (선택)</div>
             <div class="review-score-row">
-                <button type="button" class="review-score-btn <c:if test='${myReview.rating == 1}'>active</c:if>" data-score="1">1</button>
-                <button type="button" class="review-score-btn <c:if test='${myReview.rating == 2}'>active</c:if>" data-score="2">2</button>
-                <button type="button" class="review-score-btn <c:if test='${myReview.rating == 3}'>active</c:if>" data-score="3">3</button>
-                <button type="button" class="review-score-btn <c:if test='${myReview.rating == 4}'>active</c:if>" data-score="4">4</button>
-                <button type="button" class="review-score-btn <c:if test='${myReview.rating == 5}'>active</c:if>" data-score="5">5</button>
+                <button type="button" class="review-score-btn ${myReview.rating == 1 ? 'active' : ''}" data-score="1">1</button>
+                <button type="button" class="review-score-btn ${myReview.rating == 2 ? 'active' : ''}" data-score="2">2</button>
+                <button type="button" class="review-score-btn ${myReview.rating == 3 ? 'active' : ''}" data-score="3">3</button>
+                <button type="button" class="review-score-btn ${myReview.rating == 4 ? 'active' : ''}" data-score="4">4</button>
+                <button type="button" class="review-score-btn ${myReview.rating == 5 ? 'active' : ''}" data-score="5">5</button>
             </div>
             <input type="hidden" id="reviewRating"
                    value="<c:out value='${myReview.rating}' default=''/>" />
@@ -806,8 +870,8 @@
 
         deleteButtons.forEach(function(btn) {
             btn.addEventListener('click', function(e) {
-                e.preventDefault();   // a 태그 이동 방지
-                e.stopPropagation();  // 클릭 버블링 차단
+                e.preventDefault();
+                e.stopPropagation();
 
                 const roomId = this.dataset.roomId;
                 if (!roomId) return;
@@ -878,12 +942,10 @@
 
     // 거래 상태별 UI 제어
     if (tradeStatus === 'CONFIRMED' && productStatus === 'SOLD') {
-        // 거래 완료: 채팅 차단
         textarea.disabled   = true;
         btnSend.disabled    = true;
         textarea.placeholder = '거래가 완료된 채팅방입니다. 추가 메세지는 보낼 수 없습니다.';
     } else if (tradeStatus === 'REQUESTED' && isBuyer && bannerEl) {
-        // 판매자가 거래 확정을 요청했고, 내가 그 구매자일 때
         bannerEl.style.display        = 'flex';
         bannerEl.style.justifyContent = 'space-between';
         bannerEl.style.alignItems     = 'center';
@@ -1017,7 +1079,6 @@
 
     if (btnOpenReview) {
         btnOpenReview.addEventListener('click', function() {
-            // 새 작성: 값 초기화
             if (reviewRatingInput) reviewRatingInput.value = '';
             if (reviewContentArea) reviewContentArea.value = '';
             reviewScoreButtons.forEach(function(b){ b.classList.remove('active'); });
@@ -1028,7 +1089,6 @@
 
     if (btnOpenReviewEdit) {
         btnOpenReviewEdit.addEventListener('click', function() {
-            // 서버에서 이미 값이 채워진 상태이므로 그대로 오픈
             openReviewModal();
             updateReviewSubmitButton();
         });
@@ -1063,10 +1123,7 @@
 
     function updateReviewSubmitButton() {
         if (!btnReviewSubmit) return;
-        const ratingVal  = reviewRatingInput ? reviewRatingInput.value.trim() : '';
         const contentVal = reviewContentArea ? reviewContentArea.value.trim() : '';
-
-        // 별점은 선택 사항, 내용은 필수
         btnReviewSubmit.disabled = !(contentVal.length > 0);
     }
 
@@ -1123,7 +1180,8 @@
 })();
 </script>
 </c:if>
-    <jsp:include page="/WEB-INF/views/common/footer.jsp" />
+
+<jsp:include page="/WEB-INF/views/common/footer.jsp" />
 
 </body>
 </html>

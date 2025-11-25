@@ -163,4 +163,11 @@ public class ChatServiceImpl implements ChatService {
             chatDAO.deleteRoom(roomId);
         }
     }
+    @Override
+    public ChatRoomVO getRoomWithOpponent(int roomId, int userId) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("roomId", roomId);
+        param.put("userId", userId);
+        return chatDAO.findRoomWithOpponent(param);
+    }
 }

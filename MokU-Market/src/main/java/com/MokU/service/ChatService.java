@@ -42,5 +42,9 @@ public interface ChatService {
     void deleteRoom(int roomId, int loginUserId);
 
     void deleteAllByProductId(int productId);
+    // 상품 상세에서 채팅 시작 (이미 있으면 재사용)
+
+    // ✅ 로그인 유저 기준으로 상대 정보(opponent*)까지 포함해서 조회
+    ChatRoomVO getRoomWithOpponent(int roomId, int userId);   // ← 이 줄 추가
 
 }

@@ -110,7 +110,7 @@ public class ChatController {
         }
         int userId = loginUser.getUserId();
 
-        ChatRoomVO room = chatService.getRoom(roomId);
+        ChatRoomVO room = chatService.getRoomWithOpponent(roomId, userId);
         if (room == null) {
             rttr.addFlashAttribute("msg", "존재하지 않는 채팅방입니다.");
             return "redirect:/home";
