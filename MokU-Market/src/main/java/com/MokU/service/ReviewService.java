@@ -17,4 +17,7 @@ public interface ReviewService {
     // 마이페이지용 목록
     List<ReviewVO> getReceivedReviews(int userId);
     List<ReviewVO> getWrittenReviews(int userId);
+    
+    List<ReviewVO> getReviewsForMember(int memberId);
+
 }

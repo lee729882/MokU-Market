@@ -41,4 +41,9 @@ public class ReviewServiceImpl implements ReviewService {
         List<ReviewVO> list = reviewDAO.findWrittenReviews(userId);
         return list;
     }
+    
+    @Override
+    public List<ReviewVO> getReviewsForMember(int memberId) {
+        return reviewDAO.selectByTargetMemberId(memberId);
+    }
 }

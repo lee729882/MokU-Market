@@ -16,6 +16,6 @@ public interface MemberService {
 
     void updateProfileImage(MemberVO user);
 
-    // ⭐ 판매자 정보 조회용 (상세페이지 필수)
+    // 🔹 프로필 및 판매자 정보 조회용
     MemberVO getMemberById(int userId);
 }

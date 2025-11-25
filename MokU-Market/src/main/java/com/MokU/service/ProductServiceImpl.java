@@ -239,4 +239,8 @@ public int getMyProductsCount(int userId) {
 public int getMyFavoriteProductsCount(int userId) {
     return productDAO.getMyFavoriteProductsCount(userId);  // 해당 사용자가 찜한 상품의 개수를 반환
 }
+@Override
+public List<ProductVO> getProductsBySeller(int sellerId) {
+    return productDAO.selectBySellerId(sellerId);
+}
 }

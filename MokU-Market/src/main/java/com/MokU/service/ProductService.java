@@ -76,4 +76,7 @@ public interface ProductService {
 
     // 내가 찜한 상품 개수
     int getMyFavoriteProductsCount(int userId);
+    
+    List<ProductVO> getProductsBySeller(int sellerId);
+
 }

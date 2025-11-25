@@ -159,6 +159,14 @@
     WHERE PRODUCT_ID = #{productId}
 </update>
 
+<select id="selectBySellerId"
+        parameterType="int"
+        resultType="com.MokU.vo.ProductVO">
+    SELECT *
+    FROM PRODUCT
+    WHERE SELLER_ID = #{sellerId}
+    ORDER BY CREATED_AT DESC
+</select>
 
 
 

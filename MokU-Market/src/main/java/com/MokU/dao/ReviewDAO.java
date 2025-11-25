@@ -16,5 +16,8 @@ public interface ReviewDAO {
 
     List<ReviewVO> findReceivedReviews(@Param("userId") int userId);
     List<ReviewVO> findWrittenReviews(@Param("userId") int userId);
+    
+    List<ReviewVO> selectByTargetMemberId(int memberId);
+
 }
 

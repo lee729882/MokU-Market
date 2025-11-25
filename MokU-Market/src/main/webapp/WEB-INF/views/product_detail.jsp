@@ -531,6 +531,13 @@ html, body {
   font-size: 14px;
   color: #555;
 }
+.seller-name-link {
+  color: #333;
+  text-decoration: none;
+}
+.seller-name-link:hover {
+  text-decoration: underline;
+}
 
 </style>
 </head>
@@ -600,26 +607,35 @@ html, body {
         </div>
     </div>
 
-    <!-- 판매자 정보 -->
-<div class="seller-box">
-    <img src="${ctx}${seller.profileImagePath}"
-         onerror="this.src='${ctx}/resources/images/default_profile.png';">
-    <div>
-        <!-- 이름 + 캠퍼스 인증 여부 -->
-        <div style="display:flex; align-items:center; gap:6px; font-weight:700; font-size:16px;">
-            <span>${seller.name}</span>
+        <!-- 판매자 정보 -->
+    <div class="seller-box">
+        <!-- 프로필 사진 클릭 시 프로필 페이지로 이동 -->
+        <a href="${ctx}/profile?id=${seller.userId}">
+            <img src="${ctx}${seller.profileImagePath}"
+                 onerror="this.src='${ctx}/resources/images/default_profile.png';">
+        </a>
 
-            <c:if test="${seller.isLocationVerified == 'Y'}">
-                <span class="seller-verified-badge">📡 캠퍼스 인증</span>
-            </c:if>
-        </div>
+        <!-- 오른쪽(이름 + 매너온도) 묶는 래퍼 -->
+        <div>
+            <!-- 이름 + 캠퍼스 인증 여부 -->
+            <div style="display:flex; align-items:center; gap:6px; font-weight:700; font-size:16px;">
+                <a href="${ctx}/profile?id=${seller.userId}"
+                   class="seller-name-link">
+                    ${seller.name}
+                </a>
 
-        <!-- 매너온도만 표시 -->
-        <div style="font-size:13px; color:#777; margin-top:3px;">
-            매너온도 ${seller.mannerTemp}°C
+                <c:if test="${seller.isLocationVerified == 'Y'}">
+                    <span class="seller-verified-badge">📡 캠퍼스 인증</span>
+                </c:if>
+            </div>
+
+            <!-- 매너온도 -->
+            <div style="font-size:13px; color:#777; margin-top:3px;">
+                매너온도 ${seller.mannerTemp}°C
+            </div>
         </div>
     </div>
-</div>
+
 
     <!-- ================= 탭 구조 ================= -->
 <c:choose>

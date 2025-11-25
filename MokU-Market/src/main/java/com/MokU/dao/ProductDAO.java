@@ -80,4 +80,7 @@ public interface ProductDAO {
 
     // 내가 찜한 상품 개수
     int getMyFavoriteProductsCount(@Param("userId") int userId);
+    
+    List<ProductVO> selectBySellerId(int sellerId);
+
 }

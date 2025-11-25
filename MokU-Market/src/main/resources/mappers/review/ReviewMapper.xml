@@ -117,5 +117,15 @@
         WHERE r.WRITER_ID = #{userId}
         ORDER BY r.CREATED_AT DESC
     </select>
+<select id="selectByTargetMemberId"
+        parameterType="int"
+        resultType="com.MokU.vo.ReviewVO">
+    SELECT r.*,
+           m.NICKNAME AS writerName
+    FROM REVIEW r
+    JOIN MEMBER m ON r.WRITER_ID = m.MEMBER_ID
+    WHERE r.TARGET_MEMBER_ID = #{memberId}
+    ORDER BY r.CREATED_AT DESC
+</select>
 
 </mapper>

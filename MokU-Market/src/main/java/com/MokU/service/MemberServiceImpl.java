@@ -2,6 +2,7 @@ package com.MokU.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.MokU.dao.MemberMapper;
 import com.MokU.vo.MemberVO;
 
@@ -46,7 +47,7 @@ public class MemberServiceImpl implements MemberService {
         memberMapper.updateProfileImage(user);
     }
 
-    // ⭐⭐ 상세페이지 판매자 정보 조회 (필수 추가)
+    // 🔹 상세페이지 / 프로필 공용
     @Override
     public MemberVO getMemberById(int userId) {
         return memberMapper.getMemberById(userId);

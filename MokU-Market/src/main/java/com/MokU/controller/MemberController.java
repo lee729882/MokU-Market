@@ -13,7 +13,9 @@ import org.springframework.web.multipart.MultipartFile;
 import com.MokU.service.MemberService;
 import com.MokU.vo.MemberVO;
 import com.MokU.vo.ProductVO;
+import com.MokU.vo.ReviewVO;
 import com.MokU.service.ProductService;   // ✅ 추가
+import com.MokU.service.ReviewService;
 
 @Controller
 public class MemberController {
@@ -27,6 +29,10 @@ public class MemberController {
     @Autowired
     private ProductService productService;   // ✅ 메인화면 상품 조회용
     
+    @Autowired
+    private ReviewService reviewService;   // ✅ 메인화면 상품 조회용
+    
+
     @GetMapping("/signup")
     public String signupPage() {
         return "signup";
@@ -192,5 +198,32 @@ public String homePage(HttpSession session, Model model) {
   // 4) home.jsp로 이동
   return "home";
 }
+@GetMapping("/profile")
+public String profile(@RequestParam("id") int memberId,
+                      HttpSession session,
+                      Model model) {
+
+    MemberVO profileMember = memberService.getMemberById(memberId);
+    if (profileMember == null) {
+        return "redirect:/home";   // 없으면 홈으로
+    }
+
+    MemberVO loginUser = (MemberVO) session.getAttribute("loginUser");
+    boolean isOwner = (loginUser != null && loginUser.getUserId() == memberId);
+
+    List<ProductVO> products = productService.getMyProducts(memberId);
+    List<ReviewVO> receivedReviews = reviewService.getReceivedReviews(memberId);
+    List<ReviewVO> writtenReviews  = reviewService.getWrittenReviews(memberId);
+
+    model.addAttribute("member", profileMember);
+    model.addAttribute("isOwner", isOwner);
+    model.addAttribute("products", products);
+    model.addAttribute("receivedReviews", receivedReviews);
+    model.addAttribute("writtenReviews", writtenReviews);
+
+    return "profile";   // → /WEB-INF/views/profile.jsp
+}
+
+
 
 }
