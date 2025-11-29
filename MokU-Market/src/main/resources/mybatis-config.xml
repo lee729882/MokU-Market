@@ -1,15 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE configuration
-    PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
-    "http://mybatis.org/dtd/mybatis-3-config.dtd">
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
 
 <configuration>
-
-    <!-- ✅ 한글 인코딩 관련 설정 -->
-    <properties>
-        <property name="useUnicode" value="true"/>
-        <property name="characterEncoding" value="UTF-8"/>
-    </properties>
 
     <settings>
         <setting name="mapUnderscoreToCamelCase" value="true"/>
@@ -17,7 +11,17 @@
     </settings>
 
     <mappers>
-        <mapper resource="mappers/MemberMapper.xml"/>
+
+        <!-- review 폴더 -->
+        <mapper resource="mappers/review/BoardMapper.xml"/>
+        <mapper resource="mappers/review/BoardLikeMapper.xml"/>
+        <mapper resource="mappers/review/CommentMapper.xml"/>
+        <mapper resource="mappers/review/MemberMapper.xml"/>
+        <mapper resource="mappers/review/ProductMapper.xml"/>
+
+        <!-- chat 폴더 -->
+        <mapper resource="mappers/chat/chat-mapper.xml"/>
+
     </mappers>
 
 </configuration>

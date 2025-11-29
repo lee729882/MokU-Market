@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.MokU.mapper.CommentMapper">
+
+    <!-- 댓글 리스트 조회 -->
+    <select id="getComments" parameterType="int" resultType="com.MokU.vo.CommentVO">
+        SELECT *
+        FROM comments
+        WHERE board_id = #{boardId}
+        ORDER BY id ASC
+    </select>
+
+    <!-- 댓글 등록 (자바 인터페이스 insert() 와 이름 동일해야 함) -->
+    <insert id="insert" parameterType="com.MokU.vo.CommentVO">
+        INSERT INTO comments (
+            id, board_id, writer, content, created_at
+        ) VALUES (
+            comments_seq.nextval,
+            #{boardId},
+            #{writer},
+            #{content},
+            SYSTIMESTAMP
+        )
+    </insert>
+
+    <!-- 댓글 삭제 -->
+    <delete id="deleteComment" parameterType="int">
+        DELETE FROM comments WHERE id = #{id}
+    </delete>
+
+</mapper>

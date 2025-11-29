@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.MokU.mapper.BoardLikeMapper">
+
+    <!-- 좋아요 여부 확인 -->
+    <select id="exists" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM board_like
+        WHERE username = #{username}
+        AND board_id = #{boardId}
+    </select>
+
+    <!-- 좋아요 추가 -->
+    <insert id="insert" parameterType="map">
+        INSERT INTO board_like (
+            username,
+            board_id,
+            created_at
+        ) VALUES (
+            #{username},
+            #{boardId},
+            SYSTIMESTAMP
+        )
+    </insert>
+
+    <!-- 좋아요 취소 -->
+    <delete id="delete" parameterType="map">
+        DELETE FROM board_like
+        WHERE username = #{username}
+        AND board_id = #{boardId}
+    </delete>
+
+</mapper>

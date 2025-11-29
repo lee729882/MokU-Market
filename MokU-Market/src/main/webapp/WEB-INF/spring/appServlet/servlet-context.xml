@@ -8,29 +8,58 @@
         http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
 
-    <!-- ✅ Spring MVC @Controller, @RequestMapping 등 활성화 -->
+    <!-- @Controller 어노테이션 활성화 -->
     <annotation-driven />
 
-    <!-- ✅ 정적 리소스 매핑 (CSS, JS, images 등) -->
+    <!-- 정적 리소스 매핑 -->
     <resources mapping="/resources/**" location="/resources/" />
 
-    <!-- ✅ View Resolver: JSP 위치 지정 -->
+    <!-- ==========================
+         🔥 프로젝트 내부 업로드 매핑
+         /webapp/uploads → /uploads URL
+       ========================== -->
+    <!-- 정적 리소스 매핑 -->
+	<!-- resources/images/uploads 를 URL로 접근 가능하게 -->
+	<!-- /uploads/** 를 실제 폴더에 매핑 -->
+	<resources mapping="/uploads/**" 
+           location="/resources/images/uploads/" />
+
+
+
+
+
+
+
+    <!-- JSP View Resolver -->
     <beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <beans:property name="prefix" value="/WEB-INF/views/" />
         <beans:property name="suffix" value=".jsp" />
     </beans:bean>
 
-    <!-- ✅ Controller 패키지 자동 스캔 -->
+    <!-- Controller Scan -->
     <context:component-scan base-package="com.MokU.controller" />
 
-    <!-- ✅ 파일 업로드 설정 (multipart/form-data) -->
+
+    <!-- ===================== 🔥 MyBatis 설정 ===================== -->
+
+    <beans:bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <beans:property name="dataSource" ref="dataSource" />
+        <beans:property name="mapperLocations" value="classpath:/mappers/*.xml" />
+        <beans:property name="typeAliasesPackage" value="com.MokU.vo" />
+    </beans:bean>
+
+    <beans:bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <beans:property name="basePackage" value="com.MokU.mapper" />
+    </beans:bean>
+
+    <!-- =========================================================== -->
+
+
+    <!-- 파일 업로드 multipart 설정 -->
     <beans:bean id="multipartResolver"
         class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-        <!-- 최대 업로드 용량 (50MB = 52428800 byte) -->
         <beans:property name="maxUploadSize" value="52428800" />
-        <!-- 기본 인코딩 -->
         <beans:property name="defaultEncoding" value="UTF-8" />
     </beans:bean>
-<resources mapping="/upload/**" location="/upload/" />
 
 </beans:beans>

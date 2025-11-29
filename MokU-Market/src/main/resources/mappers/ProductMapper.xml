@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.MokU.dao.ProductDAO">
 
@@ -22,6 +22,7 @@
         <result property="updatedAt" column="UPDATED_AT"/>
     </resultMap>
 
+    <!-- 상품 등록 -->
     <insert id="insertProduct" parameterType="com.MokU.vo.ProductVO">
         <selectKey keyProperty="productId" resultType="int" order="BEFORE">
             SELECT PRODUCT_SEQ.nextval FROM dual
@@ -37,8 +38,8 @@
             #{price},
             #{description, jdbcType=CLOB},
             #{sellerId},
-            #{latitude},
-            #{longitude},
+            #{latitude, jdbcType=NUMERIC},
+            #{longitude, jdbcType=NUMERIC},
             #{imagePath},
             #{placeName}
         )
@@ -48,33 +49,29 @@
         SELECT PRODUCT_SEQ.currval FROM dual
     </select>
 
-<insert id="insertProductImage" parameterType="map">
-    INSERT INTO PRODUCT_IMAGES (
-        IMAGE_ID, PRODUCT_ID, IMAGE_PATH, ORDERS
-    ) VALUES (
-        PRODUCT_IMAGES_SEQ.nextval,
-        #{productId},
-        #{imagePath},
-        #{orders}
-    )
-</insert>
+    <insert id="insertProductImage" parameterType="map">
+        INSERT INTO PRODUCT_IMAGES (
+            IMAGE_ID, PRODUCT_ID, IMAGE_PATH, ORDERS
+        ) VALUES (
+            PRODUCT_IMAGES_SEQ.nextval,
+            #{productId},
+            #{imagePath},
+            #{orders}
+        )
+    </insert>
 
+    <select id="getImagesByProductId" parameterType="int" resultType="string">
+        SELECT IMAGE_PATH AS IMAGE_PATH
+        FROM PRODUCT_IMAGES
+        WHERE PRODUCT_ID = #{productId}
+        ORDER BY ORDERS ASC
+    </select>
 
-
-<select id="getImagesByProductId" parameterType="int" resultType="string">
-    SELECT IMAGE_PATH AS IMAGE_PATH
-    FROM PRODUCT_IMAGES
-    WHERE PRODUCT_ID = #{productId}
-    ORDER BY ORDERS ASC
-</select>
-
-
-<select id="getProductsByCategory" parameterType="string" resultMap="ProductMap">
-    SELECT *
-    FROM PRODUCT
-    WHERE CATEGORY = #{category,jdbcType=VARCHAR}
-</select>
-
+    <select id="getProductsByCategory" parameterType="string" resultMap="ProductMap">
+        SELECT *
+        FROM PRODUCT
+        WHERE CATEGORY = #{category,jdbcType=VARCHAR}
+    </select>
 
     <select id="getProductById" parameterType="int" resultMap="ProductMap">
         SELECT *
@@ -93,7 +90,7 @@
         SELECT COUNT(*)
         FROM LIKES
         WHERE user_id = #{userId}
-        AND product_id = #{productId}
+          AND product_id = #{productId}
     </select>
 
     <insert id="addLike">
@@ -104,7 +101,7 @@
     <delete id="removeLike">
         DELETE FROM likes
         WHERE user_id = #{userId}
-        AND product_id = #{productId}
+          AND product_id = #{productId}
     </delete>
 
     <update id="increaseLikeCount">
@@ -118,166 +115,149 @@
         SET like_count = NVL(like_count, 0) - 1
         WHERE product_id = #{productId}
     </update>
-<select id="getTotalLikesBySeller" parameterType="int" resultType="int">
-    SELECT NVL(SUM(like_count), 0)
-    FROM PRODUCT
-    WHERE seller_id = #{sellerId}
-</select>
-    <!-- 🔧 상품 내용 수정 -->
-<update id="updateProduct" parameterType="com.MokU.vo.ProductVO">
-    UPDATE PRODUCT
-    <set>
-        TITLE       = #{title},
-        CATEGORY    = #{category},
-        PRICE       = #{price},
-        DESCRIPTION = #{description, jdbcType=CLOB},
-        PLACE_NAME  = #{placeName},
-        LATITUDE    = #{latitude},
-        LONGITUDE   = #{longitude},
-        UPDATED_AT  = SYSDATE
-        <if test="imagePath != null">
-            , IMAGE_PATH = #{imagePath, jdbcType=VARCHAR}
-        </if>
-    </set>
-    WHERE PRODUCT_ID = #{productId}
-</update>
 
+    <select id="getTotalLikesBySeller" parameterType="int" resultType="int">
+        SELECT NVL(SUM(like_count), 0)
+        FROM PRODUCT
+        WHERE seller_id = #{sellerId}
+    </select>
 
-<!-- ✅ 판매완료 처리 : STATUS = 'SOLD' -->
-<update id="markProductSold" parameterType="int">
-    UPDATE PRODUCT
-    SET STATUS    = 'SOLD',
-        UPDATED_AT = SYSDATE
-    WHERE PRODUCT_ID = #{productId}
-</update>
+    <!-- 상품 수정 -->
+    <update id="updateProduct" parameterType="com.MokU.vo.ProductVO">
+        UPDATE PRODUCT
+        <set>
+            TITLE       = #{title},
+            CATEGORY    = #{category},
+            PRICE       = #{price},
+            DESCRIPTION = #{description, jdbcType=CLOB},
+            PLACE_NAME  = #{placeName},
+            LATITUDE    = #{latitude, jdbcType=NUMERIC},
+            LONGITUDE   = #{longitude, jdbcType=NUMERIC},
+            UPDATED_AT  = SYSDATE
+            <if test="imagePath != null">
+                , IMAGE_PATH = #{imagePath, jdbcType=VARCHAR}
+            </if>
+        </set>
+        WHERE PRODUCT_ID = #{productId}
+    </update>
 
-<!-- ✅ 판매완료 해제 : STATUS = 'ON_SALE' -->
-<update id="markProductUnsold" parameterType="int">
-    UPDATE PRODUCT
-    SET STATUS    = 'ON_SALE',
-        UPDATED_AT = SYSDATE
-    WHERE PRODUCT_ID = #{productId}
-</update>
+    <!-- 판매완료 처리 -->
+    <update id="markProductSold" parameterType="int">
+        UPDATE PRODUCT
+        SET STATUS = 'SOLD', UPDATED_AT = SYSDATE
+        WHERE PRODUCT_ID = #{productId}
+    </update>
 
-<select id="selectBySellerId"
-        parameterType="int"
-        resultType="com.MokU.vo.ProductVO">
-    SELECT *
-    FROM PRODUCT
-    WHERE SELLER_ID = #{sellerId}
-    ORDER BY CREATED_AT DESC
-</select>
+    <!-- 판매완료 해제 -->
+    <update id="markProductUnsold" parameterType="int">
+        UPDATE PRODUCT
+        SET STATUS = 'ON_SALE', UPDATED_AT = SYSDATE
+        WHERE PRODUCT_ID = #{productId}
+    </update>
 
+    <select id="selectBySellerId" parameterType="int" resultMap="ProductMap">
+        SELECT *
+        FROM PRODUCT
+        WHERE SELLER_ID = #{sellerId}
+        ORDER BY CREATED_AT DESC
+    </select>
 
+    <delete id="deleteLikesByProductId" parameterType="int">
+        DELETE FROM LIKES
+        WHERE PRODUCT_ID = #{productId}
+    </delete>
 
-<!-- ✅ 좋아요(찜) 먼저 삭제 -->
-<delete id="deleteLikesByProductId" parameterType="int">
-    DELETE FROM LIKES
-    WHERE PRODUCT_ID = #{productId}
-</delete>
+    <delete id="deleteImagesByProductId" parameterType="int">
+        DELETE FROM PRODUCT_IMAGES
+        WHERE PRODUCT_ID = #{productId}
+    </delete>
 
-<!-- ✅ 이미지도 같이 삭제 (있으면) -->
-<delete id="deleteImagesByProductId" parameterType="int">
-    DELETE FROM PRODUCT_IMAGES
-    WHERE PRODUCT_ID = #{productId}
-</delete>
-    <!-- 🔧 삭제 -->
     <delete id="deleteById" parameterType="int">
         DELETE FROM PRODUCT
         WHERE PRODUCT_ID = #{productId}
     </delete>
+
     <select id="getAllProducts" resultMap="ProductMap">
-    SELECT PRODUCT_ID, TITLE, CATEGORY, PRICE, IMAGE_PATH, VIEW_COUNT, LIKE_COUNT, STATUS, CREATED_AT
-    FROM PRODUCT
-    ORDER BY CREATED_AT DESC
-</select>
-<!-- 판매자가 등록한 상품 -->
-<select id="getProductsBySeller" parameterType="int"
-        resultMap="ProductMap">
-    SELECT  p.*
-    FROM    PRODUCT p
-    WHERE   p.SELLER_ID = #{sellerId}
-    ORDER BY p.PRODUCT_ID DESC
-</select>
+        SELECT PRODUCT_ID, TITLE, CATEGORY, PRICE, IMAGE_PATH, VIEW_COUNT, LIKE_COUNT, STATUS, CREATED_AT
+        FROM PRODUCT
+        ORDER BY CREATED_AT DESC
+    </select>
 
-<!-- 사용자가 찜한 상품 -->
-<select id="getFavoriteProductsByUser" parameterType="int"
-        resultMap="ProductMap">
-    SELECT  p.*
-    FROM    PRODUCT p
-    JOIN    LIKES l
-           ON l.PRODUCT_ID = p.PRODUCT_ID
-    WHERE   l.USER_ID = #{userId}
-    ORDER BY l.LIKE_ID DESC
-</select>
-<!-- ✅ 찜 많은 순 인기 상품 TOP N -->
-<!-- ✅ 찜 많은 순 인기 상품 TOP N -->
-<select id="findTopByFavoriteCount"
-        parameterType="int"
-        resultType="com.MokU.vo.ProductVO">
-
-    SELECT *
-    FROM (
-        SELECT
-            p.PRODUCT_ID    AS productId,
-            p.SELLER_ID     AS sellerId,
-            p.TITLE         AS title,
-            p.PRICE         AS price,
-            p.CATEGORY      AS category,
-            p.IMAGE_PATH    AS imagePath,
-            p.STATUS        AS status,
-            p.VIEW_COUNT    AS viewCount,
-            p.LIKE_COUNT    AS likeCount,   <!-- ✅ DB 컬럼 LIKE_COUNT, VO 필드 likeCount -->
-            p.CREATED_AT    AS createdAt,
-            ROW_NUMBER() OVER (
-                ORDER BY p.LIKE_COUNT DESC, p.PRODUCT_ID DESC  <!-- ✅ 여기도 LIKE_COUNT -->
-            ) AS rn
+    <select id="getProductsBySeller" parameterType="int" resultMap="ProductMap">
+        SELECT p.*
         FROM PRODUCT p
-    )
-    WHERE rn &lt;= #{limit}
-</select>
+        WHERE p.SELLER_ID = #{sellerId}
+        ORDER BY p.PRODUCT_ID DESC
+    </select>
 
-
-<!-- ✅ 조회수 많은 순 상품 TOP N -->
-<select id="findTopByViewCount" resultType="com.MokU.vo.ProductVO">
-    SELECT *
-    FROM (
-        SELECT
-            p.PRODUCT_ID     AS productId,
-            p.SELLER_ID      AS sellerId,
-            p.TITLE          AS title,
-            p.PRICE          AS price,
-            p.CATEGORY       AS category,
-            p.IMAGE_PATH     AS imagePath,
-            p.STATUS         AS status,
-            p.VIEW_COUNT     AS viewCount,
-            p.LIKE_COUNT     AS likeCount,   <!-- ✅ 여기 likeCount 로 통일 -->
-            p.CREATED_AT     AS createdAt,
-            ROW_NUMBER() OVER (
-                ORDER BY p.VIEW_COUNT DESC, p.PRODUCT_ID DESC
-            ) AS rn
+    <select id="getFavoriteProductsByUser" parameterType="int" resultMap="ProductMap">
+        SELECT p.*
         FROM PRODUCT p
-    )
-    WHERE rn &lt;= #{limit}   <!-- XML에서는 이렇게 &lt;= 로 쓰는 게 안전합니다 -->
-</select>
-<!-- 상품에 대한 찜 개수 조회 -->
-<select id="getLikeCountForProduct" resultType="int">
-    SELECT COUNT(*)
-    FROM likes
-    WHERE product_id = #{productId}
-</select>
-<select id="getMyProductsCount" parameterType="int" resultType="int">
-    SELECT COUNT(*)
-    FROM PRODUCT
-    WHERE SELLER_ID = #{userId}
-</select>
+        JOIN LIKES l ON l.PRODUCT_ID = p.PRODUCT_ID
+        WHERE l.USER_ID = #{userId}
+        ORDER BY l.LIKE_ID DESC
+    </select>
 
-<select id="getMyFavoriteProductsCount" parameterType="int" resultType="int">
-    SELECT COUNT(*)
-    FROM LIKES
-    WHERE USER_ID = #{userId}
-</select>
+    <select id="findTopByFavoriteCount" parameterType="int" resultType="com.MokU.vo.ProductVO">
+        SELECT *
+        FROM (
+            SELECT
+                p.PRODUCT_ID    AS productId,
+                p.SELLER_ID     AS sellerId,
+                p.TITLE         AS title,
+                p.PRICE         AS price,
+                p.CATEGORY      AS category,
+                p.IMAGE_PATH    AS imagePath,
+                p.STATUS        AS status,
+                p.VIEW_COUNT    AS viewCount,
+                p.LIKE_COUNT    AS likeCount,
+                p.CREATED_AT    AS createdAt,
+                ROW_NUMBER() OVER (
+                    ORDER BY p.LIKE_COUNT DESC, p.PRODUCT_ID DESC
+                ) AS rn
+            FROM PRODUCT p
+        )
+        WHERE rn &lt;= #{limit}
+    </select>
 
+    <select id="findTopByViewCount" resultType="com.MokU.vo.ProductVO">
+        SELECT *
+        FROM (
+            SELECT
+                p.PRODUCT_ID AS productId,
+                p.SELLER_ID AS sellerId,
+                p.TITLE AS title,
+                p.PRICE AS price,
+                p.CATEGORY AS category,
+                p.IMAGE_PATH AS imagePath,
+                p.STATUS AS status,
+                p.VIEW_COUNT AS viewCount,
+                p.LIKE_COUNT AS likeCount,
+                p.CREATED_AT AS createdAt,
+                ROW_NUMBER() OVER (
+                    ORDER BY p.VIEW_COUNT DESC, p.PRODUCT_ID DESC
+                ) AS rn
+            FROM PRODUCT p
+        )
+        WHERE rn &lt;= #{limit}
+    </select>
 
+    <select id="getLikeCountForProduct" resultType="int">
+        SELECT COUNT(*)
+        FROM likes
+        WHERE product_id = #{productId}
+    </select>
+
+    <select id="getMyProductsCount" parameterType="int" resultType="int">
+        SELECT COUNT(*)
+        FROM PRODUCT
+        WHERE SELLER_ID = #{userId}
+    </select>
+
+    <select id="getMyFavoriteProductsCount" parameterType="int" resultType="int">
+        SELECT COUNT(*)
+        FROM LIKES
+        WHERE USER_ID = #{userId}
+    </select>
 
 </mapper>
