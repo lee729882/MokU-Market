@@ -187,7 +187,7 @@ async function loadPosts() {
     document.getElementById("posts").innerHTML = html;
 }
 
-// ------------------------ 댓글창 토글1 ------------------------
+// ------------------------ 댓글창 토글12 ------------------------
 function showComments(postId) {
     const box = document.getElementById("cmt-box-" + postId);
     box.style.display = (box.style.display === "block") ? "none" : "block";
