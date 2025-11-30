@@ -280,14 +280,8 @@
         <!-- 메인 배너 슬라이더 -->
         <div class="hero-carousel">
 
-            <!-- 왼쪽 버튼 -->
-            <button class="carousel-btn left" onclick="moveSlide(-1)">&#10094;</button>
-            
-            <div class="category"
-			     onclick="location.href='${pageContext.request.contextPath}/community'">
-			    <img src="https://cdn-icons-png.flaticon.com/512/1827/1827513.png" alt="커뮤니티">
-			    <span>커뮤니티</span>
-			</div>
+        
+           
 
             
 

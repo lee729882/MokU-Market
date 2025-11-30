@@ -331,6 +331,8 @@
            class="<c:out value='${menu eq "used" ? "active" : ""}'/>">중고거래</a>
         <a href="#" class="<c:out value='${menu eq "rent" ? "active" : ""}'/>">대여/렌탈</a>
         <a href="#" class="<c:out value='${menu eq "grad" ? "active" : ""}'/>">졸업생 마켓</a>
-        <a href="#" class="<c:out value='${menu eq "community" ? "active" : ""}'/>">커뮤니티</a>
+        <a href="${pageContext.request.contextPath}/community"
+   		class="<c:out value='${menu eq "community" ? "active" : ""}'/>">커뮤니티</a>
+
     </div>
 </div>

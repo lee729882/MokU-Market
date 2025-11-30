@@ -5,19 +5,19 @@
 
 <mapper namespace="com.MokU.mapper.BoardMapper">
 
-    <!-- ================================
-         INSERT (이미지 BLOB 저장)
-    ================================= -->
+    <!-- =======================================
+         INSERT : 모든 파라미터 writerName 기준
+    ======================================== -->
     <insert id="insert" parameterType="com.MokU.vo.BoardVO">
         INSERT INTO board (
-            id, title, content, writer, school, category,
+            id, title, content, writer_name, school, category,
             image_data, image_type,
             like_count, created_at, updated_at
         ) VALUES (
             board_seq.nextval,
             #{title},
             #{content},
-            #{writer},
+            #{writerName},
             #{school},
             #{category},
             #{imageData, jdbcType=BLOB},
@@ -27,10 +27,19 @@
             SYSTIMESTAMP
         )
     </insert>
+    
+    
+    <select id="login" resultType="com.MokU.vo.MemberVO">
+	    SELECT *
+	    FROM moku_user
+	    WHERE email = #{email}
+	      AND password = #{password}
+	</select>
+    
 
-    <!-- ================================
+    <!-- =======================================
          게시글 목록
-    ================================= -->
+    ======================================== -->
     <select id="getBoards" parameterType="map" resultMap="boardMap">
         SELECT *
         FROM board
@@ -39,39 +48,42 @@
         ORDER BY id DESC
     </select>
 
-    <!-- ================================
-         단일 조회
-    ================================= -->
+    <!-- =======================================
+         단일 게시글
+    ======================================== -->
     <select id="getById" parameterType="int" resultMap="boardMap">
         SELECT *
         FROM board
         WHERE id = #{id}
     </select>
 
-    <!-- ================================
-         수정 (이미지 포함)
-    ================================= -->
+    <!-- =======================================
+         UPDATE : 쉼표 문제 완전 해결됨
+    ======================================== -->
     <update id="update" parameterType="com.MokU.vo.BoardVO">
         UPDATE board
         SET 
-            title      = #{title},
-            content    = #{content},
-            image_data = #{imageData, jdbcType=BLOB},
-            image_type = #{imageType, jdbcType=VARCHAR},
-            updated_at = SYSTIMESTAMP
+            title       = #{title},
+            content     = #{content},
+            updated_at  = SYSTIMESTAMP,
+            writer_name = #{writerName}
+            <if test="imageData != null">
+                , image_data = #{imageData, jdbcType=BLOB}
+                , image_type = #{imageType, jdbcType=VARCHAR}
+            </if>
         WHERE id = #{id}
     </update>
 
-    <!-- ================================
-         삭제
-    ================================= -->
+    <!-- =======================================
+         DELETE
+    ======================================== -->
     <delete id="delete" parameterType="int">
         DELETE FROM board WHERE id = #{id}
     </delete>
 
-    <!-- ================================
-         좋아요 증가/감소
-    ================================= -->
+    <!-- =======================================
+         LIKE (+1 / -1)
+    ======================================== -->
     <update id="increaseLike" parameterType="int">
         UPDATE board
         SET like_count = like_count + 1
@@ -84,21 +96,21 @@
         WHERE id = #{id}
     </update>
 
-    <!-- ================================
-         BoardVO 매핑 정의
-    ================================= -->
+    <!-- =======================================
+         RESULTMAP : 필드명 모두 정확히 매칭됨
+    ======================================== -->
     <resultMap id="boardMap" type="com.MokU.vo.BoardVO">
-        <id     property="id"        column="ID"/>
-        <result property="title"     column="TITLE"/>
-        <result property="content"   column="CONTENT"/>
-        <result property="writer"    column="WRITER"/>
-        <result property="school"    column="SCHOOL"/>
-        <result property="category"  column="CATEGORY"/>
-        <result property="likeCount" column="LIKE_COUNT"/>
-        <result property="imageData" column="IMAGE_DATA" jdbcType="BLOB"/>
-        <result property="imageType" column="IMAGE_TYPE"/>
-        <result property="createdAt" column="CREATED_AT"/>
-        <result property="updatedAt" column="UPDATED_AT"/>
+        <id     property="id"          column="ID"/>
+        <result property="title"       column="TITLE"/>
+        <result property="content"     column="CONTENT"/>
+        <result property="writerName"  column="WRITER_NAME"/>
+        <result property="school"      column="SCHOOL"/>
+        <result property="category"    column="CATEGORY"/>
+        <result property="likeCount"   column="LIKE_COUNT"/>
+        <result property="imageData"   column="IMAGE_DATA" jdbcType="BLOB"/>
+        <result property="imageType"   column="IMAGE_TYPE"/>
+        <result property="createdAt"   column="CREATED_AT"/>
+        <result property="updatedAt"   column="UPDATED_AT"/>
     </resultMap>
 
 </mapper>

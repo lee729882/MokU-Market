@@ -3,7 +3,7 @@ package com.MokU.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.MokU.dao.MemberMapper;
+import com.MokU.mapper.MemberMapper;
 import com.MokU.vo.MemberVO;
 
 @Service
@@ -13,13 +13,13 @@ public class MemberServiceImpl implements MemberService {
     private MemberMapper memberMapper;
 
     @Override
-    public void register(MemberVO member) {
-        memberMapper.insertMember(member);
+    public MemberVO login(String email, String password) {
+        return memberMapper.login(email, password);
     }
 
     @Override
-    public MemberVO login(MemberVO member) {
-        return memberMapper.loginMember(member);
+    public void register(MemberVO member) {
+        memberMapper.insertMember(member);
     }
 
     @Override
@@ -47,7 +47,6 @@ public class MemberServiceImpl implements MemberService {
         memberMapper.updateProfileImage(user);
     }
 
-    // 🔹 상세페이지 / 프로필 공용
     @Override
     public MemberVO getMemberById(int userId) {
         return memberMapper.getMemberById(userId);

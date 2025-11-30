@@ -1,4 +1,10 @@
 eclipse.preferences.version=1
 encoding//src/main/java/com/MokU/controller/BoardController.java=UTF-8
+encoding//src/main/java/com/MokU/controller/MemberController.java=UTF-8
+encoding//src/main/java/com/MokU/controller/UserController.java=UTF-8
+encoding//src/main/java/com/MokU/mapper/MemberMapper.java=UTF-8
+encoding//src/main/java/com/MokU/service/BoardServiceImpl.java=UTF-8
+encoding//src/main/java/com/MokU/service/MemberService.java=UTF-8
+encoding//src/main/java/com/MokU/service/MemberServiceImpl.java=UTF-8
 encoding//src/main/java/com/MokU/vo/BoardVO.java=UTF-8
 encoding//src/main/webapp/WEB-INF/views/community.jsp=UTF-8
