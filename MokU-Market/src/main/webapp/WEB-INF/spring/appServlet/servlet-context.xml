@@ -11,9 +11,6 @@
     <!-- @Controller 어노테이션 활성화 -->
     <annotation-driven />
 
-    <!-- 정적 리소스 매핑 -->
-    <resources mapping="/resources/**" location="/resources/" />
-
     <!-- ==========================
          🔥 프로젝트 내부 업로드 매핑
          /webapp/uploads → /uploads URL
@@ -21,13 +18,12 @@
     <!-- 정적 리소스 매핑 -->
 	<!-- resources/images/uploads 를 URL로 접근 가능하게 -->
 	<!-- /uploads/** 를 실제 폴더에 매핑 -->
-	<resources mapping="/uploads/**" 
-           location="/resources/images/uploads/" />
+<!-- 정적 리소스 매핑 -->
+<resources mapping="/resources/**" location="/resources/" />
 
-
-
-
-
+<!-- ✅ profile / product 이미지 공통 매핑 -->
+<!-- /upload/** URL 요청을 webapp/upload/ 아래에서 찾아서 서빙 -->
+<resources mapping="/upload/**" location="/upload/" />
 
 
     <!-- JSP View Resolver -->

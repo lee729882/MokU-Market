@@ -263,7 +263,7 @@
 
         <!-- 로고 -->
         <div class="logo">
-            <a href="${pageContext.request.contextPath}/home"
+            <a href="${pageContext.request.contextPath}/controller/home"
                style="display:flex; align-items:center; gap:10px; text-decoration:none; color:#ffffff;">
                 <img src="${pageContext.request.contextPath}/resources/images/mokyu_logo.png" alt="로고">
                 <h1>목유마켓</h1>
