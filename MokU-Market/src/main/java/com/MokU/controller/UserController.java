@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.MokU.service.MemberService;
-import com.MokU.service.ProductService;   // �쐟 異붽�
+import com.MokU.service.ProductService;   // ✅ 추가
 import com.MokU.vo.MemberVO;
-import com.MokU.vo.ProductVO;           // �쐟 �븘�슂 �떆 異붽�
+import com.MokU.vo.ProductVO;           // ✅ 필요 시 추가
 
 import lombok.var;
 
-import com.MokU.service.ReviewService;   // �쐟 異붽�
+import com.MokU.service.ReviewService;   // ✅ 추가
 
 @Controller
 @RequestMapping("/controller")
@@ -30,14 +30,12 @@ public class UserController {
     private MemberService memberService;
 
     @Autowired
-    private ProductService productService;   // �쐟 �궡 �벑濡앺뀥 / 李쒗뀥 議고쉶�슜 �꽌鍮꾩뒪
+    private ProductService productService;   // ✅ 내 등록템 / 찜템 조회용 서비스
 
     @Autowired
     private ReviewService reviewService;
     
-    
-    
-    // 留덉씠�럹�씠吏� (�븳 �솕硫댁뿉�꽌 �꺆 �쟾�솚)
+    // 마이페이지 (한 화면에서 탭 전환)
     @GetMapping("/mypage")
     public String myPage(HttpSession session, Model model) {
         MemberVO user = (MemberVO) session.getAttribute("loginUser");
@@ -45,13 +43,13 @@ public class UserController {
 
         int userId = user.getUserId();
 
-        // �궡 �벑濡앺뀥, �궡 愿��떖�뀥 媛쒖닔 怨꾩궛
+        // 내 등록템, 내 관심템 개수 계산
         int myProductCount = productService.getMyProducts(userId).size();
         int myFavoriteCount = productService.getMyFavoriteProducts(userId).size();
 
-        // �썑湲� 媛쒖닔 怨꾩궛
-        int receivedReviewCount = reviewService.getReceivedReviews(userId).size();  // 諛쏆� �썑湲� 媛쒖닔
-        int writtenReviewCount = reviewService.getWrittenReviews(userId).size();    // �옉�꽦�븳 �썑湲� 媛쒖닔
+        // 후기 개수 계산
+        int receivedReviewCount = reviewService.getReceivedReviews(userId).size();  // 받은 후기 개수
+        int writtenReviewCount = reviewService.getWrittenReviews(userId).size();    // 작성한 후기 개수
 
         model.addAttribute("user", user);
         model.addAttribute("myProductCount", myProductCount);
@@ -62,7 +60,7 @@ public class UserController {
         model.addAttribute("myProducts", productService.getMyProducts(userId));
         model.addAttribute("favoriteProducts", productService.getMyFavoriteProducts(userId));
 
-        // �썑湲� 議고쉶
+        // 후기 조회
         var received = reviewService.getReceivedReviews(userId);
         var written  = reviewService.getWrittenReviews(userId);
 
@@ -74,7 +72,7 @@ public class UserController {
 
 
 
-    // �쐟 (�삁�쟾泥섎읆 蹂꾨룄 �럹�씠吏�濡� �벐吏� �븡�쓣 嫄곕씪硫� �궗�떎 �븘�옒 3媛쒕뒗 �뾾�뼱�룄 �맗�땲�떎)
+    // ✅ (예전처럼 별도 페이지로 쓰지 않을 거라면 사실 아래 3개는 없어도 됩니다)
     @GetMapping("/myProducts")
     public String myProducts() { return "user_myProducts"; }
 
@@ -84,35 +82,35 @@ public class UserController {
     @GetMapping("/reviews")
     public String reviews() { return "user_reviews"; }
 
-    // �쐟 鍮꾨�踰덊샇 蹂�寃�
+    // ✅ 비밀번호 변경
     @GetMapping("/changePassword")
     public String changePassword() {
         return "changePassword";
     }
 
-    // �쐟 Wi-Fi �씤利�, �봽濡쒗븘 �씠誘몄� 蹂�寃� 遺�遺꾩� 洹몃�濡� �쑀吏�
+    // ✅ Wi-Fi 인증, 프로필 이미지 변경 부분은 그대로 유지
     @GetMapping(value = "/verifyWifi", produces = "text/plain; charset=UTF-8")
     @ResponseBody
     public String verifyWifi(HttpServletRequest request, HttpSession session) {
         MemberVO user = (MemberVO) session.getAttribute("loginUser");
-        if (user == null) return "濡쒓렇�씤�씠 �븘�슂�빀�땲�떎.";
+        if (user == null) return "로그인이 필요합니다.";
 
         String ip = request.getRemoteAddr();
-        System.out.println("�궗�슜�옄 IP: " + ip);
+        System.out.println("사용자 IP: " + ip);
 
         if (ip.equals("183.109.228.30") || ip.startsWith("127.0.0.") || ip.startsWith("0:0:0:0")) {
             user.setIsLocationVerified("Y");
-            user.setVerifiedPlace("紐⑺룷���븰援� Wi-Fi �씤利�");
+            user.setVerifiedPlace("목포대학교 Wi-Fi 인증");
             user.setVerifiedAt(new java.util.Date());
 
-            System.out.println("�쐟 UPDATE �샇異� �쟾: " + user.getUserId());
+            System.out.println("✅ UPDATE 호출 전: " + user.getUserId());
             memberService.updateLocationVerified(user);
-            System.out.println("�쐟 UPDATE �샇異� �셿猷�");
+            System.out.println("✅ UPDATE 호출 완료");
 
             session.setAttribute("loginUser", user);
-            return "�윋� 罹좏띁�뒪 Wi-Fi �씤利� �셿猷�!";
+            return "📡 캠퍼스 Wi-Fi 인증 완료!";
         } else {
-            return "�쓬 罹좏띁�뒪 �꽕�듃�썙�겕(Wi-Fi)�뿉�꽌留� �씤利� 媛��뒫�빀�땲�떎. (�쁽�옱 IP: " + ip + ")";
+            return "❌ 캠퍼스 네트워크(Wi-Fi)에서만 인증 가능합니다. (현재 IP: " + ip + ")";
         }
     }
 
@@ -126,13 +124,13 @@ public class UserController {
         MemberVO user = (MemberVO) session.getAttribute("loginUser");
         if (user == null) {
             response.put("success", false);
-            response.put("message", "濡쒓렇�씤�씠 �븘�슂�빀�땲�떎.");
+            response.put("message", "로그인이 필요합니다.");
             return response;
         }
 
         if (file.isEmpty()) {
             response.put("success", false);
-            response.put("message", "�뙆�씪�씠 �뾾�뒿�땲�떎.");
+            response.put("message", "파일이 없습니다.");
             return response;
         }
 
@@ -150,19 +148,19 @@ public class UserController {
             user.setProfileImagePath(dbPath);
             memberService.updateProfileImage(user);
 
-            // �윍� DB�뿉�꽌 �떎�떆 �씫�뼱 ���꽌 �꽭�뀡 媛깆떊
+            // 🔥 DB에서 다시 읽어 와서 세션 갱신
             MemberVO updatedUser = memberService.getMemberById(user.getUserId());
             session.setAttribute("loginUser", updatedUser);
 
             response.put("success", true);
-            response.put("message", "�봽濡쒗븘 �씠誘몄�媛� �젙�긽�쟻�쑝濡� 蹂�寃쎈릺�뿀�뒿�땲�떎.");
+            response.put("message", "프로필 이미지가 정상적으로 변경되었습니다.");
             response.put("imagePath", updatedUser.getProfileImagePath());
             return response;
 
         } catch (Exception e) {
             e.printStackTrace();
             response.put("success", false);
-            response.put("message", "�뾽濡쒕뱶 �떎�뙣");
+            response.put("message", "업로드 실패");
             return response;
         }
     }

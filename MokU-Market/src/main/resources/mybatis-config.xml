@@ -5,13 +5,18 @@
 
 <configuration>
 
+    <!-- ✅ 한글 인코딩 관련 설정 -->
+    <properties>
+        <property name="useUnicode" value="true"/>
+        <property name="characterEncoding" value="UTF-8"/>
+    </properties>
+
     <settings>
         <setting name="mapUnderscoreToCamelCase" value="true"/>
         <setting name="jdbcTypeForNull" value="NULL"/>
     </settings>
 
     <mappers>
-
         <!-- review 폴더 -->
         <mapper resource="mappers/review/BoardMapper.xml"/>
         <mapper resource="mappers/review/BoardLikeMapper.xml"/>

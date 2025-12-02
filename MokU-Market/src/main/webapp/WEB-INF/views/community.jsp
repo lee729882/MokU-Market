@@ -627,7 +627,7 @@ let likedPosts = new Set();
 
 
 async function toggleLike(postId) {
-    // 좋아요 상태 토글
+    // 좋아요 상태 토글1
     if (likedPosts.has(postId)) {
         likedPosts.delete(postId);
     } else {

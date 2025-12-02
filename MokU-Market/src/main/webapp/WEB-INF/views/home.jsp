@@ -288,10 +288,10 @@
             <!-- 이미지 리스트 -->
             <div class="carousel-track">
                 <div class="carousel-item active">
-                    <img src="${pageContext.request.contextPath}/resources/images/banner1.png" alt="배너1">
+                    <img src="${pageContext.request.contextPath}/resources/images/banner11.png" alt="배너1">
                 </div>
                 <div class="carousel-item">
-                    <img src="${pageContext.request.contextPath}/resources/images/banner2.png" alt="배너2">
+                    <img src="${pageContext.request.contextPath}/resources/images/banner22.png" alt="배너2">
                 </div>
                 <div class="carousel-item">
                     <img src="${pageContext.request.contextPath}/resources/images/banner3.png" alt="배너3">

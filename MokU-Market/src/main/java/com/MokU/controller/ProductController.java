@@ -67,8 +67,19 @@ public class ProductController {
                              @RequestParam("files") MultipartFile[] files,
                              HttpServletRequest request,
                              HttpSession session) throws IOException {
-
+        System.out.println("=== /product/add 호출 ===");
+        System.out.println("files is null? " + (files == null));
+        if (files != null) {
+            System.out.println("files.length = " + files.length);
+            for (int i = 0; i < files.length; i++) {
+                MultipartFile f = files[i];
+                System.out.println("  [" + i + "] name=" + f.getName()
+                        + ", original=" + f.getOriginalFilename()
+                        + ", empty=" + f.isEmpty());
+            }
+        }
         MemberVO user = (MemberVO) session.getAttribute("loginUser");
+
         if (user == null) return "redirect:/login";
 
         // 판매자 ID 세팅
@@ -98,7 +109,7 @@ public class ProductController {
         if (!imagePaths.isEmpty()) {
             vo.setImagePath(imagePaths.get(0));
         } else {
-            vo.setImagePath("/upload/product/no_image.png");
+            vo.setImagePath("/upload/product/no_image2.png");
         }
 
         // 상품 INSERT (PK 생성)
