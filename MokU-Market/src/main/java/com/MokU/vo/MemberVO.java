@@ -27,6 +27,9 @@ public class MemberVO {
     private String profileImagePath;
 
     private String nickname;
+    
+    private String role;   // USER / ADMIN
+
 
     // ===== Getter & Setter =====
     public int getUserId() { return userId; }
@@ -74,5 +77,9 @@ public class MemberVO {
 
     public void setProfileImagePath(String profileImagePath) {
         this.profileImagePath = profileImagePath;
+    }
+    // ✅ 편의 메서드: 관리자 판단
+    public boolean isAdmin() {
+        return "ADMIN".equalsIgnoreCase(this.role);
     }
 }

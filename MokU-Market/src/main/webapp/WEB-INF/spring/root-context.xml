@@ -18,8 +18,8 @@
   <bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
     <property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy"/>
     <property name="jdbcUrl" value="jdbc:log4jdbc:oracle:thin:@//localhost:1521/xe"/>
-    <property name="username" value="book_ex"/>
-    <property name="password" value="book_ex"/>
+    <property name="username" value="boot_ex"/>
+    <property name="password" value="boot_ex"/>
   </bean>
 
   <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
@@ -38,6 +38,11 @@
         <property name="mapUnderscoreToCamelCase" value="true"/>
       </bean>
     </property>
+  </bean>
+  
+  <!-- MyBatis SqlSessionTemplate (DAO에서 SqlSession 주입용) -->
+  <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+    <constructor-arg index="0" ref="sqlSessionFactory"/>
   </bean>
 
   <!-- ❗ 기존 DAO + 새 Mapper 둘 다 스캔해야 함 -->

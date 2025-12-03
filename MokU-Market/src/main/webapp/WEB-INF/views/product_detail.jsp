@@ -749,6 +749,30 @@ html, body {
             </button>
         </c:otherwise>
     </c:choose>
+<!-- ✅ 판매자가 아닌 경우에만 신고 버튼 노출 -->
+<c:if test="${!isSeller}">
+    <c:choose>
+        <c:when test="${alreadyReported}">
+            <button type="button"
+                    id="btnReport"
+                    class="chat-btn"
+                    style="background-color:#cccccc; cursor:not-allowed;"
+                    disabled
+                    data-reported="true">
+                이미 신고한 상품입니다
+            </button>
+        </c:when>
+        <c:otherwise>
+            <button type="button"
+                    id="btnReport"
+                    class="chat-btn"
+                    style="background-color:#ff9f43;"
+                    data-reported="false">
+                신고하기
+            </button>
+        </c:otherwise>
+    </c:choose>
+</c:if>
 
     <div id="likeBtn" class="like-btn ${liked ? 'liked' : ''}">
         <svg class="heart-icon" viewBox="0 0 24 24">
@@ -1123,6 +1147,86 @@ function toggleSoldFromDetail(productId, currentStatus) {
         selectedRoomId = null;
         currentProductIdForModal = null;
     }
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const reportBtn = document.getElementById("btnReport");
+    if (!reportBtn) return;
+
+    reportBtn.addEventListener("click", function () {
+
+        // ✅ 이미 신고한 상태면 바로 리턴
+        if (reportBtn.dataset.reported === "true") {
+            alert("이미 신고한 상품입니다.");
+            return;
+        }
+
+        if (!confirm("이 상품을 신고하시겠습니까?")) {
+            return;
+        }
+
+        const detail = prompt(
+            "신고 사유를 입력해 주세요.\n예: 허위 매물, 욕설/비방, 스팸 등",
+            ""
+        );
+        if (detail === null || detail.trim() === "") {
+            return;
+        }
+
+        const payload = {
+            productId: ${product.productId},
+            reasonType: "PRODUCT",
+            reasonDetail: detail.trim()
+        };
+
+        fetch("${ctx}/product/report", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-Requested-With": "XMLHttpRequest"
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === "login_required") {
+                alert("로그인이 필요합니다.");
+                location.href = "${ctx}/login";
+                return;
+            }
+
+            // ✅ 백엔드에서 중복 신고로 판단한 경우
+            if (data.status === "duplicated") {
+                alert(data.message || "이미 신고한 상품입니다.");
+                // 버튼도 비활성화로 전환
+                reportBtn.dataset.reported = "true";
+                reportBtn.disabled = true;
+                reportBtn.style.backgroundColor = "#cccccc";
+                reportBtn.style.cursor = "not-allowed";
+                reportBtn.textContent = "이미 신고한 상품입니다";
+                return;
+            }
+
+            if (data.status === "success") {
+                alert("신고가 정상적으로 접수되었습니다.\n운영자가 검토 후 조치할 예정입니다.");
+
+                // 성공 후 다시 신고 못 하게 막고 싶으시면 아래처럼 변경
+                reportBtn.dataset.reported = "true";
+                reportBtn.disabled = true;
+                reportBtn.style.backgroundColor = "#cccccc";
+                reportBtn.style.cursor = "not-allowed";
+                reportBtn.textContent = "이미 신고한 상품입니다";
+            } else {
+                alert(data.message || "신고 처리 중 오류가 발생했습니다.");
+            }
+        })
+        .catch(err => {
+            console.error("REPORT ERROR:", err);
+            alert("네트워크 오류로 신고 접수에 실패했습니다.");
+        });
+    });
+});
 </script>
 
     <jsp:include page="/WEB-INF/views/common/recentProducts.jsp" />
