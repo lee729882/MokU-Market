@@ -3,7 +3,6 @@
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<!-- 반드시 인터페이스와 1:1 동일하게 -->
 <mapper namespace="com.MokU.mapper.MemberMapper">
 
     <!-- 회원가입 -->
@@ -20,28 +19,26 @@
     </insert>
 
     <!-- 로그인 -->
-<select id="login" resultType="com.MokU.vo.MemberVO">
-    SELECT 
-        USER_ID,
-        EMAIL,
-        PASSWORD,
-        NAME,
-        PHONE,
-        VERIFIED,
-        MANNER_TEMP AS mannerTemp,
-        PRODUCT_COUNT AS productCount,
-        FAVORITE_COUNT AS favoriteCount,
-        CHAT_COUNT AS chatCount,
-        IS_LOCATION_VERIFIED AS isLocationVerified,
-        VERIFIED_PLACE AS verifiedPlace,
-        VERIFIED_AT AS verifiedAt,
-        PROFILE_IMAGE_PATH AS profileImagePath,
-        ROLE                             AS role     <!-- ✅ 추가 -->
-    FROM MOKU_USER
-    WHERE EMAIL = #{email}
-      AND PASSWORD = #{password}
-</select>
-
+    <select id="login" resultType="com.MokU.vo.MemberVO">
+        SELECT 
+            USER_ID,
+            EMAIL,
+            PASSWORD,
+            NAME,
+            PHONE,
+            VERIFIED,
+            MANNER_TEMP AS mannerTemp,
+            PRODUCT_COUNT AS productCount,
+            FAVORITE_COUNT AS favoriteCount,
+            CHAT_COUNT AS chatCount,
+            IS_LOCATION_VERIFIED AS isLocationVerified,
+            VERIFIED_PLACE AS verifiedPlace,
+            VERIFIED_AT AS verifiedAt,
+            PROFILE_IMAGE_PATH AS profileImagePath
+        FROM MOKU_USER
+        WHERE EMAIL = #{email}
+          AND PASSWORD = #{password}
+    </select>
 
     <!-- 이메일 중복확인 -->
     <select id="countByEmail" resultType="int">
@@ -78,26 +75,24 @@
     </update>
 
     <!-- 유저 정보 조회 -->
-<select id="getMemberById" parameterType="int" resultType="com.MokU.vo.MemberVO">
-    SELECT 
-        USER_ID,
-        EMAIL,
-        PASSWORD,
-        NAME,
-        PHONE,
-        VERIFIED,
-        MANNER_TEMP AS mannerTemp,
-        PRODUCT_COUNT AS productCount,
-        FAVORITE_COUNT AS favoriteCount,
-        CHAT_COUNT AS chatCount,
-        IS_LOCATION_VERIFIED AS isLocationVerified,
-        VERIFIED_PLACE AS verifiedPlace,
-        VERIFIED_AT AS verifiedAt,
-        PROFILE_IMAGE_PATH AS profileImagePath,
-        ROLE                             AS role     <!-- ✅ 추가 -->
-    FROM MOKU_USER
-    WHERE USER_ID = #{userId}
-</select>
-
+    <select id="getMemberById" parameterType="int" resultType="com.MokU.vo.MemberVO">
+        SELECT 
+            USER_ID,
+            EMAIL,
+            PASSWORD,
+            NAME,
+            PHONE,
+            VERIFIED,
+            MANNER_TEMP AS mannerTemp,
+            PRODUCT_COUNT AS productCount,
+            FAVORITE_COUNT AS favoriteCount,
+            CHAT_COUNT AS chatCount,
+            IS_LOCATION_VERIFIED AS isLocationVerified,
+            VERIFIED_PLACE AS verifiedPlace,
+            VERIFIED_AT AS verifiedAt,
+            PROFILE_IMAGE_PATH AS profileImagePath
+        FROM MOKU_USER
+        WHERE USER_ID = #{userId}
+    </select>
 
 </mapper>
