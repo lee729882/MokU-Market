@@ -121,8 +121,15 @@ public class MemberController {
         session.setAttribute("loginUserId", user.getUserId());
         session.setAttribute("loginName", user.getName());
 
+        // ✅ 관리자 계정이면 신고 관리 페이지로 바로 이동
+        if (user.isAdmin()) {
+            return "redirect:/admin/report/list";
+        }
+
+        // ✅ 일반 유저는 기존 홈으로 이동
         return "redirect:/controller/home";
     }
+
 
 
     // ================================

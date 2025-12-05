@@ -18,8 +18,10 @@ import javax.servlet.http.HttpSession;
 import com.MokU.service.ChatService;
 import com.MokU.service.MemberService;
 import com.MokU.service.ProductService;
+import com.MokU.service.ReportService;
 import com.MokU.vo.MemberVO;
 import com.MokU.vo.ProductVO;
+import com.MokU.vo.ReportVO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -53,6 +55,10 @@ public class ProductController {
     @Autowired
     private ChatService chatService;
 
+    @Autowired
+    private ReportService reportService;
+
+    
     /* ============================================
      *  �긽�뭹 �벑濡� �뤌 �씠�룞
      * ============================================ */
@@ -255,6 +261,15 @@ public class ProductController {
         // �긽�뭹�뿉 ���븳 李� 媛쒖닔 議고쉶
         int likeCount = productService.getTotalLikesByProduct(pid);
         model.addAttribute("likeCount", likeCount);  // 李� 媛쒖닔 紐⑤뜽�뿉 異붽�
+        
+
+        // ✅ 이미 신고했는지 여부 계산 (로그인 + 판매자가 아닌 경우만)
+        boolean alreadyReported = false;
+        if (user != null && user.getUserId() != product.getSellerId()) {
+            alreadyReported = reportService.hasReportedProduct(user.getUserId(), pid);
+        }
+        model.addAttribute("alreadyReported", alreadyReported);
+
         
         return "product_detail";
     }
@@ -502,6 +517,7 @@ public class ProductController {
 
         return result;
     }
+
     
    
 
@@ -579,6 +595,66 @@ public class ProductController {
             return "redirect:/product/rent";
         }
     
+
+    @PostMapping("/report")
+    @ResponseBody
+    public Map<String, Object> reportProduct(@RequestBody Map<String, String> payload,
+                                             HttpSession session) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        // 로그인 유저 확인
+        MemberVO loginUser = (MemberVO) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            result.put("status", "login_required");
+            return result;
+        }
+
+        try {
+            int productId    = Integer.parseInt(payload.get("productId"));
+            String reasonType   = payload.get("reasonType");    // FRAUD, ABUSE 등 코드
+            String reasonDetail = payload.get("reasonDetail");  // 사용자가 입력한 상세 사유
+
+            int reporterId = loginUser.getUserId();
+
+            // ✅ 1) 이미 이 상품을 신고했는지 체크
+            if (reportService.hasReportedProduct(reporterId, productId)) {
+                result.put("status", "duplicated");
+                result.put("message", "이미 해당 상품을 신고하셨습니다.");
+                return result;
+            }
+
+            // 상품 정보 (판매자 ID 얻기 위해)
+            ProductVO product = productService.getProductById(productId);
+            if (product == null) {
+                result.put("status", "error");
+                result.put("message", "존재하지 않는 상품입니다.");
+                return result;
+            }
+
+            // ✅ 2) 신고 저장
+            ReportVO vo = new ReportVO();
+            vo.setReporterId(reporterId);
+            vo.setTargetUserId(product.getSellerId());
+            vo.setProductId(productId);
+            vo.setPostId(null);           // 상품 신고이므로 비움
+            vo.setChatRoomId(null);       // 필요 시 채팅방 ID 세팅
+            vo.setReasonType(reasonType);
+            vo.setDescription(reasonDetail);
+            vo.setStatus("NEW");
+
+            reportService.saveReport(vo);
+
+            result.put("status", "success");
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("status", "error");
+            result.put("message", "신고 처리 중 오류가 발생했습니다.");
+        }
+
+        return result;
+    }
+
 
 
 
