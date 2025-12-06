@@ -95,6 +95,15 @@
 	    </a>
 	</div>
     
+    <a href="${pageContext.request.contextPath}/product/rent/stats"
+	   style="display:inline-block; margin-bottom:20px; padding:10px 15px;
+	          background:#4CAF50; color:white; text-decoration:none;
+	          border-radius:8px;">
+	📊 이번달 매출/소비 보기
+	</a>
+
+    
+    
 
     <!-- 상품 추가 버튼 -->
     <div class="add-btn" onclick="toggleAddForm()">

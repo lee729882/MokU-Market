@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -21,6 +22,7 @@ import com.MokU.service.ProductService;
 import com.MokU.service.ReportService;
 import com.MokU.vo.MemberVO;
 import com.MokU.vo.ProductVO;
+import com.MokU.vo.RentPaymentVO;
 import com.MokU.vo.ReportVO;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -748,6 +750,81 @@ public class ProductController {
         return "/product/rent_history"; // JSP 파일
     }
 
+    @GetMapping("/rent/stats")
+    public String rentStats(HttpSession session, Model model) {
+
+        MemberVO user = (MemberVO) session.getAttribute("loginUser");
+
+        if (user == null) {
+            return "redirect:/member/login";
+        }
+
+        String name = user.getName();
+
+        // 오늘 날짜 기준
+        LocalDate today = LocalDate.now();
+        int year = today.getYear();
+        int month = today.getMonthValue();
+
+        // 1일의 요일 (달력 앞에 빈칸 만들어야 함)
+        LocalDate firstDay = LocalDate.of(year, month, 1);
+        int startBlank = firstDay.getDayOfWeek().getValue();
+        if (startBlank == 7) startBlank = 0; // 일요일을 0으로 보정
+
+        int lastDay = firstDay.lengthOfMonth();
+
+        // 하루별 금액 저장용 Map
+        Map<Integer, Integer> dailyEarned = new HashMap<>();
+        Map<Integer, Integer> dailySpent = new HashMap<>();
+
+        for (int i = 1; i <= lastDay; i++) {
+            dailyEarned.put(i, 0);
+            dailySpent.put(i, 0);
+        }
+
+        // 이번 달 상세 기록 가져오기
+        List<RentPaymentVO> payments =
+                rentProductService.getMonthlyPayments(name, year, month);
+
+        int totalEarned = 0;
+        int totalSpent = 0;
+
+        for (RentPaymentVO p : payments) {
+
+            int day = p.getStartAt().toLocalDateTime().getDayOfMonth();
+
+            // 판매자 = 내가 돈 번 날
+            if (p.getSellerName().equals(name)) {
+                int amount = p.getPrice();
+                dailyEarned.put(day, dailyEarned.get(day) + amount);
+                totalEarned += amount;
+            }
+
+            // 구매자 = 내가 돈 쓴 날
+            if (p.getBuyerName().equals(name)) {
+                int amount = p.getPrice();
+                dailySpent.put(day, dailySpent.get(day) + amount);
+                totalSpent += amount;
+            }
+        }
+
+        // JSP 전달
+        model.addAttribute("year", year);
+        model.addAttribute("month", month);
+        model.addAttribute("startBlank", startBlank);
+        model.addAttribute("lastDay", lastDay);
+
+        model.addAttribute("earned", totalEarned);
+        model.addAttribute("spent", totalSpent);
+
+        model.addAttribute("dailyEarned", dailyEarned);
+        model.addAttribute("dailySpent", dailySpent);
+
+        return "product/rent_stats"; 
+    }
+
+    
+    
 
 
 
