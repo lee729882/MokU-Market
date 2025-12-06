@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -738,17 +739,27 @@ public class ProductController {
 
         String name = user.getName();
 
-        // 내가 빌려준 리스트
         List<RentProductVO> gaveList = rentProductService.getProductsIGave(name);
-
-        // 내가 빌린 리스트
         List<RentProductVO> rentedList = rentProductService.getProductsIRented(name);
+
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+
+        // endAt이 null이거나 지난 건 제거
+        gaveList = gaveList.stream()
+                .filter(p -> p.getEndAt() != null && p.getEndAt().after(now))
+                .collect(Collectors.toList());
+
+        rentedList = rentedList.stream()
+                .filter(p -> p.getEndAt() != null && p.getEndAt().after(now))
+                .collect(Collectors.toList());
 
         model.addAttribute("gaveList", gaveList);
         model.addAttribute("rentedList", rentedList);
 
-        return "/product/rent_history"; // JSP 파일
+        return "/product/rent_history";
     }
+
+
 
     @GetMapping("/rent/stats")
     public String rentStats(HttpSession session, Model model) {

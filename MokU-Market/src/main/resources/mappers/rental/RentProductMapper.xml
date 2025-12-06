@@ -84,24 +84,26 @@
         WHERE rent_product_id = #{rentProductId}
     </update>
 
-    <!-- 🟢 내가 빌려준 상품 목록 -->
-    <select id="findProductsIGave" resultType="com.MokU.vo.RentProductVO">
-        SELECT
-            rent_product_id,
-            seller_name,
-            title,
-            price,
-            description,
-            image_blob,
-            duration_type,
-            status,
-            renter_name,
-            end_at,
-            created_at
-        FROM rent_product
-        WHERE seller_name = #{sellerName}
-        ORDER BY created_at DESC
-    </select>
+    <!-- 🟢 내가 빌려준 상품 목록 (기간 만료 상품은 숨김) -->
+	<select id="findProductsIGave" resultType="com.MokU.vo.RentProductVO">
+	    SELECT
+	        rent_product_id,
+	        seller_name,
+	        title,
+	        price,
+	        description,
+	        image_blob,
+	        duration_type,
+	        status,
+	        renter_name,
+	        end_at,
+	        created_at
+	    FROM rent_product
+	    WHERE seller_name = #{sellerName}
+	      AND (end_at IS NULL OR end_at > SYSDATE)
+	    ORDER BY created_at DESC
+	</select>
+
 
     <!-- 🔵 내가 빌린 상품 목록 -->
     <select id="findProductsIRented" resultType="com.MokU.vo.RentProductVO">

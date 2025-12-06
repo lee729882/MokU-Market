@@ -374,69 +374,69 @@ body {
          내가 빌린 상품
     ============================== -->
     <div class="section-box">
-        <div class="section-title rented">
-            <span class="section-icon rented">↓</span>
-            내가 빌린 상품
-        </div>
+    <div class="section-title rented">
+        <span class="section-icon rented">↓</span>
+        내가 빌린 상품
+    </div>
 
-        <c:if test="${empty rentedList}">
-            <div class="empty-msg">빌린 상품이 없습니다.</div>
-        </c:if>
+    <c:if test="${empty rentedList}">
+        <div class="empty-msg">빌린 상품이 없습니다.</div>
+    </c:if>
 
-        <c:forEach var="p" items="${rentedList}">
-            <div class="card">
+    <c:forEach var="p" items="${rentedList}">
+        <div class="card">
 
-                <!-- 왼쪽 -->
-                <div class="card-info">
-                    <div class="card-title">
-                        ${p.title}
-                        <span class="price-tag">${p.price}원</span>
-                    </div>
+            <!-- 왼쪽 -->
+            <div class="card-info">
+                <div class="card-title">
+                    ${p.title}
+                    <span class="price-tag">${p.price}원</span>
+                </div>
 
-                    <div class="small">
-                        <svg class="small-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                        </svg>
-                        판매자: ${p.sellerName}
-                    </div>
+                <div class="small">
+                    <svg class="small-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                    판매자: ${p.sellerName}
+                </div>
 
+                <!-- 🔥 endAt 없으면 이 줄 자체가 표시되지 않음 -->
+                <c:if test="${not empty p.endAt}">
                     <div class="small">
                         <svg class="small-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                         </svg>
-                        반납 예정일: 
-                        <c:choose>
-                            <c:when test="${empty p.endAt}">미설정</c:when>
-                            <c:otherwise>${p.endAt}</c:otherwise>
-                        </c:choose>
+                        반납 예정일: ${p.endAt}
                     </div>
+                </c:if>
 
-                    <div class="small">
-                        <svg class="small-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        상태: <span class="status-badge">${p.status}</span>
-                    </div>
+                <div class="small">
+                    <svg class="small-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    상태: <span class="status-badge">${p.status}</span>
                 </div>
-
-                <!-- 오른쪽 이미지 -->
-                <div class="card-img-box">
-                    <c:choose>
-                        <c:when test="${not empty p.base64Image}">
-                            <img src="data:image/png;base64,${p.base64Image}" alt="상품 이미지">
-                        </c:when>
-                        <c:otherwise>
-                            <span class="no-img">
-                                <div class="no-img-icon">🖼️</div>
-                                이미지 없음
-                            </span>
-                        </c:otherwise>
-                    </c:choose>
-                </div>
-
             </div>
-        </c:forEach>
-    </div>
+
+            <!-- 오른쪽 이미지 -->
+            <div class="card-img-box">
+                <c:choose>
+                    <c:when test="${not empty p.base64Image}">
+                        <img src="data:image/png;base64,${p.base64Image}" alt="상품 이미지">
+                    </c:when>
+                    <c:otherwise>
+                        <span class="no-img">
+                            <div class="no-img-icon">🖼️</div>
+                            이미지 없음
+                        </span>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+
+        </div>
+    </c:forEach>
+</div>
+
 
 </div>
 
