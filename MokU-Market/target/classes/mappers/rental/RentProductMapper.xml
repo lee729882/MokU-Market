@@ -19,6 +19,8 @@
             description,
             image_blob,
             duration_type,
+            status,
+            end_at,
             created_at
         ) VALUES (
             #{rentProductId},
@@ -28,6 +30,8 @@
             #{description},
             #{imageBlob, jdbcType=BLOB},
             #{durationType},
+            #{status},
+            NULL,
             SYSDATE
         )
     </insert>
@@ -42,6 +46,8 @@
             description,
             image_blob,
             duration_type,
+            status,
+            end_at,
             created_at
         FROM rent_product
         ORDER BY rent_product_id DESC
@@ -57,20 +63,28 @@
             description,
             image_blob,
             duration_type,
+            status,
+            end_at,
             created_at
         FROM rent_product
         WHERE rent_product_id = #{rentProductId}
     </select>
-    
+
+    <update id="updateRentalStatus">
+	    UPDATE rent_product
+	    SET status = #{status},
+	        end_at = #{endAt, jdbcType=TIMESTAMP}
+	    WHERE rent_product_id = #{rentProductId}
+	</update>
+
+
+
     <!-- 판매 상품 삭제 -->
-		<delete id="deleteRentProduct">
-	    DELETE FROM rent_product
-	    WHERE rent_product_id = #{productId}
-	      AND TRIM(seller_name) = TRIM(#{sellerName})
-	</delete>
-
-		
-
-    
+    <delete id="deleteRentProduct">
+        DELETE FROM rent_product
+        WHERE rent_product_id = #{productId}
+          AND TRIM(seller_name) = TRIM(#{sellerName})
+       	  AND NVL(status, 'AVAILABLE') &lt;&gt; 'RENTED'
+    </delete>
 
 </mapper>

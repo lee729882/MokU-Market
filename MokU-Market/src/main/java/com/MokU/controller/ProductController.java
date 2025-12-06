@@ -585,6 +585,7 @@ public class ProductController {
     /* ============================================
      *  렌탈 상품 목록
      * ============================================ */
+   
     @GetMapping("/rent")
     public String rentProductList(Model model, HttpSession session) {
 
@@ -687,6 +688,32 @@ public class ProductController {
 
         return "redirect:/product/rent";
     }
+
+    @PostMapping("/rent/start")
+    public String startRent(
+            @RequestParam("productId") int productId,
+            @RequestParam("durationType") String durationType,
+            HttpSession session,
+            RedirectAttributes rttr) {
+
+        MemberVO user = (MemberVO) session.getAttribute("loginUser");
+
+        if (user == null) {
+            rttr.addFlashAttribute("msg", "로그인이 필요합니다.");
+            return "redirect:/member/login";
+        }
+
+        boolean result = rentProductService.startRental(productId, durationType);
+
+        if (!result) {
+            rttr.addFlashAttribute("msg", "이미 대여중인 상품입니다.");
+        } else {
+            rttr.addFlashAttribute("msg", "대여가 시작되었습니다!");
+        }
+
+        return "redirect:/product/rent";
+    }
+
 
 
 
