@@ -21,5 +21,10 @@ public interface RentProductService {
     boolean isExpired(RentProductVO vo);            // 대여 종료 여부 판단
     String getRemainingTime(RentProductVO vo);      // 남은 시간 계산
     void updateExpiredRentals();                    // 만료된 상품 자동 초기화
+    
+    List<RentProductVO> getProductsIGave(String sellerName);
+    List<RentProductVO> getProductsIRented(String renterName);
+    
+    
 
 }

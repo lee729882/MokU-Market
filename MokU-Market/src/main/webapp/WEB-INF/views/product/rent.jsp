@@ -79,6 +79,22 @@
             👤 로그인한 사용자: <strong>${loginUser.name}</strong>
         </p>
     </c:if>
+    
+    <div style="text-align:right; margin: 20px 20px 0 0;">
+	    <a href="${pageContext.request.contextPath}/product/rent/history" 
+	       style="
+	            background:#007A5C;
+	            color:white;
+	            padding:10px 18px;
+	            border-radius:8px;
+	            text-decoration:none;
+	            font-size:14px;
+	            font-weight:bold;
+	       ">
+	       📘 대여 내역 보기
+	    </a>
+	</div>
+    
 
     <!-- 상품 추가 버튼 -->
     <div class="add-btn" onclick="toggleAddForm()">

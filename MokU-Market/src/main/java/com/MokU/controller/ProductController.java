@@ -698,22 +698,57 @@ public class ProductController {
 
         MemberVO user = (MemberVO) session.getAttribute("loginUser");
 
+        // ✔ 로그인 체크
         if (user == null) {
             rttr.addFlashAttribute("msg", "로그인이 필요합니다.");
             return "redirect:/member/login";
         }
 
-        // 🔥 로그인한 사용자 이름을 구매자로 전달
-        boolean result = rentProductService.startRental(productId, durationType, user.getName());
+        // ✔ 파라미터 기본 안정성 보정
+        if (durationType == null || durationType.isEmpty()) {
+            rttr.addFlashAttribute("msg", "대여 기간 정보가 올바르지 않습니다.");
+            return "redirect:/product/rent";
+        }
+
+        String buyerName = user.getName().trim();
+
+        // 🔥 서비스 호출 — 대여 + 결제 기록 + 상태 변경
+        boolean result = rentProductService.startRental(productId, durationType, buyerName);
 
         if (!result) {
-            rttr.addFlashAttribute("msg", "이미 대여중인 상품입니다.");
+            rttr.addFlashAttribute("msg", "대여할 수 없는 상품입니다. (이미 대여중)");
         } else {
             rttr.addFlashAttribute("msg", "결제가 완료되었습니다! 대여가 시작됩니다.");
         }
 
+        // ✔ 리다이렉션 후 목록 새로고침
         return "redirect:/product/rent";
     }
+    
+    @GetMapping("/rent/history")
+    public String rentHistory(HttpSession session, Model model) {
+
+        MemberVO user = (MemberVO) session.getAttribute("loginUser");
+
+        if (user == null) {
+            return "redirect:/member/login";
+        }
+
+        String name = user.getName();
+
+        // 내가 빌려준 리스트
+        List<RentProductVO> gaveList = rentProductService.getProductsIGave(name);
+
+        // 내가 빌린 리스트
+        List<RentProductVO> rentedList = rentProductService.getProductsIRented(name);
+
+        model.addAttribute("gaveList", gaveList);
+        model.addAttribute("rentedList", rentedList);
+
+        return "/product/rent_history"; // JSP 파일
+    }
+
+
 
 
 

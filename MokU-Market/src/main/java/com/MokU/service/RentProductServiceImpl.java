@@ -19,15 +19,18 @@ public class RentProductServiceImpl implements RentProductService {
     private RentProductDAO rentProductDAO;
 
     @Autowired
-    private RentPaymentDAO rentPaymentDAO;   // 🔥 추가 (결제 기록 DAO)
+    private RentPaymentDAO rentPaymentDAO;
+
 
     @Override
     public int getNextRentProductId() {
         return rentProductDAO.getNextRentProductId();
     }
 
+
     @Override
     public void insertRentProduct(RentProductVO vo) {
+
         int newId = rentProductDAO.getNextRentProductId();
         vo.setRentProductId(newId);
 
@@ -38,16 +41,20 @@ public class RentProductServiceImpl implements RentProductService {
         rentProductDAO.insertRentProduct(vo);
     }
 
+
     @Override
     public List<RentProductVO> getAllRentProducts() {
-        // 🔥 만료된 상품 상태 초기화
+
         updateExpiredRentals();
 
         List<RentProductVO> list = rentProductDAO.findAllRentProducts();
-        for (RentProductVO p : list) convertImageToBase64(p);
+        for (RentProductVO p : list) {
+            convertImageToBase64(p);
+        }
 
         return list;
     }
+
 
     @Override
     public RentProductVO getRentProductById(int rentProductId) {
@@ -56,15 +63,17 @@ public class RentProductServiceImpl implements RentProductService {
         return vo;
     }
 
+
     private void convertImageToBase64(RentProductVO vo) {
         if (vo != null && vo.getImageBlob() != null) {
             vo.setBase64Image(Base64.getEncoder().encodeToString(vo.getImageBlob()));
         }
     }
 
-    /** ======================================
-     * 🔥 대여 시작 + 결제 기록 저장
-     * ====================================== */
+
+    /**
+     * 🔥 대여 시작 + 결제 기록 저장 + 상품에 renter_name 저장
+     */
     @Override
     public boolean startRental(int rentProductId, String durationType, String buyerName) {
 
@@ -82,13 +91,18 @@ public class RentProductServiceImpl implements RentProductService {
             default: return false;
         }
 
-        // 🔥 상품 상태 업데이트 (RENTED)
-        int updated = rentProductDAO.updateRentalStatus(rentProductId, "RENTED", endAt);
+        // 🔥 상품 상태 업데이트 + renter_name 저장
+        int updated = rentProductDAO.updateRentalStatus(
+                rentProductId,
+                "RENTED",
+                endAt,
+                buyerName
+        );
+
         if (updated <= 0) return false;
 
-        // ===========================================
-        // 🔥 결제 기록 테이블 저장
-        // ===========================================
+
+        // 🔥 결제 기록 저장
         RentPaymentVO pay = new RentPaymentVO();
 
         pay.setPaymentId(rentPaymentDAO.getNextPaymentId());
@@ -106,7 +120,8 @@ public class RentProductServiceImpl implements RentProductService {
         return true;
     }
 
-    /** 삭제 */
+
+    /** 상품 삭제 */
     @Override
     public boolean deleteRentProduct(int rentProductId, String sellerName) {
 
@@ -121,14 +136,15 @@ public class RentProductServiceImpl implements RentProductService {
         return deleted > 0;
     }
 
-    /** 만료 체크 */
+
+    /** 만료 여부 체크 */
     @Override
     public boolean isExpired(RentProductVO vo) {
         if (vo.getEndAt() == null) return false;
         return vo.getEndAt().before(new Timestamp(System.currentTimeMillis()));
     }
 
-    /** 남은 시간 계산 */
+
     @Override
     public String getRemainingTime(RentProductVO vo) {
         if (vo.getEndAt() == null) return "-";
@@ -142,18 +158,56 @@ public class RentProductServiceImpl implements RentProductService {
         return minutes + "분 " + seconds + "초";
     }
 
-    /** 만료된 상품 자동 초기화 */
+
+    /**
+     * 🔥 만료된 대여상품 초기화 (AVAILABLE로 되돌림)
+     */
     @Override
     public void updateExpiredRentals() {
+
         List<RentProductVO> list = rentProductDAO.findAllRentProducts();
         Timestamp now = new Timestamp(System.currentTimeMillis());
 
         for (RentProductVO p : list) {
+
             if ("RENTED".equals(p.getStatus()) && p.getEndAt() != null) {
+
                 if (p.getEndAt().before(now)) {
-                    rentProductDAO.updateRentalStatus(p.getRentProductId(), "AVAILABLE", null);
+
+                    rentProductDAO.updateRentalStatus(
+                            p.getRentProductId(),
+                            "AVAILABLE",
+                            null,
+                            null    // renter_name 초기화
+                    );
                 }
             }
         }
     }
+    
+    @Override
+    public List<RentProductVO> getProductsIGave(String sellerName) {
+        List<RentProductVO> list = rentProductDAO.findProductsIGave(sellerName);
+
+        // ⭐ 이미지 Base64 변환 필수
+        for (RentProductVO p : list) {
+            convertImageToBase64(p);
+        }
+
+        return list;
+    }
+
+    @Override
+    public List<RentProductVO> getProductsIRented(String renterName) {
+        List<RentProductVO> list = rentProductDAO.findProductsIRented(renterName);
+
+        // ⭐ 이미지 Base64 변환 필수
+        for (RentProductVO p : list) {
+            convertImageToBase64(p);
+        }
+
+        return list;
+    }
+
+
 }

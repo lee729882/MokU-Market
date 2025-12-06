@@ -21,7 +21,8 @@ public class RentProductVO {
     private byte[] imageBlob;   // DB 저장/조회용
     private String base64Image; // JSP 표시용
 
-   
+    private String renterName;
+
     private Timestamp createdAt;
     private Timestamp endAt;
 }
