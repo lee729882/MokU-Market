@@ -703,16 +703,18 @@ public class ProductController {
             return "redirect:/member/login";
         }
 
-        boolean result = rentProductService.startRental(productId, durationType);
+        // 🔥 로그인한 사용자 이름을 구매자로 전달
+        boolean result = rentProductService.startRental(productId, durationType, user.getName());
 
         if (!result) {
             rttr.addFlashAttribute("msg", "이미 대여중인 상품입니다.");
         } else {
-            rttr.addFlashAttribute("msg", "대여가 시작되었습니다!");
+            rttr.addFlashAttribute("msg", "결제가 완료되었습니다! 대여가 시작됩니다.");
         }
 
         return "redirect:/product/rent";
     }
+
 
 
 

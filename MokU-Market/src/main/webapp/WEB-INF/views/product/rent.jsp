@@ -73,10 +73,49 @@
 
     <h2>대여 / 렌탈 상품</h2>
 
+    <!-- 🔥 로그인한 사용자 표시 -->
+    <c:if test="${not empty loginUser}">
+        <p style="font-size:16px; color:#333; margin-bottom:20px;">
+            👤 로그인한 사용자: <strong>${loginUser.name}</strong>
+        </p>
+    </c:if>
+
     <!-- 상품 추가 버튼 -->
     <div class="add-btn" onclick="toggleAddForm()">
         + 상품 추가
     </div>
+
+	<!-- 상품 등록 폼 박스 -->
+	<div id="addFormBox" style="display:none; background:white; padding:20px; border-radius:10px; box-shadow:0 3px 10px rgba(0,0,0,0.1); margin-bottom:20px;">
+	
+	    <h3>렌탈 상품 등록</h3>
+	
+	    <form action="${pageContext.request.contextPath}/product/rent/add"
+	          method="post" enctype="multipart/form-data">
+	
+	        <label>상품 이름</label>
+	        <input type="text" name="title" required>
+	
+	        <label>상품 설명</label>
+	        <textarea name="description" required></textarea>
+	
+	        <label>대여 가격</label>
+	        <input type="number" name="price" required>
+	
+	        <label>대여 가능 기간</label>
+	        <select name="durationType" required>
+	            <option value="3MIN">3분</option>
+	            <option value="1DAY">1일</option>
+	            <option value="1MONTH">1달</option>
+	            <option value="3MONTH">3달</option>
+	        </select>
+	
+	        <label>상품 이미지</label>
+	        <input type="file" name="file" accept="image/*" required>
+	
+	        <button type="submit" class="rent-btn">등록하기</button>
+	    </form>
+	</div>
 
     <!-- 상품 리스트 -->
     <div class="product-list">
@@ -95,6 +134,11 @@
 
                 <h3>${p.title}</h3>
                 <p>${p.price}원</p>
+
+                <!-- 🔥 판매자 이름 표시 -->
+                <div style="font-size:12px; color:#666; margin-top:5px;">
+                    판매자: <strong>${p.sellerName}</strong>
+                </div>
 
                 <!-- 상태 표시 -->
                 <c:choose>
@@ -120,17 +164,18 @@
                     </form>
                 </c:if>
 
-                <!-- 본인 상품 + 대여 중 → 삭제 불가 -->
+                <!-- 삭제 불가 -->
                 <c:if test="${loginUser != null 
                              && p.sellerName == loginUser.name 
                              && p.status == 'RENTED'}">
                     <button class="disabled-btn">대여 중 삭제 불가</button>
                 </c:if>
 
-                <!-- ⭐ 구매(대여) 버튼 → 모달 열기 (기간은 판매자가 등록한 값 사용) -->
+                <!-- ⭐ 대여하기 버튼 (결제 모달 열기) -->
                 <c:if test="${loginUser != null 
                              && p.sellerName != loginUser.name 
                              && p.status != 'RENTED'}">
+
                     <button class="rent-btn"
                             onclick="openPaymentModal('${p.rentProductId}',
                                                      '${p.title}',
@@ -140,7 +185,6 @@
                     </button>
                 </c:if>
 
-                <!-- 대여 중이라 구매 불가 -->
                 <c:if test="${p.status == 'RENTED'}">
                     <button class="disabled-btn">대여 중</button>
                 </c:if>
@@ -159,7 +203,6 @@
         <p>가격: <span id="payPrice"></span> 원</p>
         <p>대여 기간: <span id="payDurationText"></span></p>
 
-        <!-- 실제 서버로 보낼 hidden 값들 -->
         <input type="hidden" id="payProductId">
         <input type="hidden" id="payDuration">
 
@@ -181,21 +224,16 @@
 <script>
 function toggleAddForm() {
     const box = document.getElementById("addFormBox");
-    if (box) {
-        box.style.display = (box.style.display === "none") ? "block" : "none";
-    }
+    box.style.display = (box.style.display === "none") ? "block" : "none";
 }
 
-/* ============================
-   📌 결제 모달 열기
-   durationType은 판매자가 등록한 값 그대로 사용
-============================ */
+/* 결제 모달 열기 */
 function openPaymentModal(productId, title, price, durationType) {
+
     document.getElementById("payProductId").value = productId;
     document.getElementById("payTitle").innerText = title + " 결제";
     document.getElementById("payPrice").innerText = price;
 
-    // durationType → 보기 좋은 한글로 변환
     let text;
     if (durationType === '3MIN') text = '3분';
     else if (durationType === '1DAY') text = '1일';
@@ -213,11 +251,9 @@ function closePaymentModal() {
     document.getElementById("paymentModal").style.display = "none";
 }
 
-/* ============================
-   📌 AJAX 결제 & 대여 시작
-   → durationType은 hidden으로 넘김
-============================ */
+/* AJAX 결제 요청 */
 function startPayment() {
+
     const productId = document.getElementById("payProductId").value;
     const duration = document.getElementById("payDuration").value;
 
@@ -225,15 +261,15 @@ function startPayment() {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: "productId=" + encodeURIComponent(productId)
-            + "&durationType=" + encodeURIComponent(duration)
+             + "&durationType=" + encodeURIComponent(duration)
     })
     .then(() => {
-        alert("결제가 완료되었습니다.\n대여가 시작됩니다!");
+        alert("결제가 완료되었습니다!\n대여가 시작됩니다.");
         closePaymentModal();
         location.reload();
     })
     .catch(err => {
-        alert("대여 중 오류 발생");
+        alert("대여 처리 중 오류 발생");
         console.error(err);
     });
 }
