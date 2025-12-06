@@ -74,7 +74,7 @@
         WHERE rent_product_id = #{rentProductId}
     </select>
 
-    <!-- ⭐ 대여 상태 업데이트 (상태 + 종료시간 + 대여자 이름) -->
+    <!-- ⭐ 대여 상태 업데이트 -->
     <update id="updateRentalStatus">
         UPDATE rent_product
         SET 
@@ -83,22 +83,55 @@
             renter_name = #{renterName, jdbcType=VARCHAR}
         WHERE rent_product_id = #{rentProductId}
     </update>
-    
-    <!-- 내가 빌려준 상품 목록 (seller) -->
-	<select id="findProductsIGave" resultType="com.MokU.vo.RentProductVO">
-	    SELECT *
-	    FROM rent_product
-	    WHERE seller_name = #{sellerName}
-	    ORDER BY created_at DESC
-	</select>
-	
-	<!-- 내가 빌린 상품 목록 (renter) -->
-	<select id="findProductsIRented" resultType="com.MokU.vo.RentProductVO">
-	    SELECT *
-	    FROM rent_product
-	    WHERE renter_name = #{renterName}
-	    ORDER BY end_at DESC
-	</select>
-    
+
+    <!-- 🟢 내가 빌려준 상품 목록 -->
+    <select id="findProductsIGave" resultType="com.MokU.vo.RentProductVO">
+        SELECT
+            rent_product_id,
+            seller_name,
+            title,
+            price,
+            description,
+            image_blob,
+            duration_type,
+            status,
+            renter_name,
+            end_at,
+            created_at
+        FROM rent_product
+        WHERE seller_name = #{sellerName}
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 🔵 내가 빌린 상품 목록 -->
+    <select id="findProductsIRented" resultType="com.MokU.vo.RentProductVO">
+        SELECT
+            rent_product_id,
+            seller_name,
+            title,
+            price,
+            description,
+            image_blob,
+            duration_type,
+            status,
+            renter_name,
+            end_at,
+            created_at
+        FROM rent_product
+        WHERE renter_name = #{renterName}
+        ORDER BY end_at DESC
+    </select>
+
+    <!-- 🗑 상품 삭제 → 꼭 필요함 -->
+    <delete id="deleteRentProduct">
+    <![CDATA[
+        DELETE FROM rent_product
+        WHERE rent_product_id = #{productId}
+          AND TRIM(seller_name) = TRIM(#{sellerName})
+          AND NVL(status, 'AVAILABLE') <> 'RENTED'
+	    ]]>
+	</delete>
+
+
 
 </mapper>
