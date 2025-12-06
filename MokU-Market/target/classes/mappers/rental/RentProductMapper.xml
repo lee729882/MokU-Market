@@ -61,5 +61,16 @@
         FROM rent_product
         WHERE rent_product_id = #{rentProductId}
     </select>
+    
+    <!-- 판매 상품 삭제 -->
+		<delete id="deleteRentProduct">
+	    DELETE FROM rent_product
+	    WHERE rent_product_id = #{productId}
+	      AND TRIM(seller_name) = TRIM(#{sellerName})
+	</delete>
+
+		
+
+    
 
 </mapper>

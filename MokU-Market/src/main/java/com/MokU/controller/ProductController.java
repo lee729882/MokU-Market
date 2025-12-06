@@ -518,84 +518,7 @@ public class ProductController {
         return result;
     }
 
-    
-   
-
-        @Autowired
-        private RentProductService rentProductService;
-
-
-        /* ============================================
-         *  렌탈 상품 목록
-         * ============================================ */
-        @GetMapping("/rent")
-        public String rentProductList(Model model) {
-
-            List<RentProductVO> rentProducts = rentProductService.getAllRentProducts();
-            model.addAttribute("products", rentProducts);
-            model.addAttribute("menu", "rent");
-
-            return "product/rent";  // JSP
-        }
-
-
-        /* ============================================
-         *  렌탈 상품 등록 페이지
-         * ============================================ */
-        @GetMapping("/rent/add")
-        public String showRentAddPage(HttpSession session, Model model) {
-
-            MemberVO user = (MemberVO) session.getAttribute("loginUser");
-            if (user == null) return "redirect:/login";
-
-            model.addAttribute("user", user);
-
-            return "product/rent_add";
-        }
-
-
-        /* ============================================
-         *  렌탈 상품 등록 처리
-         * ============================================ */
-        @PostMapping("/rent/add")
-        public String addRentProduct(
-                @RequestParam("title") String title,
-                @RequestParam("description") String description,
-                @RequestParam("durationType") String durationType,
-                @RequestParam("price") int price,
-                @RequestParam("file") MultipartFile file,
-                HttpSession session) throws Exception {
-
-            MemberVO user = (MemberVO) session.getAttribute("loginUser");
-            if (user == null) return "redirect:/login";
-
-            RentProductVO vo = new RentProductVO();
-
-         // seller_id 저장 (DB 컬럼과 일치)
-          vo.setSellerName(user.getName());
-
-
-         // 나머지 필드
-         vo.setTitle(title);
-         vo.setDescription(description);
-         vo.setDurationType(durationType);
-         vo.setPrice(price);
-         vo.setStatus("AVAILABLE");
-         vo.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-
-         // 이미지 업로드
-         if (file != null && !file.isEmpty()) {
-             vo.setImageData(file.getBytes());
-         }
-
-         // 서비스 호출
-         rentProductService.insertRentProduct(vo);
-
-
-            return "redirect:/product/rent";
-        }
-    
-
+    	
     @PostMapping("/report")
     @ResponseBody
     public Map<String, Object> reportProduct(@RequestBody Map<String, String> payload,
@@ -654,8 +577,122 @@ public class ProductController {
 
         return result;
     }
+    
+    @Autowired
+    private RentProductService rentProductService;
 
 
+    /* ============================================
+     *  렌탈 상품 목록
+     * ============================================ */
+    @GetMapping("/rent")
+    public String rentProductList(Model model, HttpSession session) {
+
+        MemberVO user = (MemberVO) session.getAttribute("loginUser");
+
+        List<RentProductVO> rentProducts = rentProductService.getAllRentProducts();
+
+        model.addAttribute("products", rentProducts);
+        model.addAttribute("loginUser", user);   // ⭐ 추가
+
+        return "product/rent";
+    }
+
+
+
+
+
+    /* ============================================
+     *  렌탈 상품 등록 페이지
+     * ============================================ */
+    @GetMapping("/rent/add")
+    public String showRentAddPage(HttpSession session, Model model) {
+
+        MemberVO user = (MemberVO) session.getAttribute("loginUser");
+        if (user == null) return "redirect:/login";
+
+        model.addAttribute("user", user);
+
+        return "product/rent_add";
+    }
+
+
+    /* ============================================
+     *  렌탈 상품 등록 처리
+     * ============================================ */
+    @PostMapping("/rent/add")
+    public String addRentProduct(
+            @RequestParam("title") String title,
+            @RequestParam("description") String description,
+            @RequestParam("durationType") String durationType,
+            @RequestParam("price") int price,
+            @RequestParam("file") MultipartFile file,
+            HttpSession session) throws Exception {
+
+        MemberVO user = (MemberVO) session.getAttribute("loginUser");
+        if (user == null) return "redirect:/login";
+
+        RentProductVO vo = new RentProductVO();
+
+     // seller_id 저장 (DB 컬럼과 일치)
+      vo.setSellerName(user.getName());
+
+
+     // 나머지 필드
+     vo.setTitle(title);
+     vo.setDescription(description);
+     vo.setDurationType(durationType);
+     vo.setPrice(price);
+     vo.setStatus("AVAILABLE");
+     vo.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+
+     // 이미지 업로드
+     if (file != null && !file.isEmpty()) {
+         vo.setImageData(file.getBytes());
+     }
+
+     // 서비스 호출
+     rentProductService.insertRentProduct(vo);
+
+
+        return "redirect:/product/rent";
+    }
+
+
+
+
+	//상품 삭제
+  //상품 삭제
+  //상품 삭제
+    @PostMapping("/rent/delete")
+    public String deleteRentProduct(@RequestParam("productId") int productId,
+                                    HttpSession session,
+                                    RedirectAttributes rttr) {
+
+        MemberVO user = (MemberVO) session.getAttribute("loginUser");
+
+        if (user == null) {
+            rttr.addFlashAttribute("msg", "로그인이 필요합니다.");
+            return "redirect:/member/login";
+        }
+
+        String sellerName = user.getName().trim();
+        boolean result = rentProductService.deleteRentProduct(productId, sellerName);
+
+        if (result) {
+            rttr.addFlashAttribute("msg", "상품이 삭제되었습니다.");
+        } else {
+            rttr.addFlashAttribute("msg", "본인이 등록한 상품만 삭제할 수 있습니다.");
+        }
+
+        return "redirect:/product/rent";
+    }
+
+
+
+
+
+    
 
 
 }

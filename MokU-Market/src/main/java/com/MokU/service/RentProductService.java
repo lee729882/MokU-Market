@@ -14,5 +14,8 @@ public interface RentProductService {
     // 🔥 PK 생성용 메서드 추가
     int getNextRentProductId();
     boolean startRental(int rentProductId, String durationType);
+    
+    boolean deleteRentProduct(int productId, String sellerName);//상품 삭제 기능
+
 
 }

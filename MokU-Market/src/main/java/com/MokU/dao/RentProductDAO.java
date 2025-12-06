@@ -22,4 +22,9 @@ public interface RentProductDAO {
             @Param("status") String status,
             @Param("endAt") Timestamp endAt
     );
+    
+    /** 상품 삭제 */
+    int deleteRentProduct(@Param("productId") int productId,
+            @Param("sellerName") String sellerName);
+
 }

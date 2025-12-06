@@ -94,4 +94,21 @@ public class RentProductServiceImpl implements RentProductService {
 
         return updated > 0;
     }
+    
+    //상품 삭제
+    @Override
+    public boolean deleteRentProduct(int rentProductId, String sellerName) {
+        RentProductVO product = rentProductDAO.findRentProductById(rentProductId);
+
+        if (product == null) return false;
+
+        if (!product.getSellerName().equals(sellerName)) {
+            return false;
+        }
+
+        int deleted = rentProductDAO.deleteRentProduct(rentProductId, sellerName);
+        return deleted > 0;
+    }
+
+    
 }

@@ -21,6 +21,7 @@
         width: 200px; background:white; border-radius:10px;
         padding:15px; box-shadow:0 3px 8px rgba(0,0,0,0.1);
         text-align:center;
+        position:relative;
     }
 
     .product-card img {
@@ -43,6 +44,22 @@
         padding:12px 20px; background:#28a745; color:white;
         border:none; border-radius:6px; cursor:pointer;
         width:100%; font-size:16px;
+    }
+
+    /* 삭제 버튼 스타일 */
+    .delete-btn {
+        background:#ff4444;
+        color:white;
+        border:none;
+        padding:6px 10px;
+        border-radius:6px;
+        cursor:pointer;
+        margin-top:10px;
+        width:100%;
+        font-size:14px;
+    }
+    .delete-btn:hover {
+        background:#cc0000;
     }
 </style>
 
@@ -98,7 +115,9 @@
     </div>
 
     <!-- 렌탈 상품 목록 -->
+        <!-- 렌탈 상품 목록 -->
     <div class="product-list">
+
         <c:forEach var="p" items="${products}">
             <div class="product-card">
 
@@ -113,9 +132,38 @@
 
                 <h3>${p.title}</h3>
                 <p>${p.price}원</p>
+
+                <%-- 🔍 디버깅용: 판매자 / 로그인 사용자 이름 확인 --%>
+                <div style="font-size:11px; color:#888; margin-top:4px;">
+                    판매자: ${p.sellerName}
+                    <br>
+                    로그인: 
+                    <c:choose>
+                        <c:when test="${not empty sessionScope.loginUser}">
+                            ${sessionScope.loginUser.name}
+                        </c:when>
+                        <c:otherwise>
+                            (비로그인)
+                        </c:otherwise>
+                    </c:choose>
+                </div>
+
+                <%-- 🔥 본인 상품일 때만 삭제 버튼 표시 --%>
+                <c:if test="${loginUser != null && p.sellerName == loginUser.name}">
+				    <form action="${pageContext.request.contextPath}/product/rent/delete"
+					      method="post"
+					      onsubmit="return confirm('정말 삭제하시겠습니까?');">
+					    <input type="hidden" name="productId" value="${p.rentProductId}">
+					    <button type="submit" class="delete-btn">삭제하기</button>
+					</form>
+				</c:if>
+
+
             </div>
         </c:forEach>
+
     </div>
+
 
 </div>
 
